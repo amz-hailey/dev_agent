@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenOS — 에이전트 배포 위저드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+    <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Pretendard Variable','Inter','system-ui','-apple-system','sans-serif']}}}}</script>
+    <style>
+        .scrollbar-thin::-webkit-scrollbar{width:4px}.scrollbar-thin::-webkit-scrollbar-track{background:transparent}.scrollbar-thin::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:2px}
+        input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#0f172a;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px #cbd5e1}
+        input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,#0f172a var(--val),#e2e8f0 var(--val))}
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+<div x-data="wizard()" x-init="init()" class="flex h-full min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100"><div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center"><i data-lucide="shield-check" class="w-5 h-5 text-white"></i></div><span class="text-lg font-bold text-slate-900 tracking-tight">GenOS</span></div>
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="layout-dashboard" class="w-4 h-4"></i>메인 대시보드</a>
+            <a href="PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="activity" class="w-4 h-4"></i>실시간 모니터링</a>
+            <a href="PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="bell" class="w-4 h-4"></i>알림 관리</a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="boxes" class="w-4 h-4"></i>템플릿 라이브러리</a>
+            <a href="PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5"><i data-lucide="rocket" class="w-4 h-4"></i>배포 위저드</a>
+            <a href="PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="plug" class="w-4 h-4"></i>커넥터 허브</a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="file-text" class="w-4 h-4"></i>컴플라이언스 리포트</a>
+            <a href="PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="scroll-text" class="w-4 h-4"></i>감사 로그</a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="users" class="w-4 h-4"></i>사용자/권한</a>
+            <a href="PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="server" class="w-4 h-4"></i>시스템/DR</a>
+            <a href="PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 mb-0.5"><i data-lucide="settings" class="w-4 h-4"></i>설정</a>
+        </nav>
+        <div class="border-t border-slate-100 p-3"><div class="flex items-center gap-2.5 px-2 py-1.5"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">김</div><div class="flex-1 min-w-0"><p class="text-sm font-medium text-slate-900 truncate">김부장</p><p class="text-[11px] text-slate-400">IT 보안팀</p></div></div></div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 flex flex-col min-w-0">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+            <div><h1 class="text-lg font-bold text-slate-900">에이전트 배포 위저드</h1><p class="text-xs text-slate-400 -mt-0.5">노코드 5단계 온보딩</p></div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto">
+            <div class="max-w-[800px] mx-auto py-8 px-6">
+
+                <!-- ===== STEP PROGRESS ===== -->
+                <div class="flex items-center justify-between mb-10" aria-label="배포 진행 단계">
+                    <template x-for="(s, idx) in steps" :key="s.step">
+                        <div class="flex items-center" :class="idx < steps.length - 1 && 'flex-1'">
+                            <button @click="goToStep(s.step)" :disabled="s.step > maxReached"
+                                    class="flex flex-col items-center gap-1.5 group relative z-10"
+                                    :aria-label="s.label + (s.step === currentStep ? ' (현재 단계)' : '')">
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200"
+                                     :class="s.step < currentStep ? 'bg-emerald-500 text-white' : s.step === currentStep ? 'bg-slate-900 text-white ring-4 ring-slate-200' : s.step <= maxReached ? 'bg-white border-2 border-slate-300 text-slate-500 hover:border-slate-400' : 'bg-slate-100 text-slate-400'">
+                                    <template x-if="s.step < currentStep"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></template>
+                                    <template x-if="s.step >= currentStep"><span x-text="s.step"></span></template>
+                                </div>
+                                <span class="text-[11px] font-medium whitespace-nowrap" :class="s.step === currentStep ? 'text-slate-900' : 'text-slate-400'" x-text="s.label"></span>
+                            </button>
+                            <div x-show="idx < steps.length - 1" class="flex-1 h-0.5 mx-3 mt-[-18px]" :class="s.step < currentStep ? 'bg-emerald-500' : 'bg-slate-200'"></div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- ===== WIZARD CONTENT ===== -->
+                <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+
+                    <!-- Step 1: Template Selection -->
+                    <div x-show="currentStep === 1" x-transition>
+                        <h2 class="text-base font-bold text-slate-900 mb-1">템플릿 선택</h2>
+                        <p class="text-sm text-slate-500 mb-6">보안 에이전트 템플릿을 선택합니다</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">에이전트 템플릿 <span class="text-red-500">*</span></label>
+                                <select x-model="form.templateId" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                    <option value="">템플릿을 선택하세요</option>
+                                    <option value="fds-realtime">FDS 실시간 이상거래 탐지</option>
+                                    <option value="aml-monitoring">AML 자금세탁 모니터링</option>
+                                    <option value="dlp-detection">내부 정보 유출 탐지 (DLP)</option>
+                                    <option value="access-anomaly">접근 권한 이상 탐지</option>
+                                    <option value="card-fraud">카드 부정 사용 탐지</option>
+                                </select>
+                                <p x-show="errors.templateId" class="text-xs text-red-500 mt-1">에이전트 템플릿을 선택해주세요</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">에이전트 이름 <span class="text-red-500">*</span></label>
+                                <input type="text" x-model="form.agentName" placeholder="에이전트 이름 (예: KB_FDS_Agent_v1)" maxlength="100"
+                                       class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                <p x-show="errors.agentName" class="text-xs text-red-500 mt-1">영문, 한글, 숫자, 하이픈, 언더스코어만 사용 가능합니다</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">설명 <span class="text-slate-400 font-normal">(선택)</span></label>
+                                <textarea x-model="form.agentDesc" rows="3" maxlength="500" placeholder="에이전트 설명 (선택사항)"
+                                          class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1 resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Data Source -->
+                    <div x-show="currentStep === 2" x-transition>
+                        <h2 class="text-base font-bold text-slate-900 mb-1">데이터 소스 연결</h2>
+                        <p class="text-sm text-slate-500 mb-6">고객사 트랜잭션 DB 또는 API를 연결합니다</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">데이터 소스 유형 <span class="text-red-500">*</span></label>
+                                <select x-model="form.connectorType" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                    <option value="">유형 선택</option>
+                                    <option value="Oracle DB">Oracle DB</option>
+                                    <option value="PostgreSQL">PostgreSQL</option>
+                                    <option value="REST API">REST API</option>
+                                    <option value="gRPC">gRPC</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="col-span-2">
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">호스트 <span class="text-red-500">*</span></label>
+                                    <input type="text" x-model="form.host" placeholder="db.example.com" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">포트 <span class="text-red-500">*</span></label>
+                                    <input type="number" x-model="form.port" placeholder="5432" min="1" max="65535" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">데이터베이스 이름 <span class="text-red-500">*</span></label>
+                                <input type="text" x-model="form.dbName" placeholder="데이터베이스 이름" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">사용자명 <span class="text-red-500">*</span></label>
+                                    <input type="text" x-model="form.dbUser" placeholder="접속 사용자명" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">비밀번호 <span class="text-red-500">*</span></label>
+                                    <input type="password" x-model="form.dbPass" placeholder="접속 비밀번호" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <button type="button" @click="form.useSSL = !form.useSSL" :class="form.useSSL ? 'bg-slate-900' : 'bg-slate-200'" class="w-9 h-5 rounded-full relative transition-colors">
+                                        <span :class="form.useSSL ? 'translate-x-4' : 'translate-x-0.5'" class="block w-4 h-4 bg-white rounded-full shadow transition-transform"></span>
+                                    </button>
+                                    <span class="text-sm text-slate-700">SSL/TLS 연결 사용</span>
+                                </label>
+                            </div>
+                            <!-- Connection test -->
+                            <div class="pt-3 border-t border-slate-100">
+                                <button @click="testConnection" :disabled="connTesting"
+                                        class="h-9 px-4 rounded-md border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 inline-flex items-center gap-2">
+                                    <svg x-show="connTesting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                                    <i x-show="!connTesting" data-lucide="plug-zap" class="w-4 h-4"></i>
+                                    <span x-text="connTesting ? '테스트 중...' : '연결 테스트'"></span>
+                                </button>
+                                <div x-show="connResult !== null" class="mt-3 rounded-lg p-3" :class="connResult ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'">
+                                    <div class="flex items-center gap-2">
+                                        <i :data-lucide="connResult ? 'check-circle-2' : 'x-circle'" class="w-4 h-4" :class="connResult ? 'text-emerald-600' : 'text-red-600'"></i>
+                                        <span class="text-sm font-medium" :class="connResult ? 'text-emerald-700' : 'text-red-700'" x-text="connResult ? '연결 성공 — 샘플 10건 조회 확인' : '연결 실패 — 호스트 또는 인증 정보를 확인해주세요'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Parameters -->
+                    <div x-show="currentStep === 3" x-transition>
+                        <h2 class="text-base font-bold text-slate-900 mb-1">파라미터 조정</h2>
+                        <p class="text-sm text-slate-500 mb-6">탐지 임계값 및 규칙을 설정합니다</p>
+                        <div class="space-y-5">
+                            <!-- Threshold slider -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="text-sm font-medium text-slate-700">탐지 임계값</label>
+                                    <span class="text-sm font-bold text-slate-900" x-text="form.threshold.toFixed(2)"></span>
+                                </div>
+                                <input type="range" x-model="form.threshold" min="0.1" max="1.0" step="0.05"
+                                       class="w-full h-1.5 appearance-none cursor-pointer"
+                                       :style="'--val:' + ((form.threshold - 0.1) / 0.9 * 100) + '%'">
+                                <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+                                    <span>느슨 (0.10)</span><span>엄격 (1.00)</span>
+                                </div>
+                            </div>
+                            <!-- Risk levels -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">모니터링 위험 등급 <span class="text-red-500">*</span></label>
+                                <div class="flex gap-2">
+                                    <template x-for="lvl in ['고위험','중위험','저위험']" :key="lvl">
+                                        <button @click="toggleArray(form.riskLevels, lvl)" type="button"
+                                                class="px-3 py-1.5 rounded-md border text-sm font-medium transition-colors"
+                                                :class="form.riskLevels.includes(lvl) ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'"
+                                                x-text="lvl"></button>
+                                    </template>
+                                </div>
+                            </div>
+                            <!-- Alert channels -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">알림 채널 <span class="text-red-500">*</span></label>
+                                <div class="flex gap-2">
+                                    <template x-for="ch in ['Slack','Microsoft Teams','Email','SMS']" :key="ch">
+                                        <button @click="toggleArray(form.alertChannels, ch)" type="button"
+                                                class="px-3 py-1.5 rounded-md border text-sm font-medium transition-colors"
+                                                :class="form.alertChannels.includes(ch) ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'"
+                                                x-text="ch"></button>
+                                    </template>
+                                </div>
+                            </div>
+                            <!-- Schedule -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">모니터링 스케줄</label>
+                                <select x-model="form.schedule" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                    <option value="24/7 상시">24/7 상시</option>
+                                    <option value="영업시간만 (09:00-18:00)">영업시간만 (09:00-18:00)</option>
+                                    <option value="커스텀">커스텀</option>
+                                </select>
+                            </div>
+                            <!-- PII masking -->
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <button type="button" @click="form.piiMasking = !form.piiMasking" :class="form.piiMasking ? 'bg-slate-900' : 'bg-slate-200'" class="w-9 h-5 rounded-full relative transition-colors">
+                                    <span :class="form.piiMasking ? 'translate-x-4' : 'translate-x-0.5'" class="block w-4 h-4 bg-white rounded-full shadow transition-transform"></span>
+                                </button>
+                                <span class="text-sm text-slate-700">PII 자동 마스킹 적용</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Test -->
+                    <div x-show="currentStep === 4" x-transition>
+                        <h2 class="text-base font-bold text-slate-900 mb-1">테스트</h2>
+                        <p class="text-sm text-slate-500 mb-6">샘플 데이터로 에이전트 동작을 검증합니다</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">테스트 데이터 소스</label>
+                                <select x-model="form.testSource" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                    <option>연결된 데이터 소스 샘플 (10건)</option>
+                                    <option>GenOS 기본 테스트 데이터셋</option>
+                                </select>
+                            </div>
+                            <button @click="runTest" :disabled="testRunning"
+                                    class="h-10 px-6 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 transition-colors disabled:opacity-50 inline-flex items-center gap-2">
+                                <svg x-show="testRunning" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                                <i x-show="!testRunning" data-lucide="play" class="w-4 h-4"></i>
+                                <span x-text="testRunning ? '테스트 실행 중...' : '테스트 실행'"></span>
+                            </button>
+                            <!-- Test progress -->
+                            <div x-show="testRunning" class="rounded-lg bg-slate-50 border border-slate-200 p-4">
+                                <div class="flex items-center justify-between text-sm mb-2">
+                                    <span class="text-slate-600">에이전트 실행 중...</span>
+                                    <span class="text-slate-400" x-text="testProgress + '%'"></span>
+                                </div>
+                                <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-slate-900 rounded-full transition-all duration-300" :style="'width:' + testProgress + '%'"></div>
+                                </div>
+                            </div>
+                            <!-- Test results -->
+                            <div x-show="testDone" class="rounded-lg border border-emerald-200 bg-emerald-50/50 p-5 space-y-4">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i>
+                                    <span class="text-sm font-semibold text-emerald-800">테스트 완료</span>
+                                </div>
+                                <div class="grid grid-cols-4 gap-3">
+                                    <div class="text-center"><p class="text-lg font-bold text-slate-900">10</p><p class="text-[11px] text-slate-400">처리 건수</p></div>
+                                    <div class="text-center"><p class="text-lg font-bold text-red-600">3</p><p class="text-[11px] text-slate-400">이상 탐지</p></div>
+                                    <div class="text-center"><p class="text-lg font-bold text-emerald-600">7</p><p class="text-[11px] text-slate-400">정상</p></div>
+                                    <div class="text-center"><p class="text-lg font-bold text-slate-900">1.2s</p><p class="text-[11px] text-slate-400">소요 시간</p></div>
+                                </div>
+                                <div class="border-t border-emerald-100 pt-3">
+                                    <table class="w-full text-xs">
+                                        <thead><tr class="text-slate-500"><th class="text-left pb-2 font-medium">거래 ID</th><th class="text-left pb-2 font-medium">금액</th><th class="text-left pb-2 font-medium">결과</th><th class="text-left pb-2 font-medium">점수</th></tr></thead>
+                                        <tbody class="text-slate-700">
+                                            <tr class="border-t border-emerald-100"><td class="py-1.5">TXN-88471</td><td>24,000,000</td><td><span class="text-red-600 font-medium">이상</span></td><td>0.94</td></tr>
+                                            <tr class="border-t border-emerald-100"><td class="py-1.5">TXN-88302</td><td>580,000,000</td><td><span class="text-red-600 font-medium">이상</span></td><td>0.91</td></tr>
+                                            <tr class="border-t border-emerald-100"><td class="py-1.5">TXN-87650</td><td>8,470,000</td><td><span class="text-red-600 font-medium">이상</span></td><td>0.82</td></tr>
+                                            <tr class="border-t border-emerald-100"><td class="py-1.5">TXN-87201</td><td>12,500</td><td><span class="text-emerald-600">정상</span></td><td>0.23</td></tr>
+                                            <tr class="border-t border-emerald-100"><td class="py-1.5">TXN-86940</td><td>3,200,000</td><td><span class="text-emerald-600">정상</span></td><td>0.31</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Deploy -->
+                    <div x-show="currentStep === 5" x-transition>
+                        <h2 class="text-base font-bold text-slate-900 mb-1">배포</h2>
+                        <p class="text-sm text-slate-500 mb-6">최종 설정을 확인하고 에이전트를 배포합니다</p>
+                        <!-- Summary -->
+                        <div class="space-y-3 mb-6">
+                            <div class="rounded-lg bg-slate-50 border border-slate-200 p-4 grid grid-cols-2 gap-3 text-sm">
+                                <div><span class="text-slate-400">템플릿</span><p class="font-medium text-slate-900" x-text="templateLabel"></p></div>
+                                <div><span class="text-slate-400">에이전트 이름</span><p class="font-medium text-slate-900" x-text="form.agentName || '-'"></p></div>
+                                <div><span class="text-slate-400">데이터 소스</span><p class="font-medium text-slate-900" x-text="(form.connectorType || '-') + ' · ' + (form.host || '-')"></p></div>
+                                <div><span class="text-slate-400">임계값</span><p class="font-medium text-slate-900" x-text="form.threshold.toFixed(2)"></p></div>
+                                <div><span class="text-slate-400">위험 등급</span><p class="font-medium text-slate-900" x-text="form.riskLevels.join(', ')"></p></div>
+                                <div><span class="text-slate-400">알림 채널</span><p class="font-medium text-slate-900" x-text="form.alertChannels.join(', ')"></p></div>
+                                <div><span class="text-slate-400">스케줄</span><p class="font-medium text-slate-900" x-text="form.schedule"></p></div>
+                                <div><span class="text-slate-400">PII 마스킹</span><p class="font-medium text-slate-900" x-text="form.piiMasking ? '적용' : '미적용'"></p></div>
+                            </div>
+                            <div class="rounded-lg bg-emerald-50 border border-emerald-200 p-3 flex items-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                                <span class="text-sm text-emerald-700">테스트 완료 — 10건 중 3건 이상 탐지 (정상 작동)</span>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">배포 환경</label>
+                                <select x-model="form.deployEnv" class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                                    <option>스테이징</option>
+                                    <option>프로덕션</option>
+                                </select>
+                            </div>
+                            <label class="flex items-center gap-2 cursor-pointer p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                                <button type="button" @click="form.confirmDeploy = !form.confirmDeploy"
+                                        class="w-4 h-4 rounded border flex items-center justify-center transition-colors"
+                                        :class="form.confirmDeploy ? 'bg-slate-900 border-slate-900' : 'bg-white border-slate-300'">
+                                    <svg x-show="form.confirmDeploy" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                </button>
+                                <span class="text-sm text-slate-700">위 설정으로 에이전트를 배포하겠습니다</span>
+                            </label>
+                        </div>
+                        <!-- Deploy success -->
+                        <div x-show="deployDone" x-transition class="mt-6 rounded-lg bg-emerald-50 border border-emerald-200 p-6 text-center">
+                            <div class="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
+                                <i data-lucide="rocket" class="w-7 h-7 text-emerald-600"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-emerald-900">배포 완료!</h3>
+                            <p class="text-sm text-emerald-700 mt-1" x-text="form.agentName + ' 에이전트가 ' + form.deployEnv + ' 환경에 배포되었습니다.'"></p>
+                            <a href="PG-06_realtime_monitoring.html" class="inline-flex items-center gap-1.5 mt-4 h-9 px-4 rounded-md bg-emerald-600 text-sm font-medium text-white hover:bg-emerald-700 transition-colors">
+                                <i data-lucide="activity" class="w-4 h-4"></i> 모니터링 대시보드로 이동
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== NAVIGATION BUTTONS ===== -->
+                <div class="flex items-center justify-between" x-show="!deployDone">
+                    <button x-show="currentStep > 1" @click="prevStep"
+                            class="h-10 px-4 rounded-md border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i> 이전
+                    </button>
+                    <div x-show="currentStep === 1" class="w-1"></div>
+                    <div class="flex items-center gap-2">
+                        <button @click="saveDraft" class="h-10 px-4 rounded-md text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors inline-flex items-center gap-1.5">
+                            <i data-lucide="save" class="w-4 h-4"></i> 임시 저장
+                        </button>
+                        <button x-show="currentStep < 5" @click="nextStep" :disabled="!isStepValid"
+                                class="h-10 px-6 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1.5">
+                            다음 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                        <button x-show="currentStep === 5" @click="deploy" :disabled="!form.confirmDeploy || deploying"
+                                class="h-10 px-6 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1.5">
+                            <svg x-show="deploying" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                            <i x-show="!deploying" data-lucide="rocket" class="w-4 h-4"></i>
+                            <span x-text="deploying ? '배포 중...' : '에이전트 배포'"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('alpine:init',()=>{setTimeout(()=>lucide.createIcons(),50)});
+const _obs=new MutationObserver(()=>lucide.createIcons());
+_obs.observe(document.body,{childList:true,subtree:true});
+
+function wizard(){
+    return {
+        currentStep: 5,
+        maxReached: 5,
+        steps: [
+            {step:1, label:'템플릿 선택'},
+            {step:2, label:'데이터 소스'},
+            {step:3, label:'파라미터'},
+            {step:4, label:'테스트'},
+            {step:5, label:'배포'},
+        ],
+        form: {
+            templateId:'fds-realtime', agentName:'KB_FDS_Agent_v1', agentDesc:'KB국민은행 FDS 이상거래 탐지 에이전트',
+            connectorType:'Oracle DB', host:'fds-db.kbbank.internal', port:1521, dbName:'FDS_PROD', dbUser:'genos_reader', dbPass:'', useSSL:true,
+            threshold:0.70, riskLevels:['고위험','중위험'], alertChannels:['Email','Slack'], schedule:'24/7 상시', piiMasking:true,
+            testSource:'연결된 데이터 소스 샘플 (10건)',
+            deployEnv:'스테이징', confirmDeploy:false,
+        },
+        errors: { templateId:false, agentName:false },
+        connTesting:false, connResult:null,
+        testRunning:false, testProgress:0, testDone:false,
+        deploying:false, deployDone:false,
+
+        get templateLabel() {
+            const m = {'fds-realtime':'FDS 실시간 이상거래 탐지','aml-monitoring':'AML 자금세탁 모니터링','dlp-detection':'내부 정보 유출 탐지','access-anomaly':'접근 권한 이상 탐지','card-fraud':'카드 부정 사용 탐지'};
+            return m[this.form.templateId] || '-';
+        },
+
+        get isStepValid() {
+            if (this.currentStep === 1) return this.form.templateId && this.form.agentName;
+            if (this.currentStep === 2) return this.form.connectorType && this.form.host && this.form.port && this.form.dbName && this.form.dbUser && this.connResult === true;
+            if (this.currentStep === 3) return this.form.riskLevels.length > 0 && this.form.alertChannels.length > 0;
+            if (this.currentStep === 4) return this.testDone;
+            return true;
+        },
+
+        goToStep(s) { if (s <= this.maxReached) { this.currentStep = s; this.$nextTick(()=>lucide.createIcons()); }},
+        nextStep() {
+            if (!this.isStepValid) return;
+            if (this.currentStep < 5) { this.currentStep++; this.maxReached = Math.max(this.maxReached, this.currentStep); this.$nextTick(()=>lucide.createIcons()); }
+        },
+        prevStep() { if (this.currentStep > 1) { this.currentStep--; this.$nextTick(()=>lucide.createIcons()); }},
+
+        async testConnection() {
+            this.connTesting = true; this.connResult = null;
+            await new Promise(r=>setTimeout(r,2000));
+            this.connResult = this.form.host && this.form.port;
+            this.connTesting = false;
+            this.$nextTick(()=>lucide.createIcons());
+        },
+
+        async runTest() {
+            this.testRunning = true; this.testProgress = 0; this.testDone = false;
+            for (let i = 0; i <= 100; i += 5) { this.testProgress = i; await new Promise(r=>setTimeout(r,100)); }
+            this.testRunning = false; this.testDone = true;
+            this.$nextTick(()=>lucide.createIcons());
+        },
+
+        async deploy() {
+            this.deploying = true;
+            await new Promise(r=>setTimeout(r,2500));
+            this.deploying = false; this.deployDone = true;
+            this.$nextTick(()=>lucide.createIcons());
+        },
+
+        saveDraft() { alert('임시 저장 완료'); },
+
+        toggleArray(arr, val) {
+            const idx = arr.indexOf(val);
+            if (idx >= 0) { if (arr.length > 1) arr.splice(idx, 1); }
+            else arr.push(val);
+        },
+
+        init() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('template')) this.form.templateId = params.get('template');
+            this.$nextTick(()=>lucide.createIcons());
+        }
+    };
+}
+</script>
+</body>
+</html>

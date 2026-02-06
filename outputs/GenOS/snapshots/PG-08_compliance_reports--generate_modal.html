@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenOS — 컴플라이언스 리포트 센터</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard Variable', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        .slide-down { animation: slideDown 0.25s ease-out; }
+        @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+        .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+
+<div x-data="complianceReports()" x-init="init()" class="flex h-full min-h-screen">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">GenOS</span>
+        </div>
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> 메인 대시보드
+            </a>
+            <a href="PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링
+            </a>
+            <a href="PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bell" class="w-4 h-4"></i> 알림 관리
+            </a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="boxes" class="w-4 h-4"></i> 템플릿 라이브러리
+            </a>
+            <a href="PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="rocket" class="w-4 h-4"></i> 배포 위저드
+            </a>
+            <a href="PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="plug" class="w-4 h-4"></i> 커넥터 허브
+            </a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5">
+                <i data-lucide="file-text" class="w-4 h-4"></i> 컴플라이언스 리포트
+            </a>
+            <a href="PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="scroll-text" class="w-4 h-4"></i> 감사 로그
+            </a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="users" class="w-4 h-4"></i> 사용자/권한
+            </a>
+            <a href="PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="server" class="w-4 h-4"></i> 시스템/DR
+            </a>
+            <a href="PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="settings" class="w-4 h-4"></i> 설정
+            </a>
+        </nav>
+        <div class="border-t border-slate-100 p-3">
+            <div class="flex items-center gap-2.5 px-2 py-1.5">
+                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">이</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-900 truncate">이과장</p>
+                    <p class="text-[11px] text-slate-400 truncate">디지털혁신팀</p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="flex-1 flex flex-col min-w-0">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900">컴플라이언스 리포트 센터</h1>
+                <p class="text-xs text-slate-500">금융감독원·금융보안원 가이드라인 보안 리포트 자동 생성</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button @click="showScheduleModal = true"
+                    class="h-9 px-3.5 rounded-md bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4"></i> 스케줄 설정
+                </button>
+                <button @click="showGenerateModal = true"
+                    class="h-9 px-3.5 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 transition-colors flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> 리포트 생성
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+            <!-- ==================== REPORT TEMPLATES ==================== -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-base font-semibold text-slate-900">리포트 템플릿</h2>
+                    <div class="flex items-center gap-2">
+                        <select x-model="templateFilter" class="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="all">전체 유형</option>
+                            <option value="월간 보안 현황">월간 보안 현황</option>
+                            <option value="이상거래 통계">이상거래 통계</option>
+                            <option value="감사 추적 로그">감사 추적 로그</option>
+                            <option value="규제 준수 체크리스트">규제 준수 체크리스트</option>
+                            <option value="커스텀">커스텀</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <template x-for="tmpl in filteredTemplates" :key="tmpl.id">
+                        <div @click="selectTemplate(tmpl)"
+                            class="bg-white border border-slate-200 rounded-lg p-5 hover:border-slate-300 hover:shadow-sm transition-all cursor-pointer"
+                            :class="{'ring-2 ring-slate-900 border-transparent': selectedTemplate?.id === tmpl.id}">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="tmpl.iconBg">
+                                    <i :data-lucide="tmpl.icon" class="w-5 h-5" :class="tmpl.iconColor"></i>
+                                </div>
+                                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                    :class="tmpl.schedule_status === '설정됨' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'"
+                                    x-text="tmpl.schedule_status"></span>
+                            </div>
+                            <h3 class="text-sm font-semibold text-slate-900 mb-1" x-text="tmpl.template_name"></h3>
+                            <p class="text-xs text-slate-500 mb-3 line-clamp-2" x-text="tmpl.description"></p>
+                            <div class="flex items-center gap-1.5 flex-wrap mb-3">
+                                <template x-for="tag in tmpl.included_metrics.slice(0,3)" :key="tag">
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600" x-text="tag"></span>
+                                </template>
+                                <span x-show="tmpl.included_metrics.length > 3" class="text-[10px] text-slate-400" x-text="'+' + (tmpl.included_metrics.length - 3)"></span>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] text-slate-400">
+                                <span x-text="tmpl.regulation_basis"></span>
+                                <span x-text="tmpl.last_generated ? formatDate(tmpl.last_generated) : '미생성'"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </section>
+
+            <!-- ==================== REPORT SCHEDULER ==================== -->
+            <section id="scheduler" class="bg-white border border-slate-200 rounded-lg p-6">
+                <h2 class="text-base font-semibold text-slate-900 mb-4">스케줄 설정</h2>
+                <div class="grid grid-cols-3 gap-x-6 gap-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">대상 템플릿</label>
+                        <select x-model="schedule.template_id" class="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="">선택</option>
+                            <template x-for="t in templates" :key="t.id">
+                                <option :value="t.id" x-text="t.template_name"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">생성 주기</label>
+                        <select x-model="schedule.frequency" class="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="주간">주간</option>
+                            <option value="월간">월간</option>
+                            <option value="분기">분기</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">생성일</label>
+                        <select x-model="schedule.schedule_day" class="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <template x-for="day in scheduleDays" :key="day">
+                                <option :value="day" x-text="day"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">생성 시각</label>
+                        <select x-model="schedule.schedule_time" class="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="06:00">06:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="12:00">12:00</option>
+                            <option value="18:00">18:00</option>
+                            <option value="00:00">00:00</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">출력 형식</label>
+                        <div class="flex gap-3 mt-2">
+                            <label class="flex items-center gap-2 text-sm text-slate-700">
+                                <input type="checkbox" x-model="schedule.output_format" value="PDF" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900"> PDF
+                            </label>
+                            <label class="flex items-center gap-2 text-sm text-slate-700">
+                                <input type="checkbox" x-model="schedule.output_format" value="Excel" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900"> Excel
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">자동 발송</label>
+                        <div class="flex items-center gap-3 mt-2">
+                            <button @click="schedule.auto_send = !schedule.auto_send"
+                                class="relative w-10 h-5 rounded-full transition-colors"
+                                :class="schedule.auto_send ? 'bg-slate-900' : 'bg-slate-200'">
+                                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+                                    :class="schedule.auto_send ? 'translate-x-5' : 'translate-x-0'"></span>
+                            </button>
+                            <span class="text-sm text-slate-600" x-text="schedule.auto_send ? '활성' : '비활성'"></span>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="schedule.auto_send" x-transition class="mt-4 pt-4 border-t border-slate-100">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 mb-1.5">발송 대상 (이메일)</label>
+                            <input type="text" x-model="schedule.recipients_input" placeholder="이메일 입력 후 Enter"
+                                @keydown.enter.prevent="addRecipient()"
+                                class="w-full h-10 rounded-md border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <div class="flex flex-wrap gap-1.5 mt-2">
+                                <template x-for="(r, idx) in schedule.recipients" :key="idx">
+                                    <span class="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-md">
+                                        <span x-text="r"></span>
+                                        <button @click="schedule.recipients.splice(idx, 1)" class="text-slate-400 hover:text-slate-600">&times;</button>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 mb-1.5">발송 채널</label>
+                            <div class="flex gap-3 mt-2">
+                                <label class="flex items-center gap-2 text-sm text-slate-700">
+                                    <input type="checkbox" x-model="schedule.send_channel" value="Email" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900"> Email
+                                </label>
+                                <label class="flex items-center gap-2 text-sm text-slate-700">
+                                    <input type="checkbox" x-model="schedule.send_channel" value="Slack" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900"> Slack
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
+                    <div class="text-xs text-slate-500">
+                        <span x-show="schedule.template_id">다음 실행 예정: <strong class="text-slate-700" x-text="nextRunDate"></strong></span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="h-9 px-3.5 rounded-md border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">초기화</button>
+                        <button @click="saveScheduleSuccess = true; setTimeout(() => saveScheduleSuccess = false, 2000)"
+                            class="h-9 px-3.5 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 transition-colors">
+                            <span x-show="!saveScheduleSuccess">스케줄 저장</span>
+                            <span x-show="saveScheduleSuccess" class="flex items-center gap-1"><i data-lucide="check" class="w-4 h-4"></i> 저장됨</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== REPORT HISTORY ==================== -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-base font-semibold text-slate-900">리포트 이력</h2>
+                    <div class="flex items-center gap-2">
+                        <select x-model="historyFilter.status" class="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="all">전체 상태</option>
+                            <option value="완료">완료</option>
+                            <option value="생성중">생성중</option>
+                            <option value="실패">실패</option>
+                            <option value="부분생성">부분생성</option>
+                        </select>
+                        <select x-model="historyFilter.format" class="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="all">전체 형식</option>
+                            <option value="PDF">PDF</option>
+                            <option value="Excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-slate-100">
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">생성 일시</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">템플릿</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">기간</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">형식</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">상태</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">데이터 완전성</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">크기</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">생성 방식</th>
+                                <th class="text-right text-xs font-medium text-slate-500 px-4 py-3">액션</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="report in filteredHistory" :key="report.id">
+                                <tr @click="selectReport(report)" class="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors"
+                                    :class="{'bg-slate-50': selectedReport?.id === report.id}">
+                                    <td class="px-4 py-3 text-sm text-slate-700" x-text="formatDateTime(report.generated_at)"></td>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-900" x-text="report.template_name"></td>
+                                    <td class="px-4 py-3 text-sm text-slate-600" x-text="report.report_period"></td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                            :class="report.format === 'PDF' ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'"
+                                            x-text="report.format"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                            :class="{
+                                                'bg-emerald-50 text-emerald-700': report.status === '완료',
+                                                'bg-blue-50 text-blue-700': report.status === '생성중',
+                                                'bg-red-50 text-red-700': report.status === '실패',
+                                                'bg-amber-50 text-amber-700': report.status === '부분생성'
+                                            }"
+                                            x-text="report.status"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-16 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                                <div class="h-full rounded-full transition-all"
+                                                    :class="report.data_completeness === 100 ? 'bg-emerald-500' : 'bg-amber-500'"
+                                                    :style="'width:' + report.data_completeness + '%'"></div>
+                                            </div>
+                                            <span class="text-xs" :class="report.data_completeness === 100 ? 'text-slate-600' : 'text-amber-600 font-medium'"
+                                                x-text="report.data_completeness + '%'"></span>
+                                            <i x-show="report.data_completeness < 100" data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-500"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-slate-600" x-text="report.file_size"></td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-[11px] px-2 py-0.5 rounded-full"
+                                            :class="report.schedule_type === '자동(스케줄)' ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'"
+                                            x-text="report.schedule_type"></span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <button @click.stop class="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" title="PDF 다운로드">
+                                                <i data-lucide="download" class="w-4 h-4"></i>
+                                            </button>
+                                            <button @click.stop class="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" title="재생성">
+                                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                            </button>
+                                            <button @click.stop class="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" title="이메일 발송">
+                                                <i data-lucide="mail" class="w-4 h-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ==================== REPORT PREVIEW ==================== -->
+            <section x-show="selectedReport" x-transition class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                <div class="p-6 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-base font-semibold text-slate-900">리포트 미리보기</h2>
+                            <p class="text-xs text-slate-500 mt-0.5" x-text="selectedReport?.template_name + ' — ' + selectedReport?.report_period"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> PDF
+                            </button>
+                            <button class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
+                                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Excel
+                            </button>
+                            <button class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
+                                <i data-lucide="mail" class="w-3.5 h-3.5"></i> 발송
+                            </button>
+                            <button class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
+                                <i data-lucide="printer" class="w-3.5 h-3.5"></i> 인쇄
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Report Header -->
+                    <div class="bg-slate-50 rounded-lg p-5 mb-6">
+                        <div class="grid grid-cols-5 gap-4">
+                            <div>
+                                <p class="text-[11px] text-slate-400 mb-0.5">리포트 제목</p>
+                                <p class="text-sm font-medium text-slate-900" x-text="selectedReport?.template_name"></p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] text-slate-400 mb-0.5">리포트 기간</p>
+                                <p class="text-sm font-medium text-slate-900" x-text="selectedReport?.report_period"></p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] text-slate-400 mb-0.5">생성 일시</p>
+                                <p class="text-sm font-medium text-slate-900" x-text="selectedReport ? formatDateTime(selectedReport.generated_at) : ''"></p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] text-slate-400 mb-0.5">규제 근거</p>
+                                <p class="text-sm font-medium text-slate-900">금융보안원 §4.2</p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] text-slate-400 mb-0.5">데이터 완전성</p>
+                                <p class="text-sm font-medium" :class="selectedReport?.data_completeness === 100 ? 'text-emerald-600' : 'text-amber-600'"
+                                    x-text="selectedReport?.data_completeness + '%'"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Gap Warning -->
+                    <div x-show="selectedReport?.data_completeness < 100" class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"></i>
+                        <div>
+                            <p class="text-sm font-medium text-amber-800">데이터 누락 구간 감지</p>
+                            <p class="text-xs text-amber-600 mt-1">2026-01-15 02:00 ~ 2026-01-15 06:00 (4시간) — 커넥터 SH-AML-PostgreSQL 일시 중단</p>
+                            <p class="text-xs text-amber-600 mt-0.5">해당 구간은 <span class="font-medium">보간값</span>이 적용되었으며 점선으로 표시됩니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics -->
+                    <h3 class="text-sm font-semibold text-slate-900 mb-3">핵심 지표 요약</h3>
+                    <div class="grid grid-cols-4 gap-4 mb-6">
+                        <div class="bg-slate-50 rounded-lg p-4 text-center">
+                            <p class="text-2xl font-bold text-slate-900">1,247,832</p>
+                            <p class="text-xs text-slate-500 mt-1">총 거래 건수</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-4 text-center">
+                            <p class="text-2xl font-bold text-red-600">127</p>
+                            <p class="text-xs text-slate-500 mt-1">이상거래 탐지</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-4 text-center">
+                            <p class="text-2xl font-bold text-emerald-600">4.2%</p>
+                            <p class="text-xs text-slate-500 mt-1">오탐률</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-4 text-center">
+                            <p class="text-2xl font-bold text-blue-600">2.3초</p>
+                            <p class="text-xs text-slate-500 mt-1">평균 대응 시간</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="bg-slate-50 rounded-lg p-4 text-center">
+                            <p class="text-xl font-bold text-slate-900">99.97%</p>
+                            <p class="text-xs text-slate-500 mt-1">에이전트 가동률</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-4 text-center">
+                            <p class="text-xl font-bold text-orange-600">12</p>
+                            <p class="text-xs text-slate-500 mt-1">차단 거래</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-4 text-center">
+                            <p class="text-xl font-bold text-violet-600">3</p>
+                            <p class="text-xs text-slate-500 mt-1">에스컬레이션</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-900 mb-3">탐지 추이</h3>
+                            <div class="bg-slate-50 rounded-lg p-4">
+                                <canvas id="detectionTrendChart" height="200"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-900 mb-3">심각도 분포</h3>
+                            <div class="bg-slate-50 rounded-lg p-4 flex items-center justify-center">
+                                <canvas id="severityPieChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compliance Checklist -->
+                    <h3 class="text-sm font-semibold text-slate-900 mb-3">규제 준수 체크리스트</h3>
+                    <div class="border border-slate-200 rounded-lg overflow-hidden">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200">
+                                    <th class="text-left text-xs font-medium text-slate-500 px-4 py-2.5 w-8">#</th>
+                                    <th class="text-left text-xs font-medium text-slate-500 px-4 py-2.5">항목</th>
+                                    <th class="text-left text-xs font-medium text-slate-500 px-4 py-2.5 w-24">준수 여부</th>
+                                    <th class="text-left text-xs font-medium text-slate-500 px-4 py-2.5">비고</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="(item, idx) in checklistItems" :key="idx">
+                                    <tr class="border-b border-slate-50">
+                                        <td class="px-4 py-2.5 text-xs text-slate-400" x-text="idx + 1"></td>
+                                        <td class="px-4 py-2.5 text-sm text-slate-900" x-text="item.name"></td>
+                                        <td class="px-4 py-2.5">
+                                            <span class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                                :class="item.pass ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'"
+                                                x-text="item.pass ? '준수' : '미준수'"></span>
+                                        </td>
+                                        <td class="px-4 py-2.5 text-xs text-slate-500" x-text="item.note"></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Empty State for Preview -->
+            <div x-show="!selectedReport" class="bg-white border border-slate-200 rounded-lg p-12 text-center">
+                <i data-lucide="file-search" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
+                <p class="text-sm font-medium text-slate-500">리포트를 선택하면 미리보기가 표시됩니다</p>
+                <p class="text-xs text-slate-400 mt-1">위 이력 테이블에서 행을 클릭하세요</p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==================== GENERATE MODAL ==================== -->
+    <div x-show="showGenerateModal" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showGenerateModal = false">
+        <div class="bg-white rounded-lg w-[480px] shadow-xl" @click.stop>
+            <div class="p-5 border-b border-slate-100">
+                <h3 class="text-base font-semibold text-slate-900">리포트 생성</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1.5">템플릿 선택</label>
+                    <select x-model="generateForm.template_id" class="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                        <template x-for="t in templates" :key="t.id">
+                            <option :value="t.id" x-text="t.template_name"></option>
+                        </template>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">시작일</label>
+                        <input type="date" x-model="generateForm.start_date" class="w-full h-10 rounded-md border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">종료일</label>
+                        <input type="date" x-model="generateForm.end_date" class="w-full h-10 rounded-md border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1.5">출력 형식</label>
+                    <div class="flex gap-3">
+                        <label class="flex items-center gap-2 text-sm text-slate-700">
+                            <input type="checkbox" x-model="generateForm.formats" value="PDF" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900"> PDF
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-slate-700">
+                            <input type="checkbox" x-model="generateForm.formats" value="Excel" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900"> Excel
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 flex justify-end gap-2">
+                <button @click="showGenerateModal = false" class="h-9 px-3.5 rounded-md border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50">취소</button>
+                <button @click="generateReport()" class="h-9 px-3.5 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 flex items-center gap-2">
+                    <i data-lucide="play" class="w-4 h-4"></i> 생성 시작
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function complianceReports() {
+    return {
+        templateFilter: 'all',
+        selectedTemplate: null,
+        selectedReport: null,
+        showGenerateModal: true,
+        showScheduleModal: false,
+        saveScheduleSuccess: false,
+        trendChart: null,
+        pieChart: null,
+
+        schedule: {
+            template_id: '',
+            frequency: '월간',
+            schedule_day: '매월 1일',
+            schedule_time: '09:00',
+            output_format: ['PDF'],
+            auto_send: false,
+            recipients: ['security@kbfg.com'],
+            recipients_input: '',
+            send_channel: ['Email']
+        },
+
+        generateForm: {
+            template_id: 'tpl-01',
+            start_date: '2026-01-01',
+            end_date: '2026-01-31',
+            formats: ['PDF']
+        },
+
+        historyFilter: { status: 'all', format: 'all' },
+
+        templates: [
+            { id: 'tpl-01', template_name: '월간 보안 현황 보고서', template_type: '월간 보안 현황', description: '금융보안원 가이드라인에 따른 월간 종합 보안 현황 보고서. 이상거래 탐지, 에이전트 가동률, 인시던트 대응 현황 포함.', regulation_basis: '금보원 §4.2.1', included_metrics: ['탐지 건수', '오탐률', '대응 시간', '가동률', '차단 거래', '에스컬레이션'], last_generated: '2026-01-31T09:00:00', schedule_status: '설정됨', icon: 'file-bar-chart', iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+            { id: 'tpl-02', template_name: '이상거래 통계 보고서', template_type: '이상거래 통계', description: '기간별 이상거래 탐지 통계, 유형별 분류, 심각도 분포, 오탐률 추이를 상세 분석하는 통계 보고서.', regulation_basis: '금보원 §3.1.2', included_metrics: ['유형별 탐지', '심각도 분포', '오탐률 추이', '일별 추이'], last_generated: '2026-01-28T09:00:00', schedule_status: '설정됨', icon: 'bar-chart-3', iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
+            { id: 'tpl-03', template_name: '감사 추적 로그 보고서', template_type: '감사 추적 로그', description: '시스템 접근, 설정 변경, 에이전트 배포/수정 등 전체 감사 추적 이력을 기간별로 정리한 보고서.', regulation_basis: '금감원 §8.3', included_metrics: ['로그인 이력', '설정 변경', '에이전트 변경', '데이터 접근'], last_generated: '2026-01-15T09:00:00', schedule_status: '미설정', icon: 'scroll-text', iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
+            { id: 'tpl-04', template_name: '규제 준수 체크리스트', template_type: '규제 준수 체크리스트', description: '금융감독원 전자금융감독규정, 금융보안원 보안 가이드라인의 항목별 준수 여부를 점검하는 체크리스트 보고서.', regulation_basis: '전자금융감독규정 §34', included_metrics: ['MFA 적용률', 'TLS 준수율', '로그 보관', 'DR 테스트'], last_generated: '2025-12-31T09:00:00', schedule_status: '설정됨', icon: 'clipboard-check', iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
+            { id: 'tpl-05', template_name: '커스텀 보안 분석 보고서', template_type: '커스텀', description: '사용자 정의 지표와 기간을 선택하여 맞춤형 보안 분석 보고서를 생성합니다.', regulation_basis: '-', included_metrics: ['커스텀 지표'], last_generated: null, schedule_status: '미설정', icon: 'settings-2', iconBg: 'bg-slate-100', iconColor: 'text-slate-600' }
+        ],
+
+        reportHistory: [
+            { id: 'rpt-01', generated_at: '2026-01-31T09:00:00', template_name: '월간 보안 현황 보고서', report_period: '2026년 1월', format: 'PDF', status: '완료', file_size: '2.4 MB', data_completeness: 97, schedule_type: '자동(스케줄)', generated_by: '시스템' },
+            { id: 'rpt-02', generated_at: '2026-01-31T09:05:00', template_name: '월간 보안 현황 보고서', report_period: '2026년 1월', format: 'Excel', status: '완료', file_size: '1.8 MB', data_completeness: 97, schedule_type: '자동(스케줄)', generated_by: '시스템' },
+            { id: 'rpt-03', generated_at: '2026-01-28T09:00:00', template_name: '이상거래 통계 보고서', report_period: '2026년 1월 3주차', format: 'PDF', status: '완료', file_size: '1.2 MB', data_completeness: 100, schedule_type: '자동(스케줄)', generated_by: '시스템' },
+            { id: 'rpt-04', generated_at: '2026-01-20T14:30:00', template_name: '감사 추적 로그 보고서', report_period: '2026년 1월 1~20일', format: 'PDF', status: '완료', file_size: '3.1 MB', data_completeness: 100, schedule_type: '수동', generated_by: '이과장' },
+            { id: 'rpt-05', generated_at: '2026-01-15T09:00:00', template_name: '이상거래 통계 보고서', report_period: '2026년 1월 2주차', format: 'PDF', status: '부분생성', file_size: '0.9 MB', data_completeness: 85, schedule_type: '자동(스케줄)', generated_by: '시스템' },
+            { id: 'rpt-06', generated_at: '2025-12-31T09:00:00', template_name: '규제 준수 체크리스트', report_period: '2025년 4분기', format: 'PDF', status: '완료', file_size: '1.5 MB', data_completeness: 100, schedule_type: '자동(스케줄)', generated_by: '시스템' },
+            { id: 'rpt-07', generated_at: '2026-02-05T11:20:00', template_name: '월간 보안 현황 보고서', report_period: '2026년 1월 (재생성)', format: 'PDF', status: '생성중', file_size: '-', data_completeness: 100, schedule_type: '수동', generated_by: '이과장' },
+        ],
+
+        checklistItems: [
+            { name: '전자금융 거래 시 이용자 인증 강화 (MFA)', pass: true, note: '전체 사용자 MFA 적용률 100%' },
+            { name: '이상거래 탐지 시스템 운영', pass: true, note: '24시간 실시간 모니터링 가동 중' },
+            { name: '전송 구간 암호화 (TLS 1.3)', pass: true, note: '모든 커넥터 TLS 1.3 적용' },
+            { name: '감사 로그 3년 보관', pass: true, note: '로그 보관 기간: 1,095일' },
+            { name: '정기 DR 테스트 실시', pass: true, note: '2025-12-20 종합 DR 훈련 PASS' },
+            { name: '데이터 백업 정책 수립·운영', pass: true, note: '일일 스냅샷 30일 보관' },
+            { name: '접근 권한 최소 권한 원칙', pass: true, note: 'RBAC 기반 역할별 권한 분리' },
+            { name: '보안 사고 대응 절차 수립', pass: false, note: '에스컬레이션 L3 연락처 미등록' },
+            { name: '개인정보(PII) 보호 조치', pass: true, note: '자동 PII 감지 및 마스킹 적용' },
+        ],
+
+        get filteredTemplates() {
+            return this.templates.filter(t => this.templateFilter === 'all' || t.template_type === this.templateFilter);
+        },
+
+        get filteredHistory() {
+            return this.reportHistory.filter(r => {
+                if (this.historyFilter.status !== 'all' && r.status !== this.historyFilter.status) return false;
+                if (this.historyFilter.format !== 'all' && r.format !== this.historyFilter.format) return false;
+                return true;
+            });
+        },
+
+        get scheduleDays() {
+            const map = {
+                '주간': ['월요일', '화요일', '수요일', '목요일', '금요일'],
+                '월간': ['매월 1일', '매월 5일', '매월 10일', '매월 15일', '매월 말일'],
+                '분기': ['분기 시작 후 5영업일', '분기 시작 후 10영업일']
+            };
+            return map[this.schedule.frequency] || [];
+        },
+
+        get nextRunDate() {
+            if (!this.schedule.template_id) return '';
+            const now = new Date();
+            if (this.schedule.frequency === '월간') {
+                const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+                return next.toLocaleDateString('ko-KR') + ' ' + this.schedule.schedule_time;
+            }
+            return '2026-02-10 ' + this.schedule.schedule_time;
+        },
+
+        selectTemplate(tmpl) {
+            this.selectedTemplate = tmpl;
+            this.schedule.template_id = tmpl.id;
+        },
+
+        selectReport(report) {
+            this.selectedReport = report;
+            this.$nextTick(() => {
+                this.renderCharts();
+                lucide.createIcons();
+            });
+        },
+
+        addRecipient() {
+            const email = this.schedule.recipients_input.trim();
+            if (email && email.includes('@') && !this.schedule.recipients.includes(email)) {
+                this.schedule.recipients.push(email);
+            }
+            this.schedule.recipients_input = '';
+        },
+
+        generateReport() {
+            this.showGenerateModal = false;
+            this.reportHistory.unshift({
+                id: 'rpt-new-' + Date.now(),
+                generated_at: new Date().toISOString(),
+                template_name: this.templates.find(t => t.id === this.generateForm.template_id)?.template_name || '',
+                report_period: this.generateForm.start_date + ' ~ ' + this.generateForm.end_date,
+                format: this.generateForm.formats[0] || 'PDF',
+                status: '생성중',
+                file_size: '-',
+                data_completeness: 100,
+                schedule_type: '수동',
+                generated_by: '이과장'
+            });
+        },
+
+        renderCharts() {
+            // Detection Trend
+            const trendCtx = document.getElementById('detectionTrendChart');
+            if (!trendCtx) return;
+            if (this.trendChart) this.trendChart.destroy();
+            const days = Array.from({length: 31}, (_, i) => (i+1) + '일');
+            this.trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: '이상거래 탐지',
+                        data: days.map(() => Math.floor(Math.random() * 8) + 1),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 10 } },
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Severity Pie
+            const pieCtx = document.getElementById('severityPieChart');
+            if (!pieCtx) return;
+            if (this.pieChart) this.pieChart.destroy();
+            this.pieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: [8, 23, 54, 42],
+                        backgroundColor: ['#dc2626', '#f97316', '#eab308', '#94a3b8'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { position: 'right', labels: { font: { size: 11 }, padding: 12, usePointStyle: true, pointStyleWidth: 8 } }
+                    }
+                }
+            });
+        },
+
+        formatDate(dt) {
+            if (!dt) return '';
+            const d = new Date(dt);
+            return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+        },
+
+        formatDateTime(dt) {
+            if (!dt) return '';
+            const d = new Date(dt);
+            return d.toLocaleDateString('ko-KR') + ' ' + d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        },
+
+        init() {
+            this.$nextTick(() => lucide.createIcons());
+            new MutationObserver(() => lucide.createIcons()).observe(document.body, { childList: true, subtree: true });
+        }
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenOS — 시스템 상태/DR 모니터링</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard Variable', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        .slide-down { animation: slideDown 0.25s ease-out; }
+        @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+        .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+        @keyframes pulse-border { 0%,100% { border-color: #ef4444; } 50% { border-color: transparent; } }
+        .pulse-border-red { animation: pulse-border 1.5s ease-in-out infinite; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+
+<div x-data="systemDR()" class="flex h-full min-h-screen">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">GenOS</span>
+        </div>
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> 메인 대시보드
+            </a>
+            <a href="PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링
+            </a>
+            <a href="PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bell" class="w-4 h-4"></i> 알림 관리
+                <span class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span>
+            </a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="boxes" class="w-4 h-4"></i> 템플릿 라이브러리
+            </a>
+            <a href="PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="rocket" class="w-4 h-4"></i> 배포 위저드
+            </a>
+            <a href="PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="plug" class="w-4 h-4"></i> 커넥터 허브
+            </a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="file-text" class="w-4 h-4"></i> 컴플라이언스 리포트
+            </a>
+            <a href="PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="scroll-text" class="w-4 h-4"></i> 감사 로그
+            </a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="users" class="w-4 h-4"></i> 사용자/권한
+            </a>
+            <a href="PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5">
+                <i data-lucide="server" class="w-4 h-4"></i> 시스템/DR
+            </a>
+            <a href="PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="settings" class="w-4 h-4"></i> 설정
+            </a>
+        </nav>
+        <div class="border-t border-slate-100 p-3">
+            <div class="flex items-center gap-2.5 px-2 py-1.5">
+                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">김</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-900 truncate">김부장</p>
+                    <p class="text-[11px] text-slate-400 truncate">IT 보안팀</p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="flex-1 flex flex-col min-w-0">
+
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 flex-shrink-0">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900">시스템 상태 / DR 모니터링</h1>
+                <p class="text-xs text-slate-500">리전 상태, 페일오버 이력, 백업 현황, DR 테스트 일정</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 text-xs text-slate-500">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+                    <span>30초 자동 갱신</span>
+                    <span class="text-slate-400">|</span>
+                    <span x-text="'갱신: ' + lastRefresh"></span>
+                </div>
+                <button @click="refresh()" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 새로고침
+                </button>
+                <button @click="showFailoverModal = true" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> 수동 페일오버
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8 space-y-6">
+
+            <!-- ==================== REGION STATUS CARDS ==================== -->
+            <div class="grid grid-cols-2 gap-6">
+
+                <!-- Seoul Region (Primary) -->
+                <div class="bg-white border border-slate-200 rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                                <i data-lucide="server" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-900">서울 리전 (Primary)</h3>
+                                <p class="text-xs text-slate-500">Active Production Region</p>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ACTIVE
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <i data-lucide="activity" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span class="text-xs text-slate-500">에이전트 가동률</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-xl font-bold text-emerald-600">99.97</span>
+                                <span class="text-xs text-slate-500">%</span>
+                            </div>
+                            <div class="mt-1.5 w-full bg-slate-200 rounded-full h-1.5">
+                                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 99.97%"></div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span class="text-xs text-slate-500">평균 레이턴시</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-xl font-bold text-emerald-600">45</span>
+                                <span class="text-xs text-slate-500">ms</span>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1">임계: 100ms / 300ms</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <i data-lucide="bot" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span class="text-xs text-slate-500">활성 에이전트</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-xl font-bold text-slate-900">24</span>
+                                <span class="text-xs text-slate-500">개</span>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1">총 28개 배포</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <i data-lucide="cpu" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span class="text-xs text-slate-500">CPU 사용률</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-xl font-bold text-emerald-600">62</span>
+                                <span class="text-xs text-slate-500">%</span>
+                            </div>
+                            <div class="mt-1.5 w-full bg-slate-200 rounded-full h-1.5">
+                                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 62%"></div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg col-span-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="flex items-center gap-1.5 mb-1">
+                                        <i data-lucide="memory-stick" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span class="text-xs text-slate-500">메모리 사용률</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span class="text-xl font-bold text-amber-600">78</span>
+                                        <span class="text-xs text-slate-500">%</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] text-amber-500 font-medium">주의 (임계: 75%)</p>
+                                    <p class="text-[10px] text-slate-400">12.5 / 16 GB</p>
+                                </div>
+                            </div>
+                            <div class="mt-1.5 w-full bg-slate-200 rounded-full h-1.5">
+                                <div class="bg-amber-500 h-1.5 rounded-full" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daejeon Region (DR Standby) -->
+                <div class="bg-white border-2 border-slate-200 rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-violet-50 flex items-center justify-center">
+                                <i data-lucide="server" class="w-5 h-5 text-violet-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-900">대전 리전 (Standby DR)</h3>
+                                <p class="text-xs text-slate-500">Disaster Recovery Region</p>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-600 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> STANDBY
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span class="text-xs text-slate-500">리플리케이션 지연</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-xl font-bold text-emerald-600">2.3</span>
+                                <span class="text-xs text-slate-500">초</span>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1">임계: 5초 / 30초</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <i data-lucide="database" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span class="text-xs text-slate-500">데이터 동기화율</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-xl font-bold text-emerald-600">100</span>
+                                <span class="text-xs text-slate-500">%</span>
+                            </div>
+                            <div class="mt-1.5 w-full bg-slate-200 rounded-full h-1.5">
+                                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span class="text-xs text-slate-500">마지막 동기화</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-lg font-bold text-slate-900">3초 전</span>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1">2026-02-06 19:42:57</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span class="text-xs text-slate-500">페일오버 준비 상태</span>
+                            </div>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded mt-1">
+                                <i data-lucide="check-circle" class="w-3 h-3"></i> READY
+                            </span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg col-span-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="flex items-center gap-1.5 mb-1">
+                                        <i data-lucide="test-tube" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span class="text-xs text-slate-500">마지막 DR 테스트</span>
+                                    </div>
+                                    <p class="text-sm font-semibold text-slate-900">2026-01-15</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded">PASS</span>
+                                    <p class="text-[10px] text-slate-400 mt-1">RTO 18분 / RPO 2분</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== BACKUP STATUS ==================== -->
+            <div class="bg-white border border-slate-200 rounded-lg p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-2.5">
+                        <i data-lucide="hard-drive" class="w-5 h-5 text-slate-700"></i>
+                        <h2 class="text-sm font-semibold text-slate-900">백업 상태</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">
+                            <i data-lucide="history" class="w-3.5 h-3.5"></i> 스냅샷 이력
+                        </button>
+                        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">
+                            <i data-lucide="play" class="w-3.5 h-3.5"></i> 복원 테스트
+                        </button>
+                        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-colors">
+                            <i data-lucide="camera" class="w-3.5 h-3.5"></i> 수동 스냅샷
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-lg text-center">
+                        <p class="text-xs text-slate-500 mb-2">실시간 리플리케이션</p>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-700 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span> ACTIVE
+                        </span>
+                        <p class="text-[10px] text-slate-400 mt-2">지연: 2.3초</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg text-center">
+                        <p class="text-xs text-slate-500 mb-2">마지막 스냅샷</p>
+                        <p class="text-sm font-semibold text-slate-900">3시간 전</p>
+                        <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-700 rounded">SUCCESS</span>
+                        <p class="text-[10px] text-slate-400 mt-1">2026-02-06 17:00</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg text-center">
+                        <p class="text-xs text-slate-500 mb-2">스냅샷 보관</p>
+                        <div class="flex items-baseline justify-center gap-1">
+                            <span class="text-xl font-bold text-slate-900">28</span>
+                            <span class="text-xs text-slate-500">/ 30</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">총 용량: 847 GB</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg text-center">
+                        <p class="text-xs text-slate-500 mb-2">다음 스냅샷</p>
+                        <p class="text-sm font-semibold text-slate-900">2026-02-06 20:00</p>
+                        <p class="text-[10px] text-slate-400 mt-1">복구 포인트</p>
+                        <p class="text-[10px] text-blue-600 font-medium">2026-02-06 19:42:57</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== FAILOVER HISTORY ==================== -->
+            <div class="bg-white border border-slate-200 rounded-lg">
+                <div class="p-6 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <i data-lucide="arrow-left-right" class="w-5 h-5 text-slate-700"></i>
+                            <h2 class="text-sm font-semibold text-slate-900">페일오버 이력</h2>
+                            <span class="text-xs text-slate-400">RTO 목표: 30분 | RPO 목표: 5분</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <select x-model="foFilter.type" class="h-9 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                            <option value="전체">유형: 전체</option>
+                            <option value="AUTO">AUTO</option>
+                            <option value="MANUAL">MANUAL</option>
+                            <option value="TEST">TEST</option>
+                        </select>
+                        <select x-model="foFilter.status" class="h-9 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                            <option value="전체">상태: 전체</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                            <option value="FAILED">FAILED</option>
+                            <option value="ROLLBACK">ROLLBACK</option>
+                        </select>
+                        <select x-model="foFilter.range" class="h-9 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                            <option value="전체">기간: 전체</option>
+                            <option value="30">최근 30일</option>
+                            <option value="90">최근 90일</option>
+                            <option value="365">최근 1년</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-100">
+                                <th class="text-left font-medium text-slate-500 px-6 py-3 text-xs">이벤트 ID</th>
+                                <th class="text-left font-medium text-slate-500 px-4 py-3 text-xs">발생 시각</th>
+                                <th class="text-left font-medium text-slate-500 px-4 py-3 text-xs">유형</th>
+                                <th class="text-left font-medium text-slate-500 px-4 py-3 text-xs">원본 → 대상</th>
+                                <th class="text-left font-medium text-slate-500 px-4 py-3 text-xs">원인</th>
+                                <th class="text-left font-medium text-slate-500 px-4 py-3 text-xs">RTO (실제)</th>
+                                <th class="text-left font-medium text-slate-500 px-4 py-3 text-xs">RPO (실제)</th>
+                                <th class="text-left font-medium text-slate-500 px-4 py-3 text-xs">데이터 손실</th>
+                                <th class="text-left font-medium text-slate-500 px-4 py-3 text-xs">상태</th>
+                                <th class="text-right font-medium text-slate-500 px-6 py-3 text-xs"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="fo in filteredFailovers" :key="fo.event_id">
+                                <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+                                    :class="(fo.rto > 30 || fo.rpo > 5) ? 'bg-red-50/40' : ''">
+                                    <td class="px-6 py-3 font-mono text-xs text-slate-600" x-text="fo.event_id"></td>
+                                    <td class="px-4 py-3 text-xs text-slate-600" x-text="fo.triggered_at"></td>
+                                    <td class="px-4 py-3">
+                                        <span class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded"
+                                              :class="{
+                                                  'bg-amber-50 text-amber-700': fo.type === 'AUTO',
+                                                  'bg-slate-100 text-slate-600': fo.type === 'MANUAL',
+                                                  'bg-blue-50 text-blue-700': fo.type === 'TEST'
+                                              }"
+                                              x-text="fo.type"></span>
+                                    </td>
+                                    <td class="px-4 py-3 text-xs text-slate-600" x-text="fo.from + ' → ' + fo.to"></td>
+                                    <td class="px-4 py-3 text-xs text-slate-600 max-w-[200px] truncate" x-text="fo.cause"></td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-xs font-medium"
+                                              :class="fo.rto > 30 ? 'text-red-600' : 'text-slate-900'"
+                                              x-text="fo.rto + '분'"></span>
+                                        <template x-if="fo.rto > 30">
+                                            <span class="ml-1 text-[10px] text-red-500">초과</span>
+                                        </template>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-xs font-medium"
+                                              :class="fo.rpo > 5 ? 'text-red-600' : 'text-slate-900'"
+                                              x-text="fo.rpo + '분'"></span>
+                                        <template x-if="fo.rpo > 5">
+                                            <span class="ml-1 text-[10px] text-red-500">초과</span>
+                                        </template>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded"
+                                              :class="{
+                                                  'bg-emerald-50 text-emerald-700': fo.data_loss === 'NONE',
+                                                  'bg-amber-50 text-amber-700': fo.data_loss === 'MINIMAL',
+                                                  'bg-red-50 text-red-700': fo.data_loss === 'SIGNIFICANT'
+                                              }"
+                                              x-text="fo.data_loss"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded"
+                                              :class="{
+                                                  'bg-emerald-50 text-emerald-700': fo.status === 'COMPLETED',
+                                                  'bg-red-50 text-red-700': fo.status === 'FAILED',
+                                                  'bg-amber-50 text-amber-700': fo.status === 'ROLLBACK'
+                                              }"
+                                              x-text="fo.status"></span>
+                                    </td>
+                                    <td class="px-6 py-3 text-right">
+                                        <button class="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                        <button class="text-slate-400 hover:text-slate-600 transition-colors p-1 ml-1">
+                                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ==================== DR TEST SCHEDULE ==================== -->
+            <div class="bg-white border border-slate-200 rounded-lg p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-2.5">
+                        <i data-lucide="calendar" class="w-5 h-5 text-slate-700"></i>
+                        <h2 class="text-sm font-semibold text-slate-900">DR 테스트 일정</h2>
+                    </div>
+                    <button @click="showTestModal = true" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-colors">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> 테스트 등록
+                    </button>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="mb-4 flex items-center justify-between">
+                    <button @click="calendarMonth--" class="p-1.5 hover:bg-slate-100 rounded transition-colors">
+                        <i data-lucide="chevron-left" class="w-4 h-4 text-slate-600"></i>
+                    </button>
+                    <h3 class="text-sm font-semibold text-slate-900" x-text="calendarTitle"></h3>
+                    <button @click="calendarMonth++" class="p-1.5 hover:bg-slate-100 rounded transition-colors">
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-7 gap-px bg-slate-200 rounded-lg overflow-hidden">
+                    <template x-for="day in ['일','월','화','수','목','금','토']" :key="day">
+                        <div class="bg-slate-50 text-center py-2 text-xs font-medium text-slate-500" x-text="day"></div>
+                    </template>
+                    <template x-for="cell in calendarCells" :key="cell.key">
+                        <div class="bg-white min-h-[80px] p-1.5 text-xs"
+                             :class="cell.isCurrentMonth ? '' : 'bg-slate-50/50 text-slate-300'">
+                            <span class="inline-block w-6 h-6 text-center leading-6 rounded-full mb-0.5"
+                                  :class="cell.isToday ? 'bg-slate-900 text-white font-medium' : (cell.isCurrentMonth ? 'text-slate-700' : 'text-slate-300')"
+                                  x-text="cell.day"></span>
+                            <template x-for="evt in cell.events" :key="evt.id">
+                                <div class="px-1 py-0.5 rounded text-[10px] font-medium truncate mb-0.5 cursor-pointer"
+                                     :class="{
+                                         'bg-emerald-100 text-emerald-800': evt.result === 'PASS',
+                                         'bg-red-100 text-red-800': evt.result === 'FAIL',
+                                         'bg-amber-100 text-amber-800': evt.result === 'PARTIAL',
+                                         'bg-blue-100 text-blue-800': !evt.result
+                                     }"
+                                     @click="selectedTest = evt; showTestDetailModal = true"
+                                     x-text="evt.name"></div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex items-center gap-4 mt-3 text-[10px] text-slate-500">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-blue-100 border border-blue-200"></span> 예정</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-emerald-100 border border-emerald-200"></span> PASS</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-red-100 border border-red-200"></span> FAIL</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-100 border border-amber-200"></span> PARTIAL</span>
+                </div>
+
+                <!-- Upcoming Tests -->
+                <div class="mt-5 border-t border-slate-100 pt-4">
+                    <h4 class="text-xs font-semibold text-slate-700 mb-3">예정된 테스트</h4>
+                    <div class="space-y-2">
+                        <template x-for="test in upcomingTests" :key="test.id">
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                         :class="test.result ? (test.result === 'PASS' ? 'bg-emerald-100' : test.result === 'FAIL' ? 'bg-red-100' : 'bg-amber-100') : 'bg-blue-100'">
+                                        <i data-lucide="test-tube" class="w-4 h-4"
+                                           :class="test.result ? (test.result === 'PASS' ? 'text-emerald-600' : test.result === 'FAIL' ? 'text-red-600' : 'text-amber-600') : 'text-blue-600'"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-900" x-text="test.name"></p>
+                                        <p class="text-[11px] text-slate-500" x-text="test.type + ' · ' + test.date + ' ' + test.time + ' · 담당: ' + test.assignee"></p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <template x-if="test.result">
+                                        <span class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded"
+                                              :class="{
+                                                  'bg-emerald-50 text-emerald-700': test.result === 'PASS',
+                                                  'bg-red-50 text-red-700': test.result === 'FAIL',
+                                                  'bg-amber-50 text-amber-700': test.result === 'PARTIAL'
+                                              }"
+                                              x-text="test.result"></span>
+                                    </template>
+                                    <template x-if="!test.result">
+                                        <span class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-blue-50 text-blue-700 rounded">예정</span>
+                                    </template>
+                                    <button @click="selectedTest = test; showTestDetailModal = true" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ==================== FAILOVER CONFIRM MODAL ==================== -->
+<template x-if="showFailoverModal">
+    <div class="fixed inset-0 z-50 flex items-center justify-center" @keydown.escape.window="showFailoverModal = false">
+        <div class="absolute inset-0 bg-black/50" @click="showFailoverModal = false"></div>
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 slide-down">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-semibold text-slate-900">수동 페일오버 실행</h3>
+                    <p class="text-xs text-slate-500">서울 → 대전 리전으로 전환합니다</p>
+                </div>
+            </div>
+            <div class="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+                <p class="text-xs text-red-700 font-medium mb-1">경고: 실서비스에 영향이 있습니다</p>
+                <ul class="text-[11px] text-red-600 space-y-0.5">
+                    <li>· 전환 중 약 15~30분간 서비스 지연 가능</li>
+                    <li>· 리플리케이션 지연분의 데이터 유실 가능</li>
+                    <li>· 전환 후 수동 복구 필요</li>
+                </ul>
+            </div>
+            <div class="space-y-3 mb-5">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">비밀번호 확인</label>
+                    <input type="password" x-model="failoverPassword" placeholder="현재 비밀번호 입력"
+                           class="w-full h-10 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">확인 문구: <span class="font-mono text-red-600">FAILOVER</span> 를 입력해주세요</label>
+                    <input type="text" x-model="failoverConfirm" placeholder="FAILOVER"
+                           class="w-full h-10 px-3 text-sm font-mono border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button @click="showFailoverModal = false" class="flex-1 h-10 text-sm border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">취소</button>
+                <button class="flex-1 h-10 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        :disabled="failoverConfirm !== 'FAILOVER' || !failoverPassword">
+                    페일오버 실행
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- ==================== DR TEST REGISTER MODAL ==================== -->
+<template x-if="showTestModal">
+    <div class="fixed inset-0 z-50 flex items-center justify-center" @keydown.escape.window="showTestModal = false">
+        <div class="absolute inset-0 bg-black/50" @click="showTestModal = false"></div>
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6 slide-down">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-base font-semibold text-slate-900">DR 테스트 등록</h3>
+                <button @click="showTestModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">테스트명 <span class="text-red-500">*</span></label>
+                    <input type="text" x-model="newTest.name" placeholder="예: 2026년 1분기 종합 DR 훈련"
+                           class="w-full h-10 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">테스트 유형 <span class="text-red-500">*</span></label>
+                    <select x-model="newTest.type" class="w-full h-10 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                        <option value="">선택하세요</option>
+                        <option>전체 페일오버</option>
+                        <option>부분 페일오버</option>
+                        <option>데이터 복원</option>
+                        <option>네트워크 절체</option>
+                        <option>종합 DR 훈련</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">예정일 <span class="text-red-500">*</span></label>
+                        <input type="date" x-model="newTest.date"
+                               class="w-full h-10 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">예정 시각 <span class="text-red-500">*</span></label>
+                        <input type="time" x-model="newTest.time"
+                               class="w-full h-10 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">예상 소요 시간 (분) <span class="text-red-500">*</span></label>
+                        <input type="number" x-model="newTest.duration" min="1" placeholder="60"
+                               class="w-full h-10 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">담당자 <span class="text-red-500">*</span></label>
+                        <select x-model="newTest.assignee" class="w-full h-10 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                            <option value="">선택하세요</option>
+                            <option>김부장</option>
+                            <option>이과장</option>
+                            <option>박대리</option>
+                            <option>최사원</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">설명</label>
+                    <textarea x-model="newTest.description" rows="2" maxlength="500" placeholder="테스트 목적 및 범위 설명"
+                              class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">사전 알림</label>
+                    <select x-model="newTest.notification" class="w-full h-10 px-3 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+                        <option>1시간 전</option>
+                        <option selected>1일 전</option>
+                        <option>3일 전</option>
+                        <option>1주일 전</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-6">
+                <button @click="showTestModal = false" class="flex-1 h-10 text-sm border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">취소</button>
+                <button class="flex-1 h-10 text-sm bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-colors">등록</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- ==================== DR TEST DETAIL MODAL ==================== -->
+<template x-if="showTestDetailModal && selectedTest">
+    <div class="fixed inset-0 z-50 flex items-center justify-center" @keydown.escape.window="showTestDetailModal = false">
+        <div class="absolute inset-0 bg-black/50" @click="showTestDetailModal = false"></div>
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6 slide-down">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-base font-semibold text-slate-900" x-text="selectedTest.name"></h3>
+                <button @click="showTestDetailModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <p class="text-xs text-slate-500 mb-1">테스트 유형</p>
+                        <p class="text-sm font-medium text-slate-900" x-text="selectedTest.type"></p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <p class="text-xs text-slate-500 mb-1">예정일시</p>
+                        <p class="text-sm font-medium text-slate-900" x-text="selectedTest.date + ' ' + selectedTest.time"></p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <p class="text-xs text-slate-500 mb-1">담당자</p>
+                        <p class="text-sm font-medium text-slate-900" x-text="selectedTest.assignee"></p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <p class="text-xs text-slate-500 mb-1">예상 소요 시간</p>
+                        <p class="text-sm font-medium text-slate-900" x-text="selectedTest.duration + '분'"></p>
+                    </div>
+                </div>
+                <template x-if="selectedTest.result">
+                    <div>
+                        <h4 class="text-xs font-semibold text-slate-700 mb-2">테스트 결과</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="p-3 bg-slate-50 rounded-lg text-center">
+                                <p class="text-xs text-slate-500 mb-1">결과</p>
+                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded"
+                                      :class="{
+                                          'bg-emerald-50 text-emerald-700': selectedTest.result === 'PASS',
+                                          'bg-red-50 text-red-700': selectedTest.result === 'FAIL',
+                                          'bg-amber-50 text-amber-700': selectedTest.result === 'PARTIAL'
+                                      }"
+                                      x-text="selectedTest.result"></span>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-lg text-center">
+                                <p class="text-xs text-slate-500 mb-1">실제 RTO</p>
+                                <p class="text-sm font-medium" :class="selectedTest.actual_rto > 30 ? 'text-red-600' : 'text-slate-900'" x-text="selectedTest.actual_rto + '분'"></p>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-lg text-center">
+                                <p class="text-xs text-slate-500 mb-1">실제 RPO</p>
+                                <p class="text-sm font-medium" :class="selectedTest.actual_rpo > 5 ? 'text-red-600' : 'text-slate-900'" x-text="selectedTest.actual_rpo + '분'"></p>
+                            </div>
+                        </div>
+                        <template x-if="selectedTest.issues">
+                            <div class="mt-3 p-3 bg-amber-50 rounded-lg">
+                                <p class="text-xs font-medium text-amber-700 mb-1">발견된 문제</p>
+                                <p class="text-xs text-amber-600" x-text="selectedTest.issues"></p>
+                            </div>
+                        </template>
+                        <template x-if="selectedTest.corrective">
+                            <div class="mt-2 p-3 bg-blue-50 rounded-lg">
+                                <p class="text-xs font-medium text-blue-700 mb-1">시정 조치</p>
+                                <p class="text-xs text-blue-600" x-text="selectedTest.corrective"></p>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template x-if="!selectedTest.result">
+                    <div class="p-4 bg-blue-50 rounded-lg text-center">
+                        <i data-lucide="clock" class="w-8 h-8 text-blue-400 mx-auto mb-2"></i>
+                        <p class="text-sm font-medium text-blue-700">테스트 예정</p>
+                        <p class="text-xs text-blue-500 mt-1">테스트 완료 후 결과를 입력해 주세요</p>
+                    </div>
+                </template>
+            </div>
+            <div class="flex gap-2 mt-6">
+                <button @click="showTestDetailModal = false" class="flex-1 h-10 text-sm border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">닫기</button>
+                <template x-if="!selectedTest.result">
+                    <button class="flex-1 h-10 text-sm bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-colors">결과 입력</button>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+function systemDR() {
+    return {
+        lastRefresh: '19:43:00',
+        showFailoverModal: false,
+        showTestModal: true,
+        showTestDetailModal: false,
+        failoverPassword: '',
+        failoverConfirm: '',
+        selectedTest: null,
+        calendarMonth: 1, // Feb 2026 (0-indexed month offset from Jan)
+        newTest: { name:'', type:'', date:'', time:'', duration:'', assignee:'', description:'', notification:'1일 전' },
+
+        foFilter: { type:'전체', status:'전체', range:'전체' },
+
+        failovers: [
+            { event_id:'FO-2026-007', triggered_at:'2026-02-01 03:22:15', type:'TEST', from:'서울', to:'대전', cause:'정기 DR 테스트 (2월)', rto:18, rpo:2, data_loss:'NONE', status:'COMPLETED' },
+            { event_id:'FO-2026-006', triggered_at:'2026-01-15 09:15:00', type:'TEST', from:'서울', to:'대전', cause:'1분기 정기 DR 테스트', rto:22, rpo:3, data_loss:'NONE', status:'COMPLETED' },
+            { event_id:'FO-2025-005', triggered_at:'2025-12-18 14:32:41', type:'AUTO', from:'서울', to:'대전', cause:'서울 리전 네트워크 장애 (ISP 이중화 실패)', rto:35, rpo:7, data_loss:'MINIMAL', status:'COMPLETED' },
+            { event_id:'FO-2025-004', triggered_at:'2025-11-22 08:05:33', type:'MANUAL', from:'대전', to:'서울', cause:'서울 리전 복구 완료 후 원복', rto:12, rpo:1, data_loss:'NONE', status:'COMPLETED' },
+            { event_id:'FO-2025-003', triggered_at:'2025-10-10 16:45:00', type:'TEST', from:'서울', to:'대전', cause:'4분기 정기 DR 테스트', rto:20, rpo:2, data_loss:'NONE', status:'COMPLETED' },
+            { event_id:'FO-2025-002', triggered_at:'2025-08-05 02:12:18', type:'AUTO', from:'서울', to:'대전', cause:'서울 IDC 전원 장애 (UPS 이상)', rto:45, rpo:12, data_loss:'SIGNIFICANT', status:'ROLLBACK' },
+            { event_id:'FO-2025-001', triggered_at:'2025-07-01 10:00:00', type:'TEST', from:'서울', to:'대전', cause:'3분기 정기 DR 테스트', rto:25, rpo:4, data_loss:'NONE', status:'COMPLETED' },
+        ],
+
+        drTests: [
+            { id:'DRT-001', name:'1분기 종합 DR 훈련', type:'종합 DR 훈련', date:'2026-01-15', time:'09:00', duration:120, assignee:'김부장', result:'PASS', actual_rto:22, actual_rpo:3, issues:null, corrective:null },
+            { id:'DRT-002', name:'2월 전체 페일오버 테스트', type:'전체 페일오버', date:'2026-02-01', time:'03:00', duration:60, assignee:'김부장', result:'PASS', actual_rto:18, actual_rpo:2, issues:null, corrective:null },
+            { id:'DRT-003', name:'데이터 복원 검증', type:'데이터 복원', date:'2026-02-15', time:'14:00', duration:90, assignee:'박대리', result:null, actual_rto:null, actual_rpo:null, issues:null, corrective:null },
+            { id:'DRT-004', name:'2분기 종합 DR 훈련', type:'종합 DR 훈련', date:'2026-03-15', time:'09:00', duration:180, assignee:'김부장', result:null, actual_rto:null, actual_rpo:null, issues:null, corrective:null },
+            { id:'DRT-005', name:'네트워크 절체 테스트', type:'네트워크 절체', date:'2026-02-22', time:'22:00', duration:45, assignee:'최사원', result:null, actual_rto:null, actual_rpo:null, issues:null, corrective:null },
+            { id:'DRT-006', name:'12월 전체 페일오버 테스트', type:'전체 페일오버', date:'2025-12-18', time:'14:00', duration:60, assignee:'김부장', result:'PARTIAL', actual_rto:35, actual_rpo:7, issues:'ISP 이중화 실패로 자동 페일오버 트리거. RTO/RPO 목표 초과', corrective:'ISP 이중화 경로 점검 및 자동 전환 로직 개선' },
+        ],
+
+        get filteredFailovers() {
+            return this.failovers.filter(fo => {
+                if (this.foFilter.type !== '전체' && fo.type !== this.foFilter.type) return false;
+                if (this.foFilter.status !== '전체' && fo.status !== this.foFilter.status) return false;
+                return true;
+            });
+        },
+
+        get upcomingTests() {
+            return this.drTests.filter(t => t.date >= '2026-01-01').sort((a,b) => a.date.localeCompare(b.date));
+        },
+
+        get calendarTitle() {
+            const baseYear = 2026;
+            const month = this.calendarMonth;
+            const d = new Date(baseYear, month, 1);
+            return d.getFullYear() + '년 ' + (d.getMonth()+1) + '월';
+        },
+
+        get calendarCells() {
+            const baseYear = 2026;
+            const month = this.calendarMonth;
+            const firstDay = new Date(baseYear, month, 1);
+            const lastDay = new Date(baseYear, month + 1, 0);
+            const startDow = firstDay.getDay();
+            const cells = [];
+            const today = new Date();
+            const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+            // Previous month fill
+            const prevLast = new Date(baseYear, month, 0);
+            for (let i = startDow - 1; i >= 0; i--) {
+                const day = prevLast.getDate() - i;
+                const dateStr = this.formatDate(baseYear, month - 1, day);
+                cells.push({ key: 'p'+day, day, isCurrentMonth: false, isToday: false, events: this.getEventsForDate(dateStr) });
+            }
+            // Current month
+            for (let d = 1; d <= lastDay.getDate(); d++) {
+                const dateStr = this.formatDate(baseYear, month, d);
+                cells.push({ key: 'c'+d, day: d, isCurrentMonth: true, isToday: dateStr === todayStr, events: this.getEventsForDate(dateStr) });
+            }
+            // Next month fill
+            const remaining = 42 - cells.length;
+            for (let d = 1; d <= remaining; d++) {
+                const dateStr = this.formatDate(baseYear, month + 1, d);
+                cells.push({ key: 'n'+d, day: d, isCurrentMonth: false, isToday: false, events: this.getEventsForDate(dateStr) });
+            }
+            return cells;
+        },
+
+        formatDate(year, month, day) {
+            const d = new Date(year, month, day);
+            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        },
+
+        getEventsForDate(dateStr) {
+            return this.drTests.filter(t => t.date === dateStr);
+        },
+
+        refresh() {
+            const now = new Date();
+            this.lastRefresh = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+        },
+
+        init() {
+            lucide.createIcons();
+            this.$nextTick(() => lucide.createIcons());
+            const observer = new MutationObserver(() => lucide.createIcons());
+            observer.observe(this.$root, { childList: true, subtree: true });
+        }
+    };
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenOS — 감사 로그 뷰어</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Pretendard Variable', 'Inter', 'system-ui', '-apple-system', 'sans-serif'] } } } }
+    </script>
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+        @keyframes slideIn { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+        .slide-in { animation: slideIn 0.2s ease-out; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+
+<div x-data="auditLog()" x-init="init()" class="flex h-full min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center"><i data-lucide="shield-check" class="w-5 h-5 text-white"></i></div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">GenOS</span>
+        </div>
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> 메인 대시보드</a>
+            <a href="PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링</a>
+            <a href="PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="bell" class="w-4 h-4"></i> 알림 관리</a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="boxes" class="w-4 h-4"></i> 템플릿 라이브러리</a>
+            <a href="PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="rocket" class="w-4 h-4"></i> 배포 위저드</a>
+            <a href="PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="plug" class="w-4 h-4"></i> 커넥터 허브</a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="file-text" class="w-4 h-4"></i> 컴플라이언스 리포트</a>
+            <a href="PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5"><i data-lucide="scroll-text" class="w-4 h-4"></i> 감사 로그</a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="users" class="w-4 h-4"></i> 사용자/권한</a>
+            <a href="PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="server" class="w-4 h-4"></i> 시스템/DR</a>
+            <a href="PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="settings" class="w-4 h-4"></i> 설정</a>
+        </nav>
+        <div class="border-t border-slate-100 p-3">
+            <div class="flex items-center gap-2.5 px-2 py-1.5">
+                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">김</div>
+                <div class="flex-1 min-w-0"><p class="text-sm font-medium text-slate-900 truncate">김부장</p><p class="text-[11px] text-slate-400 truncate">IT 보안팀</p></div>
+                <button class="text-slate-400 hover:text-slate-600"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 flex flex-col min-w-0">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900">감사 로그 뷰어</h1>
+                <p class="text-xs text-slate-500">전체 에이전트 활동 로그 검색 · 필터 · 내보내기 — 3년 보관</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">총 <strong class="text-slate-700" x-text="filteredLogs.length.toLocaleString()"></strong>건</span>
+            </div>
+        </header>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- SEARCH BAR -->
+            <div class="bg-white border-b border-slate-200 p-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div class="relative flex-1 min-w-[240px]">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" x-model="filters.keyword" placeholder="로그 ID, 사용자명, IP, 키워드 검색"
+                            class="w-full h-9 pl-9 pr-3 rounded-md border border-slate-200 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                    </div>
+                    <select x-model="filters.date_range" class="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                        <option value="today">오늘</option>
+                        <option value="7d">최근 7일</option>
+                        <option value="30d" selected>최근 30일</option>
+                        <option value="90d">최근 90일</option>
+                    </select>
+                    <select x-model="filters.severity" class="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                        <option value="all">전체 심각도</option>
+                        <option value="CRITICAL">CRITICAL</option>
+                        <option value="HIGH">HIGH</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="LOW">LOW</option>
+                        <option value="INFO">INFO</option>
+                    </select>
+                    <select x-model="filters.action_type" class="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                        <option value="all">전체 액션</option>
+                        <option value="LOGIN">LOGIN</option>
+                        <option value="CREATE">CREATE</option>
+                        <option value="UPDATE">UPDATE</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="DEPLOY">DEPLOY</option>
+                        <option value="EXPORT">EXPORT</option>
+                        <option value="ALERT_TRIGGER">ALERT_TRIGGER</option>
+                    </select>
+                    <select x-model="filters.result" class="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                        <option value="all">전체 결과</option>
+                        <option value="SUCCESS">SUCCESS</option>
+                        <option value="FAILURE">FAILURE</option>
+                    </select>
+                    <button @click="resetFilters()" class="h-9 px-3 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors">초기화</button>
+
+                    <!-- Export Buttons -->
+                    <div class="flex items-center gap-1 ml-auto">
+                        <button class="h-9 px-3 rounded-md border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> CSV
+                        </button>
+                        <button class="h-9 px-3 rounded-md border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> PDF
+                        </button>
+                        <button class="h-9 px-3 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 flex items-center gap-1.5">
+                            <i data-lucide="shield" class="w-4 h-4"></i> 감사 증빙 패키지
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE + DETAIL PANEL -->
+            <div class="flex-1 flex overflow-hidden">
+                <!-- LOG TABLE -->
+                <div class="flex-1 overflow-auto" :class="selectedLog ? 'w-[60%]' : 'w-full'">
+                    <table class="w-full">
+                        <thead class="sticky top-0 bg-white z-10">
+                            <tr class="border-b border-slate-200">
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5 w-[160px]">일시</th>
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5 w-[100px]">로그 ID</th>
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5 w-[100px]">사용자</th>
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5 w-[110px]">IP 주소</th>
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5 w-[120px]">액션</th>
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5">대상 리소스</th>
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5 w-[80px]">심각도</th>
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5 w-[70px]">결과</th>
+                                <th class="text-left text-[11px] font-medium text-slate-500 px-3 py-2.5 w-[80px]">소요(ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="log in filteredLogs" :key="log.log_id">
+                                <tr @click="selectLog(log)" class="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors text-sm"
+                                    :class="{'bg-blue-50/50': selectedLog?.log_id === log.log_id}">
+                                    <td class="px-3 py-2 text-xs text-slate-600 font-mono" x-text="log.timestamp"></td>
+                                    <td class="px-3 py-2 text-xs text-slate-500 font-mono" x-text="log.log_id"></td>
+                                    <td class="px-3 py-2 text-sm text-slate-700" x-text="log.user_name"></td>
+                                    <td class="px-3 py-2 text-xs text-slate-500 font-mono" x-text="log.ip_address"></td>
+                                    <td class="px-3 py-2">
+                                        <span class="text-xs font-medium text-slate-700" x-text="log.action_type"></span>
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-slate-600 truncate max-w-[200px]" x-text="log.target_resource"></td>
+                                    <td class="px-3 py-2">
+                                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                                            :class="{
+                                                'bg-red-100 text-red-700': log.severity === 'CRITICAL',
+                                                'bg-orange-100 text-orange-700': log.severity === 'HIGH',
+                                                'bg-yellow-100 text-yellow-700': log.severity === 'MEDIUM',
+                                                'bg-slate-100 text-slate-600': log.severity === 'LOW',
+                                                'bg-blue-50 text-blue-600': log.severity === 'INFO'
+                                            }" x-text="log.severity"></span>
+                                    </td>
+                                    <td class="px-3 py-2">
+                                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                                            :class="{
+                                                'bg-emerald-100 text-emerald-700': log.result === 'SUCCESS',
+                                                'bg-red-100 text-red-700': log.result === 'FAILURE'
+                                            }" x-text="log.result"></span>
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-slate-500 text-right font-mono" x-text="log.duration_ms"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- LOG DETAIL PANEL -->
+                <div x-show="selectedLog" x-transition class="w-[440px] border-l border-slate-200 bg-white overflow-y-auto flex-shrink-0 slide-in">
+                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-slate-900">로그 상세</h3>
+                        <button @click="selectedLog = null" class="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div x-show="selectedLog" class="p-5 space-y-5">
+                        <!-- Basic Info -->
+                        <div>
+                            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">기본 정보</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">로그 ID</span><span class="text-xs font-mono text-slate-700" x-text="selectedLog?.log_id"></span></div>
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">일시</span><span class="text-xs font-mono text-slate-700" x-text="selectedLog?.timestamp"></span></div>
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">사용자</span><span class="text-xs text-slate-700" x-text="selectedLog?.user_name"></span></div>
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">이메일</span><span class="text-xs text-slate-700" x-text="selectedLog?.user_email"></span></div>
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">IP 주소</span><span class="text-xs font-mono text-slate-700" x-text="selectedLog?.ip_address"></span></div>
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">User Agent</span><span class="text-xs text-slate-600 truncate max-w-[200px]" x-text="selectedLog?.user_agent"></span></div>
+                            </div>
+                        </div>
+
+                        <!-- Action Detail -->
+                        <div>
+                            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">액션 상세</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">액션 유형</span><span class="text-xs font-medium text-slate-700" x-text="selectedLog?.action_type"></span></div>
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">대상 리소스</span><span class="text-xs text-slate-700" x-text="selectedLog?.target_resource"></span></div>
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">리소스 ID</span><span class="text-xs font-mono text-slate-600" x-text="selectedLog?.resource_id"></span></div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-slate-500">심각도</span>
+                                    <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                                        :class="{
+                                            'bg-red-100 text-red-700': selectedLog?.severity === 'CRITICAL',
+                                            'bg-orange-100 text-orange-700': selectedLog?.severity === 'HIGH',
+                                            'bg-yellow-100 text-yellow-700': selectedLog?.severity === 'MEDIUM',
+                                            'bg-slate-100 text-slate-600': selectedLog?.severity === 'LOW',
+                                            'bg-blue-50 text-blue-600': selectedLog?.severity === 'INFO'
+                                        }" x-text="selectedLog?.severity"></span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-slate-500">결과</span>
+                                    <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                                        :class="{ 'bg-emerald-100 text-emerald-700': selectedLog?.result === 'SUCCESS', 'bg-red-100 text-red-700': selectedLog?.result === 'FAILURE' }"
+                                        x-text="selectedLog?.result"></span>
+                                </div>
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">소요시간</span><span class="text-xs text-slate-700" x-text="selectedLog?.duration_ms + 'ms'"></span></div>
+                            </div>
+                        </div>
+
+                        <!-- Change Diff -->
+                        <div x-show="selectedLog?.before_state">
+                            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">변경 내역</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <p class="text-[10px] text-slate-400 mb-1">변경 전</p>
+                                    <pre class="bg-red-50 rounded p-2 text-[10px] text-red-800 font-mono overflow-x-auto whitespace-pre-wrap" x-text="JSON.stringify(selectedLog?.before_state, null, 2)"></pre>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] text-slate-400 mb-1">변경 후</p>
+                                    <pre class="bg-emerald-50 rounded p-2 text-[10px] text-emerald-800 font-mono overflow-x-auto whitespace-pre-wrap" x-text="JSON.stringify(selectedLog?.after_state, null, 2)"></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div x-show="selectedLog?.result === 'FAILURE'">
+                            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">에러 정보</h4>
+                            <div class="bg-red-50 rounded-lg p-3">
+                                <p class="text-xs text-red-700 font-mono" x-text="selectedLog?.error_message"></p>
+                                <p class="text-[11px] text-red-500 mt-1">응답 코드: <span x-text="selectedLog?.response_code"></span></p>
+                            </div>
+                        </div>
+
+                        <!-- Audit Chain -->
+                        <div>
+                            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">감사 추적 체인</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between"><span class="text-xs text-slate-500">세션 ID</span><span class="text-xs font-mono text-slate-600" x-text="selectedLog?.session_id"></span></div>
+                                <div x-show="selectedLog?.parent_log_id" class="flex justify-between">
+                                    <span class="text-xs text-slate-500">상위 로그</span>
+                                    <button class="text-xs text-blue-600 hover:underline font-mono" x-text="selectedLog?.parent_log_id">
+                                    </button>
+                                </div>
+                                <div x-show="selectedLog?.workflow_id" class="flex justify-between">
+                                    <span class="text-xs text-slate-500">워크플로우</span>
+                                    <button class="text-xs text-blue-600 hover:underline font-mono" x-text="selectedLog?.workflow_id"></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex gap-2 pt-3 border-t border-slate-100">
+                            <button class="flex-1 h-8 rounded-md border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50">관련 로그 조회</button>
+                            <button class="flex-1 h-8 rounded-md border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50">북마크</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+function auditLog() {
+    return {
+        selectedLog: null,
+        filters: { keyword: '', date_range: '30d', severity: 'all', action_type: 'all', result: 'all' },
+
+        logs: [
+            { log_id: 'LOG-8A2F', timestamp: '2026-02-06 09:32:15.123', user_name: '김**', user_email: 'kim***@kbfg.com', ip_address: '10.**.**.42', user_agent: 'Chrome/121 Windows', action_type: 'LOGIN', target_resource: '/auth/login', resource_id: 'session-a8f2', severity: 'INFO', result: 'SUCCESS', duration_ms: 342, session_id: 'sess-8a2f', before_state: null, after_state: null, parent_log_id: null, workflow_id: null, error_message: null, response_code: 200 },
+            { log_id: 'LOG-7B3E', timestamp: '2026-02-06 09:28:44.891', user_name: '이**', user_email: 'lee***@kbfg.com', ip_address: '10.**.**.15', user_agent: 'Chrome/121 macOS', action_type: 'UPDATE', target_resource: '에이전트 설정 / KB_FDS_Agent_v1', resource_id: 'agent-001', severity: 'MEDIUM', result: 'SUCCESS', duration_ms: 1205, session_id: 'sess-7b3e', before_state: { threshold: 0.7, schedule: '5m' }, after_state: { threshold: 0.65, schedule: '3m' }, parent_log_id: null, workflow_id: null, error_message: null, response_code: 200 },
+            { log_id: 'LOG-6C4D', timestamp: '2026-02-06 09:15:22.456', user_name: '시스템', user_email: 'system@genos.ai', ip_address: '10.0.0.1', user_agent: 'GenOS Agent v2.1', action_type: 'ALERT_TRIGGER', target_resource: '이상거래 탐지 / TXN-2026020609152', resource_id: 'alert-847', severity: 'HIGH', result: 'SUCCESS', duration_ms: 89, session_id: 'sys-auto', before_state: null, after_state: null, parent_log_id: null, workflow_id: 'wf-fds-01', error_message: null, response_code: 200 },
+            { log_id: 'LOG-5D5E', timestamp: '2026-02-06 08:55:03.789', user_name: '김**', user_email: 'kim***@kbfg.com', ip_address: '10.**.**.42', user_agent: 'Chrome/121 Windows', action_type: 'DEPLOY', target_resource: '에이전트 배포 / NH_AML_Agent_v2', resource_id: 'agent-012', severity: 'HIGH', result: 'SUCCESS', duration_ms: 45200, session_id: 'sess-5d5e', before_state: { status: 'draft' }, after_state: { status: 'active', environment: 'production' }, parent_log_id: 'LOG-5D4C', workflow_id: null, error_message: null, response_code: 200 },
+            { log_id: 'LOG-4E6F', timestamp: '2026-02-06 08:42:11.234', user_name: '박**', user_email: 'park***@shfg.com', ip_address: '10.**.**.88', user_agent: 'Firefox/122 Windows', action_type: 'EXPORT', target_resource: '감사 로그 내보내기 / 2026-01', resource_id: 'export-321', severity: 'MEDIUM', result: 'SUCCESS', duration_ms: 8900, session_id: 'sess-4e6f', before_state: null, after_state: null, parent_log_id: null, workflow_id: null, error_message: null, response_code: 200 },
+            { log_id: 'LOG-3F7G', timestamp: '2026-02-06 08:30:55.567', user_name: '김**', user_email: 'kim***@kbfg.com', ip_address: '10.**.**.42', user_agent: 'Chrome/121 Windows', action_type: 'DELETE', target_resource: '커넥터 삭제 / Test-MySQL-Conn', resource_id: 'conn-099', severity: 'HIGH', result: 'SUCCESS', duration_ms: 1560, session_id: 'sess-3f7g', before_state: { connector_name: 'Test-MySQL-Conn', status: 'disconnected' }, after_state: null, parent_log_id: null, workflow_id: null, error_message: null, response_code: 200 },
+            { log_id: 'LOG-2G8H', timestamp: '2026-02-06 08:15:33.890', user_name: '최**', user_email: 'choi***@nhfg.com', ip_address: '10.**.**.71', user_agent: 'Chrome/121 Windows', action_type: 'LOGIN', target_resource: '/auth/login', resource_id: 'session-2g8h', severity: 'CRITICAL', result: 'FAILURE', duration_ms: 120, session_id: 'sess-fail', before_state: null, after_state: null, parent_log_id: null, workflow_id: null, error_message: '계정 잠금: 5회 연속 로그인 실패', response_code: 423 },
+            { log_id: 'LOG-1H9I', timestamp: '2026-02-06 07:45:12.123', user_name: '시스템', user_email: 'system@genos.ai', ip_address: '10.0.0.1', user_agent: 'GenOS Scheduler', action_type: 'CREATE', target_resource: '리포트 생성 / 월간 보안 현황 2026-01', resource_id: 'rpt-feb01', severity: 'INFO', result: 'SUCCESS', duration_ms: 32100, session_id: 'sys-sched', before_state: null, after_state: null, parent_log_id: null, workflow_id: null, error_message: null, response_code: 200 },
+            { log_id: 'LOG-0I0J', timestamp: '2026-02-05 23:00:01.001', user_name: '시스템', user_email: 'system@genos.ai', ip_address: '10.0.0.1', user_agent: 'GenOS Backup Agent', action_type: 'CREATE', target_resource: '일일 스냅샷 / snapshot-20260205', resource_id: 'snap-0205', severity: 'INFO', result: 'SUCCESS', duration_ms: 180000, session_id: 'sys-backup', before_state: null, after_state: null, parent_log_id: null, workflow_id: null, error_message: null, response_code: 200 },
+            { log_id: 'LOG-ZJ1K', timestamp: '2026-02-05 18:22:44.567', user_name: '이**', user_email: 'lee***@kbfg.com', ip_address: '10.**.**.15', user_agent: 'Chrome/121 macOS', action_type: 'UPDATE', target_resource: '사용자 권한 / 박** 역할 변경', resource_id: 'user-park01', severity: 'HIGH', result: 'SUCCESS', duration_ms: 890, session_id: 'sess-zj1k', before_state: { role: 'VIEWER' }, after_state: { role: 'ANALYST' }, parent_log_id: null, workflow_id: null, error_message: null, response_code: 200 },
+            { log_id: 'LOG-YK2L', timestamp: '2026-02-05 16:10:33.234', user_name: '시스템', user_email: 'system@genos.ai', ip_address: '10.0.0.1', user_agent: 'GenOS Agent v2.1', action_type: 'ALERT_TRIGGER', target_resource: '접근 이상 탐지 / 비인가 API 호출', resource_id: 'alert-902', severity: 'CRITICAL', result: 'SUCCESS', duration_ms: 45, session_id: 'sys-auto', before_state: null, after_state: null, parent_log_id: null, workflow_id: 'wf-access-01', error_message: null, response_code: 200 },
+            { log_id: 'LOG-XL3M', timestamp: '2026-02-05 14:33:21.678', user_name: '김**', user_email: 'kim***@kbfg.com', ip_address: '10.**.**.42', user_agent: 'Chrome/121 Windows', action_type: 'CONFIGURE', target_resource: '알림 채널 설정 / Slack Webhook 변경', resource_id: 'notif-slack', severity: 'MEDIUM', result: 'SUCCESS', duration_ms: 650, session_id: 'sess-xl3m', before_state: { webhook: 'https://hooks.slack.com/old...' }, after_state: { webhook: 'https://hooks.slack.com/new...' }, parent_log_id: null, workflow_id: null, error_message: null, response_code: 200 },
+        ],
+
+        get filteredLogs() {
+            return this.logs.filter(l => {
+                if (this.filters.severity !== 'all' && l.severity !== this.filters.severity) return false;
+                if (this.filters.action_type !== 'all' && l.action_type !== this.filters.action_type) return false;
+                if (this.filters.result !== 'all' && l.result !== this.filters.result) return false;
+                if (this.filters.keyword) {
+                    const kw = this.filters.keyword.toLowerCase();
+                    return l.log_id.toLowerCase().includes(kw) || l.user_name.includes(kw) || l.target_resource.toLowerCase().includes(kw) || l.action_type.toLowerCase().includes(kw);
+                }
+                return true;
+            });
+        },
+
+        selectLog(log) { this.selectedLog = log; this.$nextTick(() => lucide.createIcons()); },
+        resetFilters() { this.filters = { keyword: '', date_range: '30d', severity: 'all', action_type: 'all', result: 'all' }; },
+
+        init() {
+            this.selectedLog = this.logs[0];
+            this.$nextTick(() => lucide.createIcons());
+            new MutationObserver(() => lucide.createIcons()).observe(document.body, { childList: true, subtree: true });
+        }
+    }
+}
+</script>
+</body>
+</html>
