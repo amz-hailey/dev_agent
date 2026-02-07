@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenOS — 페이지 목록</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 2rem; }
+  h1 { font-size: 1.5rem; margin-bottom: .5rem; }
+  .subtitle { color: #94a3b8; margin-bottom: 2rem; font-size: .875rem; }
+  .phase { margin-bottom: 2rem; }
+  .phase-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: #64748b; margin-bottom: .75rem; padding-bottom: .5rem; border-bottom: 1px solid #1e293b; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .75rem; }
+  a { text-decoration: none; display: block; padding: .75rem 1rem; background: #1e293b; border-radius: .5rem; border: 1px solid #334155; transition: all .15s; }
+  a:hover { background: #334155; border-color: #3b82f6; }
+  .page-id { font-size: .75rem; color: #3b82f6; font-weight: 600; }
+  .page-name { color: #e2e8f0; font-size: .875rem; margin-top: .125rem; }
+  .snapshots { margin-top: .25rem; font-size: .75rem; color: #64748b; }
+  .snap-links { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: .375rem; }
+  .snap-links a { padding: .25rem .5rem; font-size: .7rem; background: #0f172a; border-color: #1e293b; display: inline-block; }
+  .snap-links a:hover { border-color: #6366f1; }
+  .snap-label { color: #a5b4fc; }
+  .stats { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; font-size: .8rem; color: #64748b; }
+  .stats span { color: #e2e8f0; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>GenOS 금융 AI 보안 플랫폼</h1>
+<p class="subtitle">html.to.design 변환용 페이지 목록</p>
+<div class="stats">
+  <div>메인 페이지 <span>16</span></div>
+  <div>스냅샷 <span>29</span></div>
+  <div>총 <span>45</span></div>
+</div>
+
+<div class="phase">
+  <div class="phase-title">Phase 1 — MVP (12 pages)</div>
+  <div class="grid">
+    <div>
+      <a href="PG-01_login.html"><span class="page-id">PG-01</span><div class="page-name">로그인 / 인증</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-01_login--mfa.html"><span class="snap-label">MFA 인증</span></a>
+        <a href="snapshots/PG-01_login--success.html"><span class="snap-label">로그인 성공</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-02_dashboard.html"><span class="page-id">PG-02</span><div class="page-name">통합 대시보드</div></a>
+    </div>
+    <div>
+      <a href="PG-03_agent_templates.html"><span class="page-id">PG-03</span><div class="page-name">AI 에이전트 템플릿</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-03_agent_templates--detail.html"><span class="snap-label">상세보기</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-04_deploy_wizard.html"><span class="page-id">PG-04</span><div class="page-name">배포 위자드</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-04_deploy_wizard--step2.html"><span class="snap-label">Step 2</span></a>
+        <a href="snapshots/PG-04_deploy_wizard--step3.html"><span class="snap-label">Step 3</span></a>
+        <a href="snapshots/PG-04_deploy_wizard--step4.html"><span class="snap-label">Step 4</span></a>
+        <a href="snapshots/PG-04_deploy_wizard--step5.html"><span class="snap-label">Step 5</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-05_connector_hub.html"><span class="page-id">PG-05</span><div class="page-name">데이터 커넥터 허브</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-05_connector_hub--add_modal.html"><span class="snap-label">추가 모달</span></a>
+        <a href="snapshots/PG-05_connector_hub--detail.html"><span class="snap-label">상세보기</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-06_realtime_monitoring.html"><span class="page-id">PG-06</span><div class="page-name">실시간 모니터링</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-06_realtime_monitoring--detail.html"><span class="snap-label">상세보기</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-07_alert_management.html"><span class="page-id">PG-07</span><div class="page-name">알림 관리</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-07_alert_management--escalation.html"><span class="snap-label">에스컬레이션</span></a>
+        <a href="snapshots/PG-07_alert_management--history.html"><span class="snap-label">히스토리</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-08_compliance_reports.html"><span class="page-id">PG-08</span><div class="page-name">컴플라이언스 리포트</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-08_compliance_reports--generate_modal.html"><span class="snap-label">생성 모달</span></a>
+        <a href="snapshots/PG-08_compliance_reports--preview.html"><span class="snap-label">미리보기</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-09_audit_log.html"><span class="page-id">PG-09</span><div class="page-name">감사 로그</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-09_audit_log--detail.html"><span class="snap-label">상세보기</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-10_user_permissions.html"><span class="page-id">PG-10</span><div class="page-name">사용자 권한 관리</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-10_user_permissions--add_modal.html"><span class="snap-label">추가 모달</span></a>
+        <a href="snapshots/PG-10_user_permissions--matrix.html"><span class="snap-label">권한 매트릭스</span></a>
+        <a href="snapshots/PG-10_user_permissions--roles.html"><span class="snap-label">역할 관리</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-11_system_dr.html"><span class="page-id">PG-11</span><div class="page-name">시스템 DR</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-11_system_dr--failover_modal.html"><span class="snap-label">페일오버 모달</span></a>
+        <a href="snapshots/PG-11_system_dr--test_detail.html"><span class="snap-label">테스트 상세</span></a>
+        <a href="snapshots/PG-11_system_dr--test_register.html"><span class="snap-label">테스트 등록</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-12_settings.html"><span class="page-id">PG-12</span><div class="page-name">시스템 설정</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-12_settings--display.html"><span class="snap-label">디스플레이</span></a>
+        <a href="snapshots/PG-12_settings--notification.html"><span class="snap-label">알림 설정</span></a>
+        <a href="snapshots/PG-12_settings--security.html"><span class="snap-label">보안 설정</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-title">Phase 2 — 확장 (2 pages)</div>
+  <div class="grid">
+    <div>
+      <a href="PG-13_workflow_builder.html"><span class="page-id">PG-13</span><div class="page-name">워크플로우 빌더</div></a>
+    </div>
+    <div>
+      <a href="PG-14_customer_health.html"><span class="page-id">PG-14</span><div class="page-name">고객 헬스 스코어</div></a>
+    </div>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-title">Phase 3 — 고도화 (2 pages)</div>
+  <div class="grid">
+    <div>
+      <a href="PG-15_ai_pipeline.html"><span class="page-id">PG-15</span><div class="page-name">AI 재학습 파이프라인</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-15_ai_pipeline--training.html"><span class="snap-label">학습 중</span></a>
+        <a href="snapshots/PG-15_ai_pipeline--deploy_modal.html"><span class="snap-label">배포 모달</span></a>
+        <a href="snapshots/PG-15_ai_pipeline--rollback_modal.html"><span class="snap-label">롤백 모달</span></a>
+      </div>
+    </div>
+    <div>
+      <a href="PG-16_benchmarking.html"><span class="page-id">PG-16</span><div class="page-name">벤치마킹 대시보드</div></a>
+      <div class="snap-links">
+        <a href="snapshots/PG-16_benchmarking--false_positive.html"><span class="snap-label">오탐률 필터</span></a>
+        <a href="snapshots/PG-16_benchmarking--bank_filter.html"><span class="snap-label">금융사 필터</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
