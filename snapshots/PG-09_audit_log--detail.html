@@ -334,8 +334,7 @@ function auditLog() {
         init() {
             this.selectedLog = this.logs[0];
             this.$nextTick(() => lucide.createIcons());
-            new MutationObserver(() => lucide.createIcons()).observe(document.body, { childList: true, subtree: true });
-        }
+}
     }
 }
 </script>
