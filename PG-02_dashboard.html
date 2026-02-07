@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenOS — 메인 대시보드</title>
+
+    <link rel="stylesheet" href="cdn/tailwind.css">
+    <script defer src="cdn/alpine.js"></script>
+    <script src="cdn/lucide.js"></script>
+    <script src="cdn/chart.js"></script>
+                
+    
+
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        .slide-down { animation: slideDown 0.25s ease-out; }
+        @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+        .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+
+<div x-data="dashboard()" x-init="init()" class="flex h-full min-h-screen">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+
+        <!-- Logo -->
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">GenOS</span>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <!-- 보안 운영 -->
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> 메인 대시보드
+            </a>
+            <a href="PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링
+            </a>
+            <a href="PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bell" class="w-4 h-4"></i> 알림 관리
+                <span class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span>
+            </a>
+
+            <!-- 에이전트 관리 -->
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="boxes" class="w-4 h-4"></i> 템플릿 라이브러리
+            </a>
+            <a href="PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="rocket" class="w-4 h-4"></i> 배포 위저드
+            </a>
+            <a href="PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="plug" class="w-4 h-4"></i> 커넥터 허브
+            </a>
+
+            <!-- 리포팅/감사 -->
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">자동화</p>
+            <a href="PG-13_workflow_builder.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="git-branch" class="w-4 h-4"></i> 워크플로우 빌더</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="file-text" class="w-4 h-4"></i> 컴플라이언스 리포트
+            </a>
+            <a href="PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="scroll-text" class="w-4 h-4"></i> 감사 로그
+            </a>
+
+            <!-- 시스템 관리 -->
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="users" class="w-4 h-4"></i> 사용자/권한
+            </a>
+            <a href="PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="server" class="w-4 h-4"></i> 시스템/DR
+            </a>
+            <a href="PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="settings" class="w-4 h-4"></i> 설정
+            </a>
+
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">고도화</p>
+            <a href="PG-15_ai_pipeline.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="brain-circuit" class="w-4 h-4"></i> AI 재학습 파이프라인</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">내부 관리</p>
+            <a href="PG-14_customer_health.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="heart-pulse" class="w-4 h-4"></i> 고객 Health</a>
+            <a href="PG-16_benchmarking.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i> 벤치마킹</a>
+
+        </nav>
+
+        <!-- User -->
+        <div class="border-t border-slate-100 p-3">
+            <div class="flex items-center gap-2.5 px-2 py-1.5">
+                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">김</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-900 truncate">김부장</p>
+                    <p class="text-[11px] text-slate-400 truncate">IT 보안팀</p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="flex-1 flex flex-col min-w-0">
+
+        <!-- Top bar -->
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900">메인 대시보드</h1>
+                <p class="text-xs text-slate-400 -mt-0.5">보안 현황 오버뷰</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- Live indicator -->
+                <div class="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full pulse-dot"></span>
+                    실시간
+                </div>
+                <!-- Last updated -->
+                <span class="text-xs text-slate-400" x-text="'갱신: ' + lastUpdated"></span>
+                <!-- Refresh -->
+                <button @click="refreshAll" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors" title="새로고침">
+                    <i data-lucide="refresh-cw" class="w-4 h-4" :class="refreshing && 'animate-spin'"></i>
+                </button>
+                <!-- Notifications -->
+                <button class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors" title="알림">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6">
+
+            <!-- ===== STATUS SUMMARY CARDS ===== -->
+            <div class="grid grid-cols-5 gap-4 mb-6" aria-label="보안 현황 요약 지표">
+                <template x-for="card in summaryCards" :key="card.id">
+                    <a :href="card.link"
+                       class="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md hover:border-slate-300 transition-all duration-200 group cursor-pointer"
+                       :aria-label="card.label + ' ' + card.displayValue">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-medium text-slate-500" x-text="card.label"></span>
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                                 :class="card.statusColor + ' group-hover:scale-110 transition-transform'">
+                                <i :data-lucide="card.icon" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-bold text-slate-900 mb-1" x-text="card.displayValue"></p>
+                        <div class="flex items-center gap-1" x-show="card.trend !== null">
+                            <svg x-show="card.trend > 0" class="w-3 h-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+                            <svg x-show="card.trend < 0" class="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 4.5l15 15m0 0V8.25m0 11.25H8.25"/></svg>
+                            <svg x-show="card.trend === 0" class="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg>
+                            <span class="text-xs font-medium"
+                                  :class="card.trendIsGood ? 'text-emerald-600' : card.trend === 0 ? 'text-slate-400' : 'text-red-600'"
+                                  x-text="card.trendText"></span>
+                        </div>
+                    </a>
+                </template>
+            </div>
+
+            <!-- ===== CHART + TIMELINE ROW ===== -->
+            <div class="grid grid-cols-5 gap-4 mb-6">
+
+                <!-- Detection Trend Chart -->
+                <div class="col-span-3 bg-white rounded-xl border border-slate-200 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-sm font-semibold text-slate-900">탐지 추이</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">에이전트 유형별 이상 탐지 건수</p>
+                        </div>
+                        <div class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                            <template x-for="p in periods" :key="p.value">
+                                <button @click="changePeriod(p.value)"
+                                        class="px-2.5 py-1 text-xs font-medium rounded-md transition-colors"
+                                        :class="selectedPeriod === p.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                                        x-text="p.label"></button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="h-[280px]">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Alert Timeline -->
+                <div class="col-span-2 bg-white rounded-xl border border-slate-200 flex flex-col">
+                    <div class="flex items-center justify-between p-5 pb-3">
+                        <div>
+                            <h2 class="text-sm font-semibold text-slate-900">실시간 알림</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">최근 보안 이벤트</p>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <template x-for="sev in severityFilters" :key="sev.value">
+                                <button @click="toggleSeverity(sev.value)"
+                                        class="px-2 py-0.5 text-[11px] font-medium rounded-full border transition-colors"
+                                        :class="activeSeverities.includes(sev.value) ? sev.activeClass : 'border-slate-200 text-slate-400 hover:border-slate-300'"
+                                        x-text="sev.label"></button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto scrollbar-thin px-5 pb-4" aria-label="실시간 보안 알림 타임라인">
+                        <div class="space-y-0">
+                            <template x-for="alert in filteredAlerts" :key="alert.id">
+                                <div class="flex gap-3 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 -mx-2 px-2 rounded-md transition-colors cursor-pointer slide-down"
+                                     @click="alert.expanded = !alert.expanded">
+                                    <!-- Severity dot -->
+                                    <div class="mt-1.5 flex-shrink-0">
+                                        <span class="block w-2 h-2 rounded-full" :class="severityDotColor(alert.severity)"></span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span class="text-[11px] font-mono text-slate-400" x-text="alert.time"></span>
+                                            <span class="text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0"
+                                                  :class="severityBadgeClass(alert.severity)"
+                                                  x-text="alert.severityLabel"></span>
+                                        </div>
+                                        <p class="text-sm text-slate-800 mt-0.5 leading-snug" x-text="alert.message"></p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[11px] text-slate-400" x-text="alert.agent"></span>
+                                            <span class="text-[10px] px-1.5 py-0.5 rounded-full"
+                                                  :class="alert.status === 'new' ? 'bg-blue-50 text-blue-600' : alert.status === 'acknowledged' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-500'"
+                                                  x-text="alert.statusLabel"></span>
+                                        </div>
+                                        <!-- Expanded detail -->
+                                        <div x-show="alert.expanded" x-transition class="mt-2 p-2.5 bg-slate-50 rounded-md text-xs text-slate-600 space-y-1">
+                                            <p><span class="font-medium text-slate-700">거래 ID:</span> <span x-text="alert.txId || 'N/A'"></span></p>
+                                            <p><span class="font-medium text-slate-700">에이전트 유형:</span> <span x-text="alert.agentType"></span></p>
+                                            <div class="flex gap-2 mt-2">
+                                                <button class="px-2 py-1 bg-white border border-slate-200 rounded text-[11px] font-medium hover:bg-slate-100 transition-colors">상세 보기</button>
+                                                <button class="px-2 py-1 bg-slate-900 text-white rounded text-[11px] font-medium hover:bg-slate-800 transition-colors">확인 처리</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 p-3">
+                        <a href="PG-07_alert_management.html" class="flex items-center justify-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors">
+                            전체 알림 보기 <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== QUICK ACTIONS ===== -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5" aria-label="빠른 작업 바로가기">
+                <h2 class="text-sm font-semibold text-slate-900 mb-3">빠른 실행</h2>
+                <div class="grid grid-cols-4 gap-3">
+                    <a href="PG-04_deploy_wizard.html"
+                       class="flex items-center gap-3 p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
+                        <div class="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i data-lucide="rocket" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-900">에이전트 배포</p>
+                            <p class="text-xs text-slate-400">새 보안 에이전트 배포</p>
+                        </div>
+                    </a>
+                    <a href="PG-08_compliance_reports.html"
+                       class="flex items-center gap-3 p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i data-lucide="file-text" class="w-5 h-5 text-slate-700"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-900">리포트 생성</p>
+                            <p class="text-xs text-slate-400">컴플라이언스 리포트</p>
+                        </div>
+                    </a>
+                    <a href="PG-05_connector_hub.html"
+                       class="flex items-center gap-3 p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i data-lucide="database" class="w-5 h-5 text-slate-700"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-900">데이터 소스 연결</p>
+                            <p class="text-xs text-slate-400">새 커넥터 설정</p>
+                        </div>
+                    </a>
+                    <a href="PG-06_realtime_monitoring.html"
+                       class="flex items-center gap-3 p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i data-lucide="activity" class="w-5 h-5 text-slate-700"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-900">실시간 모니터링</p>
+                            <p class="text-xs text-slate-400">위협 탐지 현황</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('alpine:init', () => { setTimeout(() => lucide.createIcons(), 50); });
+
+function dashboard() {
+    return {
+        /* ── Summary Cards ── */
+        summaryCards: [
+            {
+                id: 'uptime', label: '에이전트 가동률', icon: 'shield-check',
+                value: 99.97, displayValue: '99.97%', format: 'pct',
+                trend: 0.02, trendText: '+0.02pp (전일)', trendIsGood: true,
+                statusColor: 'bg-emerald-100 text-emerald-700',
+                link: 'PG-11_system_dr.html'
+            },
+            {
+                id: 'detections', label: '오늘 탐지 건수', icon: 'alert-triangle',
+                value: 127, displayValue: '127', format: 'num',
+                trend: 15, trendText: '+15건 (전일)', trendIsGood: false,
+                statusColor: 'bg-amber-100 text-amber-700',
+                link: 'PG-06_realtime_monitoring.html'
+            },
+            {
+                id: 'alerts', label: '미처리 알림', icon: 'bell',
+                value: 3, displayValue: '3', format: 'num',
+                trend: -2, trendText: '-2건 (전일)', trendIsGood: true,
+                statusColor: 'bg-emerald-100 text-emerald-700',
+                link: 'PG-07_alert_management.html'
+            },
+            {
+                id: 'fpr', label: '오탐률', icon: 'target',
+                value: 4.2, displayValue: '4.2%', format: 'pct',
+                trend: -1.1, trendText: '-1.1pp (전주)', trendIsGood: true,
+                statusColor: 'bg-emerald-100 text-emerald-700',
+                link: 'PG-06_realtime_monitoring.html'
+            },
+            {
+                id: 'agents', label: '활성 에이전트', icon: 'bot',
+                value: 24, displayValue: '24', format: 'num',
+                trend: null, trendText: '', trendIsGood: true,
+                statusColor: 'bg-blue-100 text-blue-700',
+                link: 'PG-03_agent_templates.html'
+            },
+        ],
+
+        /* ── Alerts ── */
+        alerts: [
+            { id: 'a1', severity: 'critical', severityLabel: '긴급', time: '14:32:07', agent: 'FDS-Agent-KB', agentType: 'FDS 이상거래', message: '비정상 거래 패턴 — 30분간 동일 계좌 15회 이체 시도 (총 2.4억원)', status: 'new', statusLabel: '신규', txId: 'TXN-2026-0206-88471', expanded: false },
+            { id: 'a2', severity: 'high', severityLabel: '높음', time: '14:28:41', agent: 'AML-Agent-SH', agentType: 'AML 자금세탁', message: '고위험 거래 의심 — 해외 송금 3건 연속 (총 5.8억원, 목적지 동남아)', status: 'new', statusLabel: '신규', txId: 'TXN-2026-0206-88302', expanded: false },
+            { id: 'a3', severity: 'critical', severityLabel: '긴급', time: '14:22:15', agent: 'Access-Agent-NH', agentType: '접근 권한 이상', message: '비인가 IP(103.42.xx.xx)에서 관리자 계정 접근 시도 3회', status: 'acknowledged', statusLabel: '확인됨', txId: null, expanded: false },
+            { id: 'a4', severity: 'medium', severityLabel: '보통', time: '14:15:33', agent: 'FDS-Agent-KB', agentType: 'FDS 이상거래', message: '야간 시간대(02:00~05:00) 비정상 대량 조회 — 계좌 잔액 조회 847건', status: 'acknowledged', statusLabel: '확인됨', txId: 'TXN-2026-0206-87650', expanded: false },
+            { id: 'a5', severity: 'high', severityLabel: '높음', time: '14:08:19', agent: 'DLP-Agent-SH', agentType: '내부 정보 유출', message: '대량 고객정보 다운로드 감지 — 신한은행 직원 ID: emp_3847 (12,400건)', status: 'new', statusLabel: '신규', txId: null, expanded: false },
+            { id: 'a6', severity: 'low', severityLabel: '낮음', time: '13:55:02', agent: 'FDS-Agent-NH', agentType: 'FDS 이상거래', message: '소액 다건 이체 패턴 — 10분간 500원~1,000원 이체 23건', status: 'acknowledged', statusLabel: '확인됨', txId: 'TXN-2026-0206-87201', expanded: false },
+            { id: 'a7', severity: 'medium', severityLabel: '보통', time: '13:41:55', agent: 'AML-Agent-KB', agentType: 'AML 자금세탁', message: '구조화 거래 의심 — 입금 분산 패턴 (4개 계좌, 각 9.9백만원)', status: 'acknowledged', statusLabel: '확인됨', txId: 'TXN-2026-0206-86940', expanded: false },
+            { id: 'a8', severity: 'info', severityLabel: '정보', time: '13:30:00', agent: 'System', agentType: '시스템', message: '에이전트 정기 업데이트 완료 — FDS v3.2.1 → v3.2.2 (3개 인스턴스)', status: 'resolved', statusLabel: '해결됨', txId: null, expanded: false },
+        ],
+
+        /* ── Severity filter ── */
+        activeSeverities: ['critical','high','medium','low','info'],
+        severityFilters: [
+            { value: 'critical', label: '긴급', activeClass: 'border-red-300 bg-red-50 text-red-700' },
+            { value: 'high', label: '높음', activeClass: 'border-orange-300 bg-orange-50 text-orange-700' },
+            { value: 'medium', label: '보통', activeClass: 'border-amber-300 bg-amber-50 text-amber-700' },
+            { value: 'low', label: '낮음', activeClass: 'border-blue-300 bg-blue-50 text-blue-700' },
+            { value: 'info', label: '정보', activeClass: 'border-slate-300 bg-slate-50 text-slate-600' },
+        ],
+
+        get filteredAlerts() {
+            return this.alerts.filter(a => this.activeSeverities.includes(a.severity));
+        },
+
+        toggleSeverity(sev) {
+            const idx = this.activeSeverities.indexOf(sev);
+            if (idx >= 0) { if (this.activeSeverities.length > 1) this.activeSeverities.splice(idx, 1); }
+            else this.activeSeverities.push(sev);
+        },
+
+        severityDotColor(s) {
+            return { critical:'bg-red-500', high:'bg-orange-500', medium:'bg-amber-500', low:'bg-blue-500', info:'bg-slate-400' }[s] || 'bg-slate-400';
+        },
+        severityBadgeClass(s) {
+            return { critical:'bg-red-100 text-red-700', high:'bg-orange-100 text-orange-700', medium:'bg-amber-100 text-amber-700', low:'bg-blue-100 text-blue-700', info:'bg-slate-100 text-slate-500' }[s] || 'bg-slate-100 text-slate-500';
+        },
+
+        /* ── Chart ── */
+        selectedPeriod: '30d',
+        periods: [
+            { value: '7d', label: '7일' },
+            { value: '14d', label: '14일' },
+            { value: '30d', label: '30일' },
+            { value: '90d', label: '90일' },
+        ],
+        chartInstance: null,
+
+        /* ── UI ── */
+        lastUpdated: '',
+        refreshing: false,
+
+        /* ── Methods ── */
+
+        init() {
+            this.lastUpdated = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            this.$nextTick(() => {
+                this.buildChart();
+                lucide.createIcons();
+            });
+        },
+
+        refreshAll() {
+            this.refreshing = true;
+            setTimeout(() => {
+                this.lastUpdated = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                this.refreshing = false;
+            }, 800);
+        },
+
+        changePeriod(p) {
+            this.selectedPeriod = p;
+            this.buildChart();
+        },
+
+        buildChart() {
+            const days = { '7d':7, '14d':14, '30d':30, '90d':90 }[this.selectedPeriod] || 30;
+            const labels = [];
+            const fds = [], aml = [], dlp = [], access = [];
+            const now = new Date();
+
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date(now); d.setDate(d.getDate() - i);
+                const mm = String(d.getMonth()+1).padStart(2,'0');
+                const dd = String(d.getDate()).padStart(2,'0');
+                labels.push(mm + '/' + dd);
+
+                const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                const base = isWeekend ? 0.6 : 1;
+                const trend = 1 + (days - i) / days * 0.3;
+                fds.push(Math.round((15 + Math.random()*25) * base * trend));
+                aml.push(Math.round((5 + Math.random()*12) * base * trend));
+                dlp.push(Math.round((2 + Math.random()*8) * base));
+                access.push(Math.round((3 + Math.random()*10) * base));
+            }
+
+            if (this.chartInstance) this.chartInstance.destroy();
+            const ctx = document.getElementById('trendChart')?.getContext('2d');
+            if (!ctx) return;
+
+            this.chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: '이상거래 (FDS)', data: fds, borderColor: '#DC2626', backgroundColor: 'rgba(220,38,38,0.08)', tension: 0.3, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, fill: true },
+                        { label: '자금세탁 (AML)', data: aml, borderColor: '#EA580C', backgroundColor: 'rgba(234,88,12,0.06)', tension: 0.3, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, fill: true },
+                        { label: '정보 유출 (DLP)', data: dlp, borderColor: '#7C3AED', backgroundColor: 'rgba(124,58,237,0.06)', tension: 0.3, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, fill: true },
+                        { label: '접근 이상', data: access, borderColor: '#2563EB', backgroundColor: 'rgba(37,99,235,0.06)', tension: 0.3, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, fill: true },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 11, family: 'Pretendard Variable, Inter, sans-serif' } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { size: 12, family: 'Pretendard Variable, Inter, sans-serif' },
+                            bodyFont: { size: 11, family: 'Pretendard Variable, Inter, sans-serif' },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y}건`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10, family: 'Pretendard Variable, Inter, sans-serif' }, color: '#94a3b8', maxRotation: 0, maxTicksLimit: days <= 14 ? days : 10 }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { size: 10, family: 'Pretendard Variable, Inter, sans-serif' }, color: '#94a3b8', callback: (v) => v + '건' }
+                        }
+                    }
+                }
+            });
+        }
+    };
+}
+</script>
+</body>
+</html>

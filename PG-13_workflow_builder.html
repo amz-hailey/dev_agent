@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenOS — 워크플로우 빌더</title>
+    <link rel="stylesheet" href="cdn/tailwind.css">
+    <script defer src="cdn/alpine.js"></script>
+    <script src="cdn/lucide.js"></script>
+                    
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        .canvas-grid { background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px); background-size: 24px 24px; }
+        .palette-node { cursor: grab; }
+        .palette-node:active { cursor: grabbing; }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        .slide-down { animation: slideDown 0.2s ease-out; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+
+<div x-data="workflowBuilder()" x-init="init()" class="flex h-full">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">GenOS</span>
+        </div>
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> 메인 대시보드</a>
+            <a href="PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링</a>
+            <a href="PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bell" class="w-4 h-4"></i> 알림 관리
+                <span class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span></a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="boxes" class="w-4 h-4"></i> 템플릿 라이브러리</a>
+            <a href="PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="rocket" class="w-4 h-4"></i> 배포 위저드</a>
+            <a href="PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="plug" class="w-4 h-4"></i> 커넥터 허브</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">자동화</p>
+            <a href="PG-13_workflow_builder.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5">
+                <i data-lucide="git-branch" class="w-4 h-4"></i> 워크플로우 빌더</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="file-text" class="w-4 h-4"></i> 컴플라이언스 리포트</a>
+            <a href="PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="scroll-text" class="w-4 h-4"></i> 감사 로그</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="users" class="w-4 h-4"></i> 사용자/권한</a>
+            <a href="PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="server" class="w-4 h-4"></i> 시스템/DR</a>
+            <a href="PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="settings" class="w-4 h-4"></i> 설정</a>
+
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">고도화</p>
+            <a href="PG-15_ai_pipeline.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="brain-circuit" class="w-4 h-4"></i> AI 재학습 파이프라인</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">내부 관리</p>
+            <a href="PG-14_customer_health.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="heart-pulse" class="w-4 h-4"></i> 고객 Health</a>
+            <a href="PG-16_benchmarking.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i> 벤치마킹</a>
+
+        </nav>
+        <div class="border-t border-slate-100 p-3">
+            <div class="flex items-center gap-2.5 px-2 py-1.5">
+                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">김</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-900 truncate">김부장</p>
+                    <p class="text-[11px] text-slate-400 truncate">IT 보안팀</p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN ==================== -->
+    <main class="flex-1 flex flex-col min-w-0 h-screen">
+
+        <!-- Toolbar -->
+        <div class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <h1 class="text-sm font-bold text-slate-900">이상거래 탐지 자동화</h1>
+                    <button class="text-slate-400 hover:text-slate-600"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                </div>
+                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">v2.1 배포됨</span>
+                <span class="text-[11px] text-slate-400">마지막 저장: 14:32</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors" title="실행 취소">
+                    <i data-lucide="undo-2" class="w-4 h-4"></i></button>
+                <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors" title="다시 실행">
+                    <i data-lucide="redo-2" class="w-4 h-4"></i></button>
+                <div class="w-px h-5 bg-slate-200 mx-1"></div>
+                <button @click="zoom = Math.max(50, zoom-10)" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-colors">
+                    <i data-lucide="minus" class="w-3.5 h-3.5"></i></button>
+                <span class="text-xs text-slate-500 w-10 text-center" x-text="zoom+'%'"></span>
+                <button @click="zoom = Math.min(150, zoom+10)" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-colors">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i></button>
+                <div class="w-px h-5 bg-slate-200 mx-1"></div>
+                <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors" title="자동 정렬">
+                    <i data-lucide="align-horizontal-distribute-center" class="w-4 h-4"></i></button>
+                <div class="w-px h-5 bg-slate-200 mx-1"></div>
+                <button class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5">
+                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 검증</button>
+                <button class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5">
+                    <i data-lucide="play" class="w-3.5 h-3.5"></i> 테스트</button>
+                <button class="h-8 px-3 rounded-md bg-slate-900 text-xs font-medium text-white hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5">
+                    <i data-lucide="rocket" class="w-3.5 h-3.5"></i> 배포</button>
+            </div>
+        </div>
+
+        <!-- Builder Area -->
+        <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex-1 flex min-h-0">
+
+                <!-- ==================== NODE PALETTE ==================== -->
+                <div class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0">
+                    <div class="p-3 border-b border-slate-100">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400"></i>
+                            <input x-model="paletteSearch" type="text" placeholder="노드 검색..."
+                                   class="w-full h-8 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300">
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto scrollbar-thin p-2">
+                        <template x-for="cat in filteredCategories" :key="cat.id">
+                            <div class="mb-1">
+                                <button @click="toggleCategory(cat.id)"
+                                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full" :class="'bg-'+cat.color+'-500'"></span>
+                                        <span x-text="cat.label"></span>
+                                        <span class="text-slate-400 font-normal" x-text="'('+cat.nodes.length+')'"></span>
+                                    </div>
+                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 transition-transform" :class="isCategoryOpen(cat.id) ? '' : '-rotate-90'"></i>
+                                </button>
+                                <div x-show="isCategoryOpen(cat.id)" x-transition.duration.150ms class="mt-0.5 space-y-0.5">
+                                    <template x-for="node in cat.nodes" :key="node.id">
+                                        <div class="palette-node flex items-center gap-2.5 px-2.5 py-2 rounded-md border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-colors group">
+                                            <div class="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0" :class="'bg-'+cat.color+'-50'">
+                                                <i :data-lucide="node.icon" class="w-3.5 h-3.5" :class="'text-'+cat.color+'-600'"></i>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <p class="text-xs font-medium text-slate-700 truncate" x-text="node.label"></p>
+                                                <p class="text-[10px] text-slate-400 truncate" x-text="node.desc"></p>
+                                            </div>
+                                            <i data-lucide="grip-vertical" class="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"></i>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- ==================== CANVAS ==================== -->
+                <div class="flex-1 bg-slate-100 canvas-grid overflow-auto relative">
+                    <div class="relative" style="width: 1480px; height: 440px; min-width: 100%; min-height: 100%;">
+
+                        <!-- SVG Edges -->
+                        <svg class="absolute inset-0 pointer-events-none" width="1480" height="440">
+                            <defs>
+                                <marker id="arr-g" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#22c55e"/></marker>
+                                <marker id="arr-a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#f59e0b"/></marker>
+                            </defs>
+                            <!-- n1→n2 -->
+                            <path d="M210 208 C245 208,245 208,280 208" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arr-g)"/>
+                            <!-- n2→n3 -->
+                            <path d="M450 208 C485 208,485 208,520 208" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arr-g)"/>
+                            <!-- n3→n4 (conditional) -->
+                            <path d="M690 208 C730 178,720 118,760 108" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 3" fill="none" marker-end="url(#arr-a)"/>
+                            <text x="718" y="152" class="text-[10px] fill-amber-600 font-medium">고위험 ≥85</text>
+                            <!-- n3→n5 (conditional) -->
+                            <path d="M690 208 C730 238,720 298,760 308" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 3" fill="none" marker-end="url(#arr-a)"/>
+                            <text x="718" y="278" class="text-[10px] fill-amber-600 font-medium">중위험 &lt;85</text>
+                            <!-- n4→n6 -->
+                            <path d="M930 108 C965 108,965 108,1000 108" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arr-g)"/>
+                            <!-- n5→n7 -->
+                            <path d="M930 308 C965 308,965 308,1000 308" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arr-g)"/>
+                            <!-- n6→n8 -->
+                            <path d="M1170 108 C1210 108,1200 208,1240 208" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arr-g)"/>
+                            <!-- n7→n8 -->
+                            <path d="M1170 308 C1210 308,1200 208,1240 208" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arr-g)"/>
+                        </svg>
+
+                        <!-- Node Cards -->
+                        <!-- N1: 이상거래 탐지 -->
+                        <div class="absolute w-[170px] rounded-lg border-2 bg-white shadow-sm cursor-pointer transition-all hover:shadow"
+                             :class="selectedNode==='n1' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'"
+                             style="left:40px;top:180px" @click="selectNode('n1')">
+                            <div class="flex items-center gap-2.5 px-3 py-2.5">
+                                <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="shield" class="w-4 h-4 text-blue-600"></i></div>
+                                <div class="min-w-0"><p class="text-xs font-semibold text-slate-800 truncate">이상거래 탐지</p>
+                                    <p class="text-[10px] text-slate-400">FDS v2.1</p></div>
+                            </div>
+                            <div class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                        </div>
+
+                        <!-- N2: 위험도 분류 -->
+                        <div class="absolute w-[170px] rounded-lg border-2 bg-white shadow-sm cursor-pointer transition-all hover:shadow"
+                             :class="selectedNode==='n2' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'"
+                             style="left:280px;top:180px" @click="selectNode('n2')">
+                            <div class="flex items-center gap-2.5 px-3 py-2.5">
+                                <div class="w-8 h-8 rounded-md bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-600"></i></div>
+                                <div class="min-w-0"><p class="text-xs font-semibold text-slate-800 truncate">위험도 분류</p>
+                                    <p class="text-[10px] text-slate-400">3등급 분류</p></div>
+                            </div>
+                            <div class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                            <div class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                        </div>
+
+                        <!-- N3: 임계값 분기 -->
+                        <div class="absolute w-[170px] rounded-lg border-2 bg-white shadow-sm cursor-pointer transition-all hover:shadow"
+                             :class="selectedNode==='n3' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'"
+                             style="left:520px;top:180px" @click="selectNode('n3')">
+                            <div class="flex items-center gap-2.5 px-3 py-2.5">
+                                <div class="w-8 h-8 rounded-md bg-amber-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="git-branch" class="w-4 h-4 text-amber-600"></i></div>
+                                <div class="min-w-0"><p class="text-xs font-semibold text-slate-800 truncate">임계값 분기</p>
+                                    <p class="text-[10px] text-slate-400">risk_score ≥ 85</p></div>
+                            </div>
+                            <div class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                            <div class="absolute -right-1.5 top-1/3 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-amber-400"></div>
+                            <div class="absolute -right-1.5 top-2/3 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-amber-400"></div>
+                        </div>
+
+                        <!-- N4: 자동 차단 -->
+                        <div class="absolute w-[170px] rounded-lg border-2 bg-white shadow-sm cursor-pointer transition-all hover:shadow"
+                             :class="selectedNode==='n4' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'"
+                             style="left:760px;top:80px" @click="selectNode('n4')">
+                            <div class="flex items-center gap-2.5 px-3 py-2.5">
+                                <div class="w-8 h-8 rounded-md bg-red-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="ban" class="w-4 h-4 text-red-600"></i></div>
+                                <div class="min-w-0"><p class="text-xs font-semibold text-slate-800 truncate">자동 차단</p>
+                                    <p class="text-[10px] text-slate-400">임계값 90</p></div>
+                            </div>
+                            <div class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-amber-400"></div>
+                            <div class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                        </div>
+
+                        <!-- N5: 수동 검토 대기 -->
+                        <div class="absolute w-[170px] rounded-lg border-2 bg-white shadow-sm cursor-pointer transition-all hover:shadow"
+                             :class="selectedNode==='n5' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'"
+                             style="left:760px;top:280px" @click="selectNode('n5')">
+                            <div class="flex items-center gap-2.5 px-3 py-2.5">
+                                <div class="w-8 h-8 rounded-md bg-red-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="eye" class="w-4 h-4 text-red-600"></i></div>
+                                <div class="min-w-0"><p class="text-xs font-semibold text-slate-800 truncate">수동 검토 대기</p>
+                                    <p class="text-[10px] text-slate-400">검토 대기열</p></div>
+                            </div>
+                            <div class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-amber-400"></div>
+                            <div class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                        </div>
+
+                        <!-- N6: Slack 알림 -->
+                        <div class="absolute w-[170px] rounded-lg border-2 bg-white shadow-sm cursor-pointer transition-all hover:shadow"
+                             :class="selectedNode==='n6' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'"
+                             style="left:1000px;top:80px" @click="selectNode('n6')">
+                            <div class="flex items-center gap-2.5 px-3 py-2.5">
+                                <div class="w-8 h-8 rounded-md bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="message-square" class="w-4 h-4 text-emerald-600"></i></div>
+                                <div class="min-w-0"><p class="text-xs font-semibold text-slate-800 truncate">Slack 알림</p>
+                                    <p class="text-[10px] text-slate-400">#security-alerts</p></div>
+                            </div>
+                            <div class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                            <div class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                        </div>
+
+                        <!-- N7: 이메일 알림 -->
+                        <div class="absolute w-[170px] rounded-lg border-2 bg-white shadow-sm cursor-pointer transition-all hover:shadow"
+                             :class="selectedNode==='n7' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'"
+                             style="left:1000px;top:280px" @click="selectNode('n7')">
+                            <div class="flex items-center gap-2.5 px-3 py-2.5">
+                                <div class="w-8 h-8 rounded-md bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="mail" class="w-4 h-4 text-emerald-600"></i></div>
+                                <div class="min-w-0"><p class="text-xs font-semibold text-slate-800 truncate">이메일 알림</p>
+                                    <p class="text-[10px] text-slate-400">security@company</p></div>
+                            </div>
+                            <div class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                            <div class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                        </div>
+
+                        <!-- N8: 인시던트 리포트 -->
+                        <div class="absolute w-[170px] rounded-lg border-2 bg-white shadow-sm cursor-pointer transition-all hover:shadow"
+                             :class="selectedNode==='n8' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'"
+                             style="left:1240px;top:180px" @click="selectNode('n8')">
+                            <div class="flex items-center gap-2.5 px-3 py-2.5">
+                                <div class="w-8 h-8 rounded-md bg-violet-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="file-text" class="w-4 h-4 text-violet-600"></i></div>
+                                <div class="min-w-0"><p class="text-xs font-semibold text-slate-800 truncate">인시던트 리포트</p>
+                                    <p class="text-[10px] text-slate-400">자동 생성</p></div>
+                            </div>
+                            <div class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-emerald-400"></div>
+                        </div>
+
+                        <!-- Minimap -->
+                        <div class="absolute bottom-3 right-3 w-[140px] h-[80px] bg-white/90 border border-slate-200 rounded-lg overflow-hidden backdrop-blur-sm shadow-sm">
+                            <svg width="100%" height="100%" viewBox="0 0 1480 440" preserveAspectRatio="xMidYMid meet" class="p-1">
+                                <rect x="40" y="180" width="170" height="56" rx="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="3"/>
+                                <rect x="280" y="180" width="170" height="56" rx="4" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="3"/>
+                                <rect x="520" y="180" width="170" height="56" rx="4" fill="#fef3c7" stroke="#fcd34d" stroke-width="3"/>
+                                <rect x="760" y="80" width="170" height="56" rx="4" fill="#fee2e2" stroke="#fca5a5" stroke-width="3"/>
+                                <rect x="760" y="280" width="170" height="56" rx="4" fill="#fee2e2" stroke="#fca5a5" stroke-width="3"/>
+                                <rect x="1000" y="80" width="170" height="56" rx="4" fill="#d1fae5" stroke="#6ee7b7" stroke-width="3"/>
+                                <rect x="1000" y="280" width="170" height="56" rx="4" fill="#d1fae5" stroke="#6ee7b7" stroke-width="3"/>
+                                <rect x="1240" y="180" width="170" height="56" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="3"/>
+                                <path d="M210 208 L280 208" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                                <path d="M450 208 L520 208" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                                <path d="M690 208 Q725 108 760 108" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                                <path d="M690 208 Q725 308 760 308" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                                <path d="M930 108 L1000 108" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                                <path d="M930 308 L1000 308" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                                <path d="M1170 108 Q1205 208 1240 208" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                                <path d="M1170 308 Q1205 208 1240 208" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== PROPERTY PANEL ==================== -->
+                <div class="w-[300px] bg-white border-l border-slate-200 flex flex-col flex-shrink-0">
+                    <!-- Panel Header -->
+                    <div class="h-11 flex items-center justify-between px-4 border-b border-slate-100">
+                        <span class="text-xs font-semibold text-slate-700">노드 속성</span>
+                        <div class="flex items-center gap-1">
+                            <button class="p-1 text-slate-400 hover:text-slate-600 rounded" title="복제"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+                            <button class="p-1 text-red-400 hover:text-red-600 rounded" title="삭제"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Panel Content -->
+                    <div class="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-4" x-show="selectedNode">
+
+                        <!-- Basic Info (shared) -->
+                        <div>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">기본 정보</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">노드 이름</label>
+                                    <input type="text" :value="nodeInfo[selectedNode]?.label"
+                                           class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">설명</label>
+                                    <textarea :value="nodeInfo[selectedNode]?.desc" rows="2"
+                                              class="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300 resize-none"></textarea>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-slate-500">활성화</label>
+                                    <button class="w-9 h-5 rounded-full bg-emerald-500 relative transition-colors">
+                                        <span class="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-100"></div>
+
+                        <!-- Detection Settings -->
+                        <div x-show="nodeInfo[selectedNode]?.type==='detection'" x-transition>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">탐지 설정</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">탐지 모델</label>
+                                    <select class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                        <option selected>FDS v2.1</option><option>AML v1.3</option><option>내부유출 v1.0</option><option>접근권한 v1.0</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="text-xs text-slate-500">탐지 민감도</label>
+                                        <span class="text-xs font-medium text-slate-700">75</span>
+                                    </div>
+                                    <input type="range" min="1" max="100" value="75" class="w-full h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">신뢰도 임계값 (%)</label>
+                                    <input type="number" value="85" min="50" max="99"
+                                           class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Classification Settings -->
+                        <div x-show="nodeInfo[selectedNode]?.type==='classification'" x-transition>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">분류 설정</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1.5 block">위험 등급</label>
+                                    <div class="space-y-1.5">
+                                        <label class="flex items-center gap-2 text-xs text-slate-700">
+                                            <input type="checkbox" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-300"> 고위험</label>
+                                        <label class="flex items-center gap-2 text-xs text-slate-700">
+                                            <input type="checkbox" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-300"> 중위험</label>
+                                        <label class="flex items-center gap-2 text-xs text-slate-700">
+                                            <input type="checkbox" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-300"> 저위험</label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">고위험 임계값 (점수)</label>
+                                    <input type="number" value="85" min="0" max="100"
+                                           class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">중위험 임계값 (점수)</label>
+                                    <input type="number" value="60" min="0" max="100"
+                                           class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Condition Settings -->
+                        <div x-show="nodeInfo[selectedNode]?.type==='condition'" x-transition>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">조건 분기 설정</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">조건 필드</label>
+                                    <select class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                        <option selected>risk_score</option><option>amount</option><option>frequency</option><option>time_of_day</option><option>geo_location</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">연산자</label>
+                                    <select class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                        <option>></option><option selected>>=</option><option>&lt;</option><option>&lt;=</option><option>==</option><option>!=</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">조건 값</label>
+                                    <input type="text" value="85"
+                                           class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Response Settings (auto_block) -->
+                        <div x-show="nodeInfo[selectedNode]?.type==='response'" x-transition>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">대응 설정</p>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-slate-500">자동 차단 활성화</label>
+                                    <button class="w-9 h-5 rounded-full relative transition-colors"
+                                            :class="selectedNode==='n4' ? 'bg-emerald-500' : 'bg-slate-300'">
+                                        <span class="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+                                              :class="selectedNode==='n4' ? 'right-0.5' : 'left-0.5'"></span>
+                                    </button>
+                                </div>
+                                <div x-show="selectedNode==='n4'">
+                                    <label class="text-xs text-slate-500 mb-1 block">차단 임계값 (위험 점수)</label>
+                                    <input type="number" value="90" min="80" max="100"
+                                           class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                </div>
+                                <div x-show="selectedNode==='n4'">
+                                    <label class="text-xs text-slate-500 mb-1 block">차단 지속 시간 (분)</label>
+                                    <input type="number" value="30" min="1" max="1440"
+                                           class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                </div>
+                                <div class="flex items-center justify-between" x-show="selectedNode==='n4'">
+                                    <label class="text-xs text-slate-500">수동 해제 필요</label>
+                                    <button class="w-9 h-5 rounded-full bg-emerald-500 relative"><span class="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow-sm"></span></button>
+                                </div>
+                                <div class="flex items-center justify-between" x-show="selectedNode==='n4'">
+                                    <label class="text-xs text-slate-500">차단 시 알림 발송</label>
+                                    <button class="w-9 h-5 rounded-full bg-emerald-500 relative"><span class="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow-sm"></span></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notification Settings -->
+                        <div x-show="nodeInfo[selectedNode]?.type==='notification'" x-transition>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">알림 설정</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">알림 채널</label>
+                                    <select class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                        <option :selected="selectedNode==='n6'">Slack</option>
+                                        <option :selected="selectedNode==='n7'">Email</option>
+                                        <option>SMS</option><option>Microsoft Teams</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">수신자</label>
+                                    <div class="flex flex-wrap gap-1 p-1.5 bg-slate-50 border border-slate-200 rounded-md min-h-[32px]">
+                                        <span class="inline-flex items-center gap-1 text-[11px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded"
+                                              x-text="selectedNode==='n6' ? '#security-alerts' : 'security@company.com'">
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">메시지 템플릿</label>
+                                    <textarea rows="3" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300 resize-none"
+                                              x-text="selectedNode==='n6' ? '🚨 [고위험] 이상거래 감지\n거래ID: {{tx_id}}\n위험점수: {{risk_score}}' : '[중위험 거래] 수동 검토 필요\n거래ID: {{tx_id}}'"></textarea>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">알림 쿨다운 (분)</label>
+                                    <input type="number" :value="selectedNode==='n6' ? 5 : 10" min="0" max="60"
+                                           class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Report Settings -->
+                        <div x-show="nodeInfo[selectedNode]?.type==='report'" x-transition>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">리포트 설정</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">리포트 형식</label>
+                                    <select class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                        <option selected>인시던트 보고서</option><option>컴플라이언스 로그</option><option>요약 리포트</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-slate-500">자동 발송</label>
+                                    <button class="w-9 h-5 rounded-full bg-emerald-500 relative"><span class="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow-sm"></span></button>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 mb-1 block">보관 기간</label>
+                                    <select class="w-full h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                                        <option>1년</option><option selected>3년</option><option>5년</option><option>영구</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- No selection state -->
+                        <div x-show="!selectedNode" class="flex flex-col items-center justify-center h-full text-center px-6">
+                            <i data-lucide="mouse-pointer-click" class="w-8 h-8 text-slate-300 mb-3"></i>
+                            <p class="text-xs text-slate-400">캔버스에서 노드를 선택하면<br>여기에 속성이 표시됩니다.</p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="border-t border-slate-100 pt-3 mt-auto">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="h-8 text-xs font-medium text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">초기화</button>
+                                <button class="h-8 text-xs font-medium text-white bg-slate-900 rounded-md hover:bg-slate-800 transition-colors">저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== VERSION HISTORY DRAWER ==================== -->
+            <div class="border-t border-slate-200 bg-white flex-shrink-0">
+                <button @click="showVersions=!showVersions" class="w-full h-9 flex items-center justify-center gap-1.5 text-xs text-slate-500 hover:bg-slate-50 transition-colors">
+                    <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                    <span>버전 이력 (5)</span>
+                    <i data-lucide="chevron-up" class="w-3 h-3 transition-transform" :class="showVersions ? 'rotate-180' : ''"></i>
+                </button>
+                <div x-show="showVersions" x-transition.duration.200ms class="border-t border-slate-100">
+                    <div class="max-h-[200px] overflow-auto px-4 pb-3">
+                        <table class="w-full text-xs">
+                            <thead class="sticky top-0 bg-white">
+                                <tr class="text-left text-slate-400 font-medium border-b border-slate-100">
+                                    <th class="py-2 pr-3 w-16">버전</th>
+                                    <th class="py-2 pr-3 w-36">변경 일시</th>
+                                    <th class="py-2 pr-3 w-16">변경자</th>
+                                    <th class="py-2 pr-3">변경 요약</th>
+                                    <th class="py-2 pr-3 w-20">상태</th>
+                                    <th class="py-2 pr-3 w-14">노드</th>
+                                    <th class="py-2 w-24 text-right">액션</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="v in versions" :key="v.version">
+                                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                                        <td class="py-2 pr-3 font-medium text-slate-700" x-text="v.version"></td>
+                                        <td class="py-2 pr-3 text-slate-500" x-text="v.date"></td>
+                                        <td class="py-2 pr-3 text-slate-600" x-text="v.author"></td>
+                                        <td class="py-2 pr-3 text-slate-600" x-text="v.summary"></td>
+                                        <td class="py-2 pr-3">
+                                            <span class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                                  :class="v.status==='deployed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'"
+                                                  x-text="v.status==='deployed' ? '배포됨' : '아카이브'"></span>
+                                        </td>
+                                        <td class="py-2 pr-3 text-slate-500 text-center" x-text="v.nodes"></td>
+                                        <td class="py-2 text-right">
+                                            <div class="flex items-center justify-end gap-1">
+                                                <button class="p-1 text-slate-400 hover:text-slate-600 rounded" title="상세 보기"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+                                                <button class="p-1 text-slate-400 hover:text-amber-600 rounded" title="롤백" x-show="v.status!=='deployed'"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i></button>
+                                                <button class="p-1 text-slate-400 hover:text-slate-600 rounded" title="다운로드"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('alpine:init', () => { setTimeout(() => lucide.createIcons(), 50); });
+
+function workflowBuilder() {
+    return {
+        selectedNode: 'n2',
+        paletteSearch: '',
+        openCategories: ['detection','classification'],
+        showVersions: false,
+        zoom: 100,
+
+        nodeInfo: {
+            n1: { label: '이상거래 탐지', desc: 'FDS 모델 기반 실시간 이상거래 탐지', type: 'detection' },
+            n2: { label: '위험도 분류', desc: '고위험/중위험/저위험 자동 분류', type: 'classification' },
+            n3: { label: '임계값 분기', desc: '위험 점수 기준 조건 분기', type: 'condition' },
+            n4: { label: '자동 차단', desc: '고위험 거래 자동 차단', type: 'response' },
+            n5: { label: '수동 검토 대기', desc: '담당자 수동 검토 대기열에 추가', type: 'response' },
+            n6: { label: 'Slack 알림', desc: 'Slack 채널 알림 발송', type: 'notification' },
+            n7: { label: '이메일 알림', desc: '이메일 알림 발송', type: 'notification' },
+            n8: { label: '인시던트 리포트', desc: '사건 보고서 자동 생성', type: 'report' }
+        },
+
+        categories: [
+            { id:'detection', label:'탐지', icon:'shield', color:'blue', nodes:[
+                { id:'fds_detect', label:'이상거래 탐지', icon:'shield', desc:'FDS 모델 기반 실시간 탐지' },
+                { id:'aml_detect', label:'AML 모니터링', icon:'search', desc:'자금세탁 의심 거래 탐지' },
+                { id:'insider_detect', label:'내부 유출 탐지', icon:'lock', desc:'내부 정보 유출 패턴 감지' },
+                { id:'access_anomaly', label:'접근 권한 이상', icon:'user-x', desc:'비정상 접근 패턴 탐지' }
+            ]},
+            { id:'classification', label:'분류', icon:'bar-chart-3', color:'indigo', nodes:[
+                { id:'risk_classifier', label:'위험도 분류', icon:'bar-chart-3', desc:'고/중/저위험 자동 분류' },
+                { id:'custom_rule', label:'커스텀 규칙', icon:'settings', desc:'사용자 정의 분류 규칙' }
+            ]},
+            { id:'notification', label:'알림', icon:'bell', color:'emerald', nodes:[
+                { id:'slack_alert', label:'Slack 알림', icon:'message-square', desc:'Slack 채널 알림 발송' },
+                { id:'email_alert', label:'이메일 알림', icon:'mail', desc:'이메일 알림 발송' },
+                { id:'sms_alert', label:'SMS 알림', icon:'phone', desc:'SMS 알림 발송' },
+                { id:'teams_alert', label:'Teams 알림', icon:'message-circle', desc:'MS Teams 알림 발송' }
+            ]},
+            { id:'response', label:'대응', icon:'zap', color:'red', nodes:[
+                { id:'auto_block', label:'자동 차단', icon:'ban', desc:'고위험 거래 자동 차단' },
+                { id:'manual_review', label:'수동 검토 대기', icon:'eye', desc:'담당자 수동 검토 대기열' },
+                { id:'escalation', label:'에스컬레이션', icon:'arrow-up-circle', desc:'상위 담당자 에스컬레이션' }
+            ]},
+            { id:'report', label:'리포트', icon:'file-text', color:'violet', nodes:[
+                { id:'incident_report', label:'인시던트 리포트', icon:'file-text', desc:'사건 보고서 자동 생성' },
+                { id:'compliance_log', label:'컴플라이언스 로그', icon:'clipboard-list', desc:'규제 감사용 로그 기록' }
+            ]},
+            { id:'condition', label:'조건', icon:'git-branch', color:'amber', nodes:[
+                { id:'threshold_gate', label:'임계값 분기', icon:'git-branch', desc:'임계값 기준 조건 분기' },
+                { id:'time_window', label:'시간 윈도우', icon:'clock', desc:'특정 시간대 조건 분기' },
+                { id:'amount_filter', label:'금액 필터', icon:'dollar-sign', desc:'거래 금액 기준 분기' }
+            ]}
+        ],
+
+        versions: [
+            { version:'v2.1', date:'2026-02-06 14:32', author:'김부장', summary:'자동 차단 임계값 90→85 조정', status:'deployed', nodes:8 },
+            { version:'v2.0', date:'2026-02-05 10:15', author:'김부장', summary:'임계값 분기 노드 추가', status:'archived', nodes:8 },
+            { version:'v1.2', date:'2026-01-28 16:45', author:'이과장', summary:'SMS 알림 채널 추가', status:'archived', nodes:7 },
+            { version:'v1.1', date:'2026-01-20 09:30', author:'김부장', summary:'Slack 알림 템플릿 수정', status:'archived', nodes:6 },
+            { version:'v1.0', date:'2026-01-15 11:00', author:'김부장', summary:'초기 워크플로우 생성', status:'archived', nodes:5 }
+        ],
+
+        get filteredCategories() {
+            if (!this.paletteSearch) return this.categories;
+            const q = this.paletteSearch.toLowerCase();
+            return this.categories.map(c => ({
+                ...c,
+                nodes: c.nodes.filter(n => n.label.toLowerCase().includes(q) || n.desc.toLowerCase().includes(q))
+            })).filter(c => c.nodes.length > 0);
+        },
+
+        toggleCategory(id) {
+            const i = this.openCategories.indexOf(id);
+            if (i >= 0) this.openCategories.splice(i, 1); else this.openCategories.push(id);
+        },
+
+        isCategoryOpen(id) { return this.openCategories.includes(id); },
+
+        selectNode(id) {
+            this.selectedNode = this.selectedNode === id ? null : id;
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        init() { this.$nextTick(() => { try { lucide.createIcons(); } catch(e) { console.warn('Lucide init:', e); } }); }
+    };
+}
+</script>
+</body>
+</html>
