@@ -540,9 +540,11 @@ function aiPipeline() {
         },
 
         renderChart() {
-            const ctx = document.getElementById('performanceChart');
+            const el = document.getElementById('performanceChart');
+            if (!el) return;
+            if (this.perfChart) { this.perfChart.destroy(); this.perfChart = null; }
+            const ctx = el.getContext('2d');
             if (!ctx) return;
-            if (this.perfChart) this.perfChart.destroy();
 
             const type = this.selectedData?.type;
             if (!type) return;
@@ -563,6 +565,7 @@ function aiPipeline() {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
                         legend: { display: false },

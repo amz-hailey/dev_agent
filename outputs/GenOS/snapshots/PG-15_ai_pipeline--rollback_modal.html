@@ -400,9 +400,11 @@ function aiPipeline() {
         refreshData() { this.lastUpdated = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }); },
 
         renderChart() {
-            const ctx = document.getElementById('performanceChart');
+            const el = document.getElementById('performanceChart');
+            if (!el) return;
+            if (this.perfChart) { this.perfChart.destroy(); this.perfChart = null; }
+            const ctx = el.getContext('2d');
             if (!ctx) return;
-            if (this.perfChart) this.perfChart.destroy();
             const type = this.selectedData?.type; if (!type) return;
             const versions = this.models.filter(m => m.type === type && m.accuracy !== null).slice(-4);
             if (versions.length === 0) return;
@@ -414,7 +416,7 @@ function aiPipeline() {
                     { label: '재현율', data: versions.map(v => v.recall), backgroundColor: '#f59e0b', borderRadius: 4, barPercentage: 0.7, categoryPercentage: 0.8 },
                     { label: 'F1 Score', data: versions.map(v => v.f1 * 100), backgroundColor: '#8b5cf6', borderRadius: 4, barPercentage: 0.7, categoryPercentage: 0.8 }
                 ]},
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
                     plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1e293b', titleFont: { size: 11 }, bodyFont: { size: 11 }, padding: 8, cornerRadius: 6, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + (ctx.dataset.label === 'F1 Score' ? '' : '%') } } },
                     scales: { x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#64748b' } }, y: { min: 85, max: 100, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 }, color: '#94a3b8', callback: v => v + '%' } } }
                 }

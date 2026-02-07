@@ -471,9 +471,11 @@ function customerHealth() {
         },
 
         renderChart() {
-            const ctx = document.getElementById('usageChart');
+            const el = document.getElementById('usageChart');
+            if (!el) return;
+            if (this.usageChart) { this.usageChart.destroy(); this.usageChart = null; }
+            const ctx = el.getContext('2d');
             if (!ctx) return;
-            if (this.usageChart) this.usageChart.destroy();
 
             const labels = Array.from({length:30}, (_,i) => {
                 const d = new Date(2026, 1, i+1);
@@ -498,6 +500,7 @@ function customerHealth() {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
                     interaction: { mode:'index', intersect:false },
                     plugins: { legend:{ display:false }, tooltip:{ backgroundColor:'#1e293b', titleFont:{size:11}, bodyFont:{size:11}, padding:8, cornerRadius:6 } },
                     scales: {
