@@ -383,8 +383,6 @@
 
 <script>
 document.addEventListener('alpine:init',()=>{setTimeout(()=>lucide.createIcons(),50)});
-const _obs=new MutationObserver(()=>lucide.createIcons());
-_obs.observe(document.body,{childList:true,subtree:true});
 
 function wizard(){
     return {

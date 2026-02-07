@@ -182,7 +182,6 @@
 </div>
 <script>
 document.addEventListener('alpine:init',()=>{setTimeout(()=>lucide.createIcons(),50)});
-const _o=new MutationObserver(()=>lucide.createIcons());_o.observe(document.body,{childList:true,subtree:true});
 function connectorHub(){
     return {
         showAddModal:true, selectedConn:null,

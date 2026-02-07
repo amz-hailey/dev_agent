@@ -170,7 +170,6 @@
 </div>
 <script>
 document.addEventListener('alpine:init',()=>{setTimeout(()=>lucide.createIcons(),50)});
-const _o=new MutationObserver(()=>lucide.createIcons());_o.observe(document.body,{childList:true,subtree:true});
 function monitoring(){
     return {
         paused:false, sevFilter:'all', heatmapPeriod:'1d', selectedAlert:null,

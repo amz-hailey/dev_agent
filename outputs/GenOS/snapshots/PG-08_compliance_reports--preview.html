@@ -777,8 +777,7 @@ function complianceReports() {
         init() {
             this.selectedReport = this.reportHistory[0];
             this.$nextTick(() => lucide.createIcons());
-            new MutationObserver(() => lucide.createIcons()).observe(document.body, { childList: true, subtree: true });
-        }
+}
     }
 }
 </script>
