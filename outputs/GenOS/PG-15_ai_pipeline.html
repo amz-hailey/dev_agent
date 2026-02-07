@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenOS — AI 재학습 파이프라인</title>
+    <link rel="stylesheet" href="cdn/tailwind.css">
+    <script defer src="cdn/alpine.js"></script>
+    <script src="cdn/lucide.js"></script>
+    <script src="cdn/chart.js"></script>
+
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        .slide-down { animation: slideDown 0.25s ease-out; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+        @keyframes progress-stripe { 0%{background-position:1rem 0} 100%{background-position:0 0} }
+        .progress-stripe {
+            background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+            background-size: 1rem 1rem;
+            animation: progress-stripe 0.5s linear infinite;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+
+<div x-data="aiPipeline()" x-init="init()" class="flex h-full min-h-screen">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">GenOS</span>
+        </div>
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> 메인 대시보드</a>
+            <a href="PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링</a>
+            <a href="PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bell" class="w-4 h-4"></i> 알림 관리
+                <span class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span></a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="boxes" class="w-4 h-4"></i> 템플릿 라이브러리</a>
+            <a href="PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="rocket" class="w-4 h-4"></i> 배포 위저드</a>
+            <a href="PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="plug" class="w-4 h-4"></i> 커넥터 허브</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">자동화</p>
+            <a href="PG-13_workflow_builder.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="git-branch" class="w-4 h-4"></i> 워크플로우 빌더</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="file-text" class="w-4 h-4"></i> 컴플라이언스 리포트</a>
+            <a href="PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="scroll-text" class="w-4 h-4"></i> 감사 로그</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="users" class="w-4 h-4"></i> 사용자/권한</a>
+            <a href="PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="server" class="w-4 h-4"></i> 시스템/DR</a>
+            <a href="PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="settings" class="w-4 h-4"></i> 설정</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">고도화</p>
+            <a href="PG-15_ai_pipeline.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5">
+                <i data-lucide="brain-circuit" class="w-4 h-4"></i> AI 재학습 파이프라인</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">내부 관리</p>
+            <a href="PG-14_customer_health.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="heart-pulse" class="w-4 h-4"></i> 고객 Health</a>
+            <a href="PG-16_benchmarking.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i> 벤치마킹</a>
+        </nav>
+        <div class="border-t border-slate-100 p-3">
+            <div class="flex items-center gap-2.5 px-2 py-1.5">
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">이</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-900 truncate">이PM</p>
+                    <p class="text-[11px] text-slate-400 truncate">AI모델팀</p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN ==================== -->
+    <main class="flex-1 flex flex-col min-w-0">
+
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900">AI 재학습 파이프라인</h1>
+                <p class="text-xs text-slate-400 -mt-0.5">모델 버전 관리 · 학습 상태 · 성능 비교 · 배포 제어</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full pulse-dot"></span>파이프라인 활성
+                </div>
+                <span class="text-xs text-slate-400" x-text="'갱신: ' + lastUpdated"></span>
+                <button @click="refreshData()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                <button class="h-8 px-3 rounded-md bg-slate-900 text-xs font-medium text-white hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> 신규 학습</button>
+            </div>
+        </header>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-5">
+
+            <!-- ==================== MODEL VERSION TABLE ==================== -->
+            <div class="bg-white rounded-xl border border-slate-200">
+                <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-sm font-semibold text-slate-900">모델 버전 관리</h2>
+                        <span class="text-[11px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full" x-text="filteredModels.length + '개 버전'"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <!-- Model Type Filter -->
+                        <div class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                            <template x-for="f in modelTypeFilters" :key="f.value">
+                                <button @click="modelTypeFilter=f.value"
+                                        class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors"
+                                        :class="modelTypeFilter===f.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                                        x-text="f.label"></button>
+                            </template>
+                        </div>
+                        <!-- Status Filter -->
+                        <select x-model="statusFilter" class="h-8 px-2.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                            <option value="전체">상태: 전체</option>
+                            <option value="deployed">배포됨</option>
+                            <option value="ready">배포 대기</option>
+                            <option value="training">학습 중</option>
+                            <option value="evaluating">평가 중</option>
+                            <option value="failed">실패</option>
+                            <option value="deprecated">폐기</option>
+                        </select>
+                        <!-- Search -->
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400"></i>
+                            <input x-model="searchQuery" type="text" placeholder="모델 검색..."
+                                   class="h-8 w-36 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="text-left text-slate-400 font-medium border-b border-slate-100 bg-slate-50/50">
+                                <th class="py-2.5 px-5 w-[140px]">모델명</th>
+                                <th class="py-2.5 px-3 w-[60px]">버전</th>
+                                <th class="py-2.5 px-3 w-[80px]">유형</th>
+                                <th class="py-2.5 px-3 w-[80px]">상태</th>
+                                <th class="py-2.5 px-3 w-[70px] cursor-pointer hover:text-slate-600" @click="sortModels('accuracy')">
+                                    <span class="inline-flex items-center gap-1">정확도 <i data-lucide="arrow-up-down" class="w-3 h-3"></i></span></th>
+                                <th class="py-2.5 px-3 w-[70px]">정밀도</th>
+                                <th class="py-2.5 px-3 w-[70px]">재현율</th>
+                                <th class="py-2.5 px-3 w-[60px]">F1</th>
+                                <th class="py-2.5 px-3 w-[90px]">학습 데이터</th>
+                                <th class="py-2.5 px-3 w-[100px]">학습 완료일</th>
+                                <th class="py-2.5 px-3 w-[80px]">담당자</th>
+                                <th class="py-2.5 px-3 w-[50px]"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="m in filteredModels" :key="m.id">
+                                <tr class="border-b border-slate-50 transition-colors cursor-pointer"
+                                    :class="selectedModel===m.id ? 'bg-blue-50/50' : 'hover:bg-slate-50'"
+                                    @click="selectModel(m.id)">
+                                    <td class="py-2.5 px-5 font-medium text-slate-800">
+                                        <div class="flex items-center gap-2">
+                                            <i :data-lucide="m.type==='FDS' ? 'shield-alert' : 'scan-search'" class="w-4 h-4 text-slate-400"></i>
+                                            <span x-text="m.name"></span>
+                                        </div></td>
+                                    <td class="py-2.5 px-3 font-mono text-slate-500" x-text="m.version"></td>
+                                    <td class="py-2.5 px-3">
+                                        <span class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                              :class="m.type==='FDS' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700'"
+                                              x-text="m.type"></span></td>
+                                    <td class="py-2.5 px-3">
+                                        <span class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-1"
+                                              :class="{
+                                                  'bg-emerald-100 text-emerald-700': m.status==='deployed',
+                                                  'bg-blue-100 text-blue-700': m.status==='ready',
+                                                  'bg-amber-100 text-amber-700': m.status==='training',
+                                                  'bg-violet-100 text-violet-700': m.status==='evaluating',
+                                                  'bg-red-100 text-red-700': m.status==='failed',
+                                                  'bg-slate-100 text-slate-500': m.status==='deprecated'
+                                              }">
+                                            <span class="w-1.5 h-1.5 rounded-full"
+                                                  :class="{
+                                                      'bg-emerald-500': m.status==='deployed',
+                                                      'bg-blue-500': m.status==='ready',
+                                                      'bg-amber-500 pulse-dot': m.status==='training',
+                                                      'bg-violet-500': m.status==='evaluating',
+                                                      'bg-red-500': m.status==='failed',
+                                                      'bg-slate-400': m.status==='deprecated'
+                                                  }"></span>
+                                            <span x-text="m.statusLabel"></span>
+                                        </span></td>
+                                    <td class="py-2.5 px-3 font-mono" :class="m.accuracy >= 95 ? 'text-emerald-600 font-medium' : m.accuracy >= 90 ? 'text-slate-700' : 'text-red-600'" x-text="m.accuracy ? m.accuracy.toFixed(1)+'%' : '—'"></td>
+                                    <td class="py-2.5 px-3 font-mono text-slate-600" x-text="m.precision ? m.precision.toFixed(1)+'%' : '—'"></td>
+                                    <td class="py-2.5 px-3 font-mono text-slate-600" x-text="m.recall ? m.recall.toFixed(1)+'%' : '—'"></td>
+                                    <td class="py-2.5 px-3 font-mono text-slate-600" x-text="m.f1 ? m.f1.toFixed(2) : '—'"></td>
+                                    <td class="py-2.5 px-3 text-slate-500" x-text="m.dataSize"></td>
+                                    <td class="py-2.5 px-3 text-slate-400" x-text="m.trainedAt || '진행 중'"></td>
+                                    <td class="py-2.5 px-3 text-slate-500" x-text="m.owner"></td>
+                                    <td class="py-2.5 px-3">
+                                        <button class="p-1 text-slate-400 hover:text-slate-600 rounded"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ==================== TRAINING STATUS + PERFORMANCE COMPARISON ==================== -->
+            <div x-show="selectedModel" x-transition class="grid grid-cols-5 gap-5 slide-down">
+
+                <!-- Training Status Panel (2 cols) -->
+                <div class="col-span-2 bg-white rounded-xl border border-slate-200 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-semibold text-slate-900">학습 상태</h2>
+                        <span class="text-[11px] px-2 py-0.5 rounded-full inline-flex items-center gap-1"
+                              :class="{
+                                  'bg-emerald-50 text-emerald-600': selectedData?.status==='deployed' || selectedData?.status==='ready',
+                                  'bg-amber-50 text-amber-600': selectedData?.status==='training',
+                                  'bg-violet-50 text-violet-600': selectedData?.status==='evaluating',
+                                  'bg-red-50 text-red-600': selectedData?.status==='failed'
+                              }"
+                              x-text="selectedData?.statusLabel"></span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-5">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[11px] text-slate-500">학습 진행률</span>
+                            <span class="text-xs font-mono font-medium text-slate-700" x-text="selectedData?.progress + '%'"></span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500"
+                                 :class="selectedData?.status==='failed' ? 'bg-red-500' : selectedData?.progress >= 100 ? 'bg-emerald-500' : 'bg-blue-500 progress-stripe'"
+                                 :style="'width:' + selectedData?.progress + '%'"></div>
+                        </div>
+                    </div>
+
+                    <!-- GPU Gauge -->
+                    <div class="mb-5">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[11px] text-slate-500">GPU 사용률</span>
+                            <span class="text-xs font-mono font-medium" :class="selectedData?.gpuUsage > 90 ? 'text-red-600' : 'text-slate-700'" x-text="selectedData?.gpuUsage + '%'"></span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500"
+                                 :class="selectedData?.gpuUsage > 90 ? 'bg-red-500' : selectedData?.gpuUsage > 70 ? 'bg-amber-500' : 'bg-emerald-500'"
+                                 :style="'width:' + selectedData?.gpuUsage + '%'"></div>
+                        </div>
+                    </div>
+
+                    <!-- 9 Metrics Grid -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold text-slate-900" x-text="selectedData?.epochs"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Epoch</p>
+                        </div>
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold text-slate-900" x-text="selectedData?.batchSize"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Batch Size</p>
+                        </div>
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold text-slate-900" x-text="selectedData?.learningRate"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Learning Rate</p>
+                        </div>
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold text-slate-900" x-text="selectedData?.dataSize"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">학습 데이터</p>
+                        </div>
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold text-slate-900" x-text="selectedData?.trainTime || '—'"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">학습 시간</p>
+                        </div>
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold text-slate-900" x-text="selectedData?.gpuType"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">GPU 유형</p>
+                        </div>
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold" :class="selectedData?.valLoss < 0.05 ? 'text-emerald-600' : 'text-slate-900'" x-text="selectedData?.valLoss ?? '—'"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Val Loss</p>
+                        </div>
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold text-slate-900" x-text="selectedData?.paramCount || '—'"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">파라미터 수</p>
+                        </div>
+                        <div class="text-center p-2.5 bg-slate-50 rounded-lg">
+                            <p class="text-lg font-bold text-slate-900" x-text="selectedData?.inferenceMs || '—'"></p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">추론 지연(ms)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Comparison Chart (3 cols) -->
+                <div class="col-span-3 bg-white rounded-xl border border-slate-200 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-sm font-semibold text-slate-900">버전 간 성능 비교</h2>
+                            <p class="text-[11px] text-slate-400 mt-0.5" x-text="selectedData?.type + ' 모델 최근 4개 버전'"></p>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px]">
+                            <span class="inline-flex items-center gap-1"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span> 정확도</span>
+                            <span class="inline-flex items-center gap-1"><span class="w-3 h-3 bg-emerald-500 rounded-sm"></span> 정밀도</span>
+                            <span class="inline-flex items-center gap-1"><span class="w-3 h-3 bg-amber-500 rounded-sm"></span> 재현율</span>
+                            <span class="inline-flex items-center gap-1"><span class="w-3 h-3 bg-violet-500 rounded-sm"></span> F1 Score</span>
+                        </div>
+                    </div>
+                    <div class="h-[280px]">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== DEPLOYMENT CONTROL ==================== -->
+            <div x-show="selectedModel && (selectedData?.status==='ready' || selectedData?.status==='deployed')" x-transition class="bg-white rounded-xl border border-slate-200 p-5 slide-down">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-sm font-semibold text-slate-900">배포 제어</h2>
+                        <p class="text-[11px] text-slate-400 mt-0.5" x-text="selectedData?.name + ' ' + selectedData?.version"></p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <template x-if="selectedData?.status==='deployed'">
+                            <button @click="showRollbackConfirm=true"
+                                    class="h-8 px-3 rounded-md border border-red-200 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors inline-flex items-center gap-1.5">
+                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 롤백</button>
+                        </template>
+                        <template x-if="selectedData?.status==='ready'">
+                            <button @click="showDeployModal=true"
+                                    class="h-8 px-3 rounded-md bg-emerald-600 text-xs font-medium text-white hover:bg-emerald-700 transition-colors inline-flex items-center gap-1.5">
+                                <i data-lucide="rocket" class="w-3.5 h-3.5"></i> 배포 시작</button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Deployment Summary Cards -->
+                <div class="grid grid-cols-4 gap-3">
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <p class="text-[11px] text-slate-400 mb-1">현재 운영 버전</p>
+                        <p class="text-sm font-bold text-slate-900" x-text="currentDeployed?.version || '—'"></p>
+                        <p class="text-[10px] text-slate-500 mt-0.5" x-text="currentDeployed?.name || ''"></p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <p class="text-[11px] text-slate-400 mb-1">배포 전략</p>
+                        <p class="text-sm font-bold text-slate-900" x-text="deployStrategy"></p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">점진적 배포</p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <p class="text-[11px] text-slate-400 mb-1">예상 소요 시간</p>
+                        <p class="text-sm font-bold text-slate-900" x-text="deployStrategy==='Canary' ? '~2시간' : deployStrategy==='Blue-Green' ? '~30분' : '~1시간'"></p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">무중단 전환</p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <p class="text-[11px] text-slate-400 mb-1">영향 고객사</p>
+                        <p class="text-sm font-bold text-slate-900" x-text="selectedData?.type==='FDS' ? '5개사' : '3개사'"></p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">활성 에이전트 기준</p>
+                    </div>
+                </div>
+
+                <!-- Deploy Strategy Selector -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <p class="text-[11px] text-slate-500 mb-2">배포 전략 선택</p>
+                    <div class="grid grid-cols-3 gap-3">
+                        <template x-for="s in strategies" :key="s.id">
+                            <button @click="deployStrategy=s.id"
+                                    class="p-3 rounded-lg border text-left transition-all"
+                                    :class="deployStrategy===s.id ? 'border-blue-300 bg-blue-50 ring-1 ring-blue-200' : 'border-slate-200 hover:border-slate-300'">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i :data-lucide="s.icon" class="w-4 h-4" :class="deployStrategy===s.id ? 'text-blue-600' : 'text-slate-400'"></i>
+                                    <span class="text-xs font-semibold" :class="deployStrategy===s.id ? 'text-blue-900' : 'text-slate-700'" x-text="s.id"></span>
+                                </div>
+                                <p class="text-[10px] text-slate-500" x-text="s.desc"></p>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div x-show="!selectedModel" class="bg-white rounded-xl border border-slate-200 p-12 text-center">
+                <i data-lucide="brain-circuit" class="w-10 h-10 text-slate-300 mx-auto mb-3"></i>
+                <p class="text-sm text-slate-500 mb-1">모델을 선택하면 학습 상태 및 성능 비교가 표시됩니다.</p>
+                <p class="text-xs text-slate-400">위 테이블에서 모델 버전을 클릭하세요.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== DEPLOY MODAL ==================== -->
+    <div x-show="showDeployModal" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showDeployModal=false">
+        <div class="bg-white rounded-xl shadow-xl w-[480px] p-6 slide-down" @click.stop>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900">배포 확인</h3>
+                <button @click="showDeployModal=false" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3 mb-5">
+                <div class="flex justify-between text-xs p-3 bg-slate-50 rounded-lg">
+                    <span class="text-slate-500">모델</span>
+                    <span class="font-medium text-slate-900" x-text="selectedData?.name + ' ' + selectedData?.version"></span>
+                </div>
+                <div class="flex justify-between text-xs p-3 bg-slate-50 rounded-lg">
+                    <span class="text-slate-500">배포 전략</span>
+                    <span class="font-medium text-slate-900" x-text="deployStrategy"></span>
+                </div>
+                <div class="flex justify-between text-xs p-3 bg-slate-50 rounded-lg">
+                    <span class="text-slate-500">대상 환경</span>
+                    <span class="font-medium text-slate-900">Production</span>
+                </div>
+                <div class="flex justify-between text-xs p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <span class="text-amber-700">현재 배포 버전이 교체됩니다</span>
+                    <span class="font-medium text-amber-800" x-text="currentDeployed?.version"></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 justify-end">
+                <button @click="showDeployModal=false" class="h-9 px-4 rounded-md border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">취소</button>
+                <button @click="confirmDeploy()" class="h-9 px-4 rounded-md bg-emerald-600 text-sm font-medium text-white hover:bg-emerald-700 transition-colors inline-flex items-center gap-1.5">
+                    <i data-lucide="rocket" class="w-4 h-4"></i> 배포 실행</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ROLLBACK CONFIRM ==================== -->
+    <div x-show="showRollbackConfirm" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showRollbackConfirm=false">
+        <div class="bg-white rounded-xl shadow-xl w-[420px] p-6 slide-down" @click.stop>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">롤백 확인</h3>
+                    <p class="text-xs text-slate-400">이전 버전으로 롤백합니다</p>
+                </div>
+            </div>
+            <p class="text-sm text-slate-600 mb-5">현재 배포된 <span class="font-medium" x-text="selectedData?.version"></span> 버전을 이전 안정 버전으로 롤백하시겠습니까? 롤백은 즉시 실행됩니다.</p>
+            <div class="flex items-center gap-3 justify-end">
+                <button @click="showRollbackConfirm=false" class="h-9 px-4 rounded-md border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">취소</button>
+                <button @click="confirmRollback()" class="h-9 px-4 rounded-md bg-red-600 text-sm font-medium text-white hover:bg-red-700 transition-colors inline-flex items-center gap-1.5">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i> 롤백 실행</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('alpine:init', () => { setTimeout(() => lucide.createIcons(), 50); });
+
+function aiPipeline() {
+    return {
+        selectedModel: null,
+        searchQuery: '',
+        modelTypeFilter: '전체',
+        statusFilter: '전체',
+        deployStrategy: 'Canary',
+        showDeployModal: false,
+        showRollbackConfirm: false,
+        perfChart: null,
+        lastUpdated: new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }),
+
+        modelTypeFilters: [
+            { value:'전체', label:'전체' },
+            { value:'FDS', label:'FDS' },
+            { value:'AML', label:'AML' }
+        ],
+
+        strategies: [
+            { id:'Blue-Green', icon:'copy', desc:'두 환경을 전환하여 즉시 배포. 빠른 롤백 가능.' },
+            { id:'Canary', icon:'bird', desc:'소량 트래픽(5%)으로 시작, 단계적 확대. 안전성 우선.' },
+            { id:'Rolling', icon:'refresh-cw', desc:'인스턴스를 순차 교체. 리소스 효율적.' }
+        ],
+
+        models: [
+            { id:'m1', name:'FDS-이상거래', version:'v3.2.1', type:'FDS', status:'deployed', statusLabel:'배포됨', accuracy:96.8, precision:95.2, recall:94.5, f1:0.95, dataSize:'2.4M건', trainedAt:'2026-01-28', owner:'김ML', progress:100, gpuUsage:0, epochs:'150', batchSize:'256', learningRate:'0.001', trainTime:'4h 32m', gpuType:'A100', valLoss:0.023, paramCount:'12.5M', inferenceMs:'8.2' },
+            { id:'m2', name:'FDS-이상거래', version:'v3.3.0', type:'FDS', status:'ready', statusLabel:'배포 대기', accuracy:97.5, precision:96.1, recall:95.8, f1:0.96, dataSize:'2.8M건', trainedAt:'2026-02-05', owner:'김ML', progress:100, gpuUsage:0, epochs:'200', batchSize:'256', learningRate:'0.0008', trainTime:'6h 15m', gpuType:'A100', valLoss:0.018, paramCount:'14.2M', inferenceMs:'9.1' },
+            { id:'m3', name:'FDS-이상거래', version:'v3.4.0', type:'FDS', status:'training', statusLabel:'학습 중', accuracy:null, precision:null, recall:null, f1:null, dataSize:'3.1M건', trainedAt:null, owner:'김ML', progress:67, gpuUsage:94, epochs:'85/200', batchSize:'512', learningRate:'0.001', trainTime:null, gpuType:'A100x2', valLoss:0.031, paramCount:'18.7M', inferenceMs:null },
+            { id:'m4', name:'FDS-이상거래', version:'v3.1.0', type:'FDS', status:'deprecated', statusLabel:'폐기', accuracy:93.2, precision:91.5, recall:90.8, f1:0.91, dataSize:'1.8M건', trainedAt:'2025-11-15', owner:'박ML', progress:100, gpuUsage:0, epochs:'120', batchSize:'128', learningRate:'0.001', trainTime:'3h 10m', gpuType:'V100', valLoss:0.042, paramCount:'10.1M', inferenceMs:'7.5' },
+            { id:'m5', name:'AML-자금세탁', version:'v2.1.0', type:'AML', status:'deployed', statusLabel:'배포됨', accuracy:94.1, precision:93.8, recall:91.2, f1:0.93, dataSize:'1.5M건', trainedAt:'2026-01-20', owner:'이ML', progress:100, gpuUsage:0, epochs:'180', batchSize:'128', learningRate:'0.0005', trainTime:'5h 48m', gpuType:'A100', valLoss:0.029, paramCount:'22.3M', inferenceMs:'12.4' },
+            { id:'m6', name:'AML-자금세탁', version:'v2.2.0', type:'AML', status:'evaluating', statusLabel:'평가 중', accuracy:95.3, precision:94.7, recall:93.1, f1:0.94, dataSize:'1.9M건', trainedAt:'2026-02-04', owner:'이ML', progress:100, gpuUsage:15, epochs:'200', batchSize:'128', learningRate:'0.0003', trainTime:'7h 22m', gpuType:'A100', valLoss:0.021, paramCount:'24.8M', inferenceMs:'13.1' },
+            { id:'m7', name:'AML-자금세탁', version:'v2.3.0', type:'AML', status:'training', statusLabel:'학습 중', accuracy:null, precision:null, recall:null, f1:null, dataSize:'2.2M건', trainedAt:null, owner:'이ML', progress:34, gpuUsage:88, epochs:'52/250', batchSize:'256', learningRate:'0.0005', trainTime:null, gpuType:'A100x2', valLoss:0.048, paramCount:'28.1M', inferenceMs:null },
+            { id:'m8', name:'FDS-이상거래', version:'v3.2.0', type:'FDS', status:'failed', statusLabel:'실패', accuracy:null, precision:null, recall:null, f1:null, dataSize:'2.4M건', trainedAt:null, owner:'김ML', progress:42, gpuUsage:0, epochs:'63/200', batchSize:'512', learningRate:'0.002', trainTime:null, gpuType:'A100', valLoss:0.089, paramCount:'15.3M', inferenceMs:null }
+        ],
+
+        get filteredModels() {
+            let list = this.models;
+            if (this.modelTypeFilter !== '전체') list = list.filter(m => m.type === this.modelTypeFilter);
+            if (this.statusFilter !== '전체') list = list.filter(m => m.status === this.statusFilter);
+            if (this.searchQuery) {
+                const q = this.searchQuery.toLowerCase();
+                list = list.filter(m => m.name.toLowerCase().includes(q) || m.version.toLowerCase().includes(q));
+            }
+            return list;
+        },
+
+        get selectedData() {
+            return this.models.find(m => m.id === this.selectedModel);
+        },
+
+        get currentDeployed() {
+            if (!this.selectedData) return null;
+            return this.models.find(m => m.type === this.selectedData.type && m.status === 'deployed');
+        },
+
+        selectModel(id) {
+            this.selectedModel = id;
+            this.$nextTick(() => {
+                lucide.createIcons();
+                this.renderChart();
+            });
+        },
+
+        sortModels(field) {
+            this.models.sort((a, b) => (b[field] || 0) - (a[field] || 0));
+        },
+
+        confirmDeploy() {
+            this.showDeployModal = false;
+            alert('배포가 시작되었습니다. 배포 전략: ' + this.deployStrategy);
+        },
+
+        confirmRollback() {
+            this.showRollbackConfirm = false;
+            alert('롤백이 시작되었습니다.');
+        },
+
+        refreshData() {
+            this.lastUpdated = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' });
+        },
+
+        renderChart() {
+            const ctx = document.getElementById('performanceChart');
+            if (!ctx) return;
+            if (this.perfChart) this.perfChart.destroy();
+
+            const type = this.selectedData?.type;
+            if (!type) return;
+            const versions = this.models.filter(m => m.type === type && m.accuracy !== null).slice(-4);
+            if (versions.length === 0) return;
+
+            this.perfChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: versions.map(v => v.version),
+                    datasets: [
+                        { label: '정확도', data: versions.map(v => v.accuracy), backgroundColor: '#3b82f6', borderRadius: 4, barPercentage: 0.7, categoryPercentage: 0.8 },
+                        { label: '정밀도', data: versions.map(v => v.precision), backgroundColor: '#22c55e', borderRadius: 4, barPercentage: 0.7, categoryPercentage: 0.8 },
+                        { label: '재현율', data: versions.map(v => v.recall), backgroundColor: '#f59e0b', borderRadius: 4, barPercentage: 0.7, categoryPercentage: 0.8 },
+                        { label: 'F1 Score', data: versions.map(v => v.f1 * 100), backgroundColor: '#8b5cf6', borderRadius: 4, barPercentage: 0.7, categoryPercentage: 0.8 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b', titleFont: { size: 11 }, bodyFont: { size: 11 },
+                            padding: 8, cornerRadius: 6,
+                            callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + (ctx.dataset.label === 'F1 Score' ? '' : '%') }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#64748b' } },
+                        y: { min: 85, max: 100, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 }, color: '#94a3b8', callback: v => v + '%' } }
+                    }
+                }
+            });
+        },
+
+        init() {
+            this.$nextTick(() => {
+                try { lucide.createIcons(); } catch(e) { console.warn('Lucide init:', e); }
+            });
+        }
+    };
+}
+</script>
+</body>
+</html>
