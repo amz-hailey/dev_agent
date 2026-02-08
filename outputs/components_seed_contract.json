@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "generated": "2026-02-08",
+    "description": "data-* 속성 태깅 규약 — badge / tab / alert / card",
+    "source": "design_agent/outputs/data_component_registry.json"
+  },
+  "components": {
+    "badge": {
+      "intent": ["info", "success", "warning", "danger", "neutral", "status"],
+      "variant": ["solid", "soft"],
+      "size": ["xs", "sm"],
+      "state_policy": "no-hover-focus",
+      "state": ["default"]
+    },
+    "tab": {
+      "intent": ["nav", "filter"],
+      "variant": ["pill", "segment"],
+      "size": ["sm", "md"],
+      "state_policy": "no-hover-focus",
+      "state": ["default"]
+    },
+    "alert": {
+      "intent": ["info", "success", "warning", "danger"],
+      "variant": ["soft", "outlined"],
+      "size": ["sm", "md"],
+      "state_policy": "no-hover-focus",
+      "state": ["default"]
+    },
+    "card": {
+      "intent": ["container", "action", "summary"],
+      "variant": ["default", "outlined"],
+      "size": ["sm", "md", "lg"],
+      "state_policy": "no-hover-focus",
+      "state": ["default"]
+    }
+  }
+}
