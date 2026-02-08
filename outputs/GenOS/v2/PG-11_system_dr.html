@@ -409,7 +409,7 @@
                                     <td class="px-6 py-3 font-mono text-xs text-slate-600" x-text="fo.event_id"></td>
                                     <td class="px-4 py-3 text-xs text-slate-600" x-text="fo.triggered_at"></td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
+                                        <span data-component="badge" :data-intent="fo.type === 'AUTO' ? 'warning' : fo.type === 'MANUAL' ? 'neutral' : 'info'" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
                                               :class="{
                                                   'bg-amber-50 text-amber-700': fo.type === 'AUTO',
                                                   'bg-slate-100 text-slate-600': fo.type === 'MANUAL',
@@ -436,7 +436,7 @@
                                         </template>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
+                                        <span data-component="badge" :data-intent="fo.data_loss === 'NONE' ? 'success' : fo.data_loss === 'MINIMAL' ? 'warning' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
                                               :class="{
                                                   'bg-emerald-50 text-emerald-700': fo.data_loss === 'NONE',
                                                   'bg-amber-50 text-amber-700': fo.data_loss === 'MINIMAL',
@@ -445,7 +445,7 @@
                                               x-text="fo.data_loss"></span>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
+                                        <span data-component="badge" :data-intent="fo.status === 'COMPLETED' ? 'success' : fo.status === 'FAILED' ? 'danger' : 'warning'" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
                                               :class="{
                                                   'bg-emerald-50 text-emerald-700': fo.status === 'COMPLETED',
                                                   'bg-red-50 text-red-700': fo.status === 'FAILED',
@@ -501,7 +501,7 @@
                                   :class="cell.isToday ? 'bg-slate-900 text-white font-medium' : (cell.isCurrentMonth ? 'text-slate-700' : 'text-slate-300')"
                                   x-text="cell.day"></span>
                             <template x-for="evt in cell.events" :key="evt.id">
-                                <div data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="px-1 py-0.5 rounded-full text-[10px] font-medium truncate mb-0.5 cursor-pointer"
+                                <div data-component="badge" :data-intent="evt.result === 'PASS' ? 'success' : evt.result === 'FAIL' ? 'danger' : evt.result === 'PARTIAL' ? 'warning' : 'info'" data-variant="filled-light" data-size="xs" data-state="default" class="px-1 py-0.5 rounded-full text-[10px] font-medium truncate mb-0.5 cursor-pointer"
                                      :class="{
                                          'bg-emerald-100 text-emerald-800': evt.result === 'PASS',
                                          'bg-red-100 text-red-800': evt.result === 'FAIL',
@@ -542,7 +542,7 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <template x-if="test.result">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
+                                        <span data-component="badge" :data-intent="test.result === 'PASS' ? 'success' : test.result === 'FAIL' ? 'danger' : 'warning'" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
                                               :class="{
                                                   'bg-emerald-50 text-emerald-700': test.result === 'PASS',
                                                   'bg-red-50 text-red-700': test.result === 'FAIL',
@@ -727,7 +727,7 @@
                         <div class="grid grid-cols-3 gap-3">
                             <div data-component="stat" class="p-3 bg-slate-50 rounded-lg text-center">
                                 <p class="text-xs text-slate-500 mb-1">결과</p>
-                                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full"
+                                <span data-component="badge" :data-intent="selectedTest.result === 'PASS' ? 'success' : selectedTest.result === 'FAIL' ? 'danger' : 'warning'" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full"
                                       :class="{
                                           'bg-emerald-50 text-emerald-700': selectedTest.result === 'PASS',
                                           'bg-red-50 text-red-700': selectedTest.result === 'FAIL',
@@ -751,9 +751,9 @@
                             </div>
                         </template>
                         <template x-if="selectedTest.corrective">
-                            <div data-component="alert" data-intent="success" data-variant="banner" data-size="md" data-state="default" role="status" class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                                <p class="text-xs font-medium text-blue-700 mb-1">시정 조치</p>
-                                <p class="text-xs text-blue-600" x-text="selectedTest.corrective"></p>
+                            <div data-component="alert" data-intent="success" data-variant="banner" data-size="md" data-state="default" role="status" class="mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-md">
+                                <p class="text-xs font-medium text-emerald-700 mb-1">시정 조치</p>
+                                <p class="text-xs text-emerald-600" x-text="selectedTest.corrective"></p>
                             </div>
                         </template>
                     </div>

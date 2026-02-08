@@ -104,7 +104,7 @@
                             <div class="flex items-center gap-2">
                                 <span class="w-6 h-6 rounded-full bg-slate-100 text-[11px] font-bold text-slate-500 flex items-center justify-center" x-text="idx+1"></span>
                                 <h3 class="text-sm font-semibold text-slate-900" x-text="rule.name"></h3>
-                                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="rule.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'" x-text="rule.enabled ? '활성' : '비활성'"></span>
+                                <span data-component="badge" :data-intent="rule.enabled ? 'success' : 'neutral'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="rule.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'" x-text="rule.enabled ? '활성' : '비활성'"></span>
                             </div>
                             <button @click="rule.enabled=!rule.enabled" :class="rule.enabled ? 'bg-slate-900' : 'bg-slate-200'" class="w-9 h-5 rounded-full relative transition-colors"><span :class="rule.enabled ? 'translate-x-4' : 'translate-x-0.5'" class="block w-4 h-4 bg-white rounded-full shadow transition-transform"></span></button>
                         </div>
@@ -139,10 +139,10 @@
                                 <tr class="hover:bg-slate-50">
                                     <td class="px-4 py-3 text-xs font-mono text-slate-500" x-text="h.time"></td>
                                     <td class="px-4 py-3"><span data-component="badge" data-intent="info" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.channelBadge" x-text="h.channel"></span></td>
-                                    <td class="px-4 py-3"><span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.sevBadge" x-text="h.severity"></span></td>
+                                    <td class="px-4 py-3"><span data-component="badge" :data-intent="h.severity === '긴급' ? 'danger' : h.severity === '높음' ? 'warning' : h.severity === '보통' ? 'warning' : 'info'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.sevBadge" x-text="h.severity"></span></td>
                                     <td class="px-4 py-3 text-xs text-slate-700 max-w-[300px] truncate" x-text="h.message"></td>
                                     <td class="px-4 py-3 text-xs text-slate-500" x-text="h.recipient"></td>
-                                    <td class="px-4 py-3"><span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.statusBadge" x-text="h.status"></span></td>
+                                    <td class="px-4 py-3"><span data-component="badge" :data-intent="h.status === '전송 완료' ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.statusBadge" x-text="h.status"></span></td>
                                 </tr>
                             </template>
                         </tbody>

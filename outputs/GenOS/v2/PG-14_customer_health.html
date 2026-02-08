@@ -133,7 +133,7 @@
                                 <button @click="industryFilter=f.value"
                                         role="tab"
                                         :aria-selected="industryFilter===f.value"
-                                        :data-state="industryFilter===f.value ? 'active' : 'inactive'"
+                                        :data-state="industryFilter===f.value ? 'selected' : 'default'"
                                         class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors"
                                         :class="industryFilter===f.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                                         x-text="f.label"></button>
@@ -175,7 +175,7 @@
                                     @click="selectCustomer(c.id)">
                                     <td class="py-2.5 px-5 font-medium text-slate-800" x-text="c.name"></td>
                                     <td class="py-2.5 px-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="{'은행':'info','증권':'info','보험':'warning','카드':'danger','저축은행':'neutral'}[c.industry]" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
                                               :class="{'bg-blue-100 text-blue-700': c.industry==='은행', 'bg-indigo-100 text-indigo-700': c.industry==='증권', 'bg-amber-100 text-amber-700': c.industry==='보험', 'bg-rose-100 text-rose-700': c.industry==='카드', 'bg-slate-100 text-slate-600': c.industry==='저축은행'}"
                                               x-text="c.industry"></span></td>
                                     <td class="py-2.5 px-3">
@@ -217,7 +217,7 @@
                          :class="selectedData?.uptime < 99.5 ? 'border-red-200' : ''">
                         <div class="flex items-center justify-between mb-2">
                             <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center"><i data-lucide="activity" class="w-4 h-4 text-blue-600"></i></div>
-                            <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
+                            <span data-component="badge" :data-intent="selectedData?.uptimeTrend > 0 ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
                                   :class="selectedData?.uptimeTrend > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'">
                                 <i :data-lucide="selectedData?.uptimeTrend > 0 ? 'trending-up' : 'trending-down'" class="w-3 h-3"></i>
                                 <span x-text="(selectedData?.uptimeTrend > 0 ? '+' : '') + selectedData?.uptimeTrend + '%'"></span>
@@ -241,7 +241,7 @@
                          :class="selectedData?.falsePositive > 5 ? 'border-red-200' : ''">
                         <div class="flex items-center justify-between mb-2">
                             <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i></div>
-                            <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
+                            <span data-component="badge" :data-intent="selectedData?.fpTrend < 0 ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
                                   :class="selectedData?.fpTrend < 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'">
                                 <i :data-lucide="selectedData?.fpTrend < 0 ? 'trending-down' : 'trending-up'" class="w-3 h-3"></i>
                                 <span x-text="(selectedData?.fpTrend > 0 ? '+' : '') + selectedData?.fpTrend + '%'"></span>
@@ -278,7 +278,7 @@
                                  :class="selectedData?.health >= 90 ? 'bg-emerald-50' : selectedData?.health >= 80 ? 'bg-amber-50' : 'bg-red-50'">
                                 <i data-lucide="heart" class="w-4 h-4"
                                    :class="selectedData?.health >= 90 ? 'text-emerald-600' : selectedData?.health >= 80 ? 'text-amber-600' : 'text-red-600'"></i></div>
-                            <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
+                            <span data-component="badge" :data-intent="selectedData?.healthTrend > 0 ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
                                   :class="selectedData?.healthTrend > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'">
                                 <i :data-lucide="selectedData?.healthTrend > 0 ? 'trending-up' : 'trending-down'" class="w-3 h-3"></i>
                                 <span x-text="(selectedData?.healthTrend > 0 ? '+' : '') + selectedData?.healthTrend"></span>
@@ -311,7 +311,7 @@
                                     <button @click="chartPeriod=p"
                                             role="tab"
                                             :aria-selected="chartPeriod===p"
-                                            :data-state="chartPeriod===p ? 'active' : 'inactive'"
+                                            :data-state="chartPeriod===p ? 'selected' : 'default'"
                                             class="px-2 py-1 text-[11px] font-medium rounded-md transition-colors"
                                             :class="chartPeriod===p ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                                             x-text="p"></button>

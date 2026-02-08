@@ -130,7 +130,7 @@
                                 <button @click="industryFilter=f.value"
                                         role="tab"
                                         :aria-selected="industryFilter===f.value"
-                                        :data-state="industryFilter===f.value ? 'active' : 'inactive'"
+                                        :data-state="industryFilter===f.value ? 'selected' : 'default'"
                                         class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors"
                                         :class="industryFilter===f.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                                         x-text="f.label"></button>
@@ -170,7 +170,7 @@
                                     @click="selectedCompany=c.id">
                                     <td class="py-2.5 px-5 font-medium text-slate-800" x-text="c.alias"></td>
                                     <td class="py-2.5 px-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="{'은행':'info','증권':'info','보험':'warning','카드':'danger'}[c.industry]" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
                                               :class="{'bg-blue-100 text-blue-700': c.industry==='은행', 'bg-indigo-100 text-indigo-700': c.industry==='증권', 'bg-amber-100 text-amber-700': c.industry==='보험', 'bg-rose-100 text-rose-700': c.industry==='카드'}"
                                               x-text="c.industry"></span></td>
                                     <td class="py-2.5 px-3 text-slate-500" x-text="c.scale"></td>
@@ -188,7 +188,7 @@
                                     <td class="py-2.5 px-3 text-slate-600 text-center" x-text="c.agents"></td>
                                     <td class="py-2.5 px-3 text-slate-600" x-text="c.dailyVolume"></td>
                                     <td class="py-2.5 px-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="(c.grade==='A+' || c.grade==='A') ? 'success' : (c.grade==='B+' || c.grade==='B') ? 'info' : (c.grade==='C+' || c.grade==='C') ? 'warning' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
                                               :class="{
                                                   'bg-emerald-100 text-emerald-700': c.grade==='A+' || c.grade==='A',
                                                   'bg-blue-100 text-blue-700': c.grade==='B+' || c.grade==='B',
@@ -219,7 +219,7 @@
                                 <button @click="benchmarkMetric=tab.value; renderBenchmarkChart()"
                                         role="tab"
                                         :aria-selected="benchmarkMetric===tab.value"
-                                        :data-state="benchmarkMetric===tab.value ? 'active' : 'inactive'"
+                                        :data-state="benchmarkMetric===tab.value ? 'selected' : 'default'"
                                         class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors"
                                         :class="benchmarkMetric===tab.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                                         x-text="tab.label"></button>

@@ -174,7 +174,7 @@
                                     <i x-show="!connTesting" data-lucide="plug-zap" class="w-4 h-4"></i>
                                     <span x-text="connTesting ? '테스트 중...' : '연결 테스트'"></span>
                                 </button>
-                                <div x-show="connResult !== null" data-component="alert" data-intent="success" data-variant="banner" data-size="md" data-state="default" role="status" class="mt-3 rounded-md p-3" :class="connResult ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'">
+                                <div x-show="connResult !== null" data-component="alert" :data-intent="connResult ? 'success' : 'danger'" data-variant="banner" data-size="md" data-state="default" role="status" class="mt-3 rounded-md p-3" :class="connResult ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'">
                                     <div class="flex items-center gap-2">
                                         <i :data-lucide="connResult ? 'check-circle-2' : 'x-circle'" class="w-4 h-4" :class="connResult ? 'text-emerald-600' : 'text-red-600'"></i>
                                         <span class="text-sm font-medium" :class="connResult ? 'text-emerald-700' : 'text-red-700'" x-text="connResult ? '연결 성공 — 샘플 10건 조회 확인' : '연결 실패 — 호스트 또는 인증 정보를 확인해주세요'"></span>

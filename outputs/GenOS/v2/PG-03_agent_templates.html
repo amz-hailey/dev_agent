@@ -154,7 +154,7 @@
                                 <div class="flex items-center gap-1.5 mt-1">
                                     <span data-component="badge" data-intent="info" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
                                           :class="categoryBadge(tpl.category)" x-text="tpl.categoryShort"></span>
-                                    <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                    <span data-component="badge" :data-intent="{'사용 가능':'success','베타':'warning','준비 중':'neutral'}[tpl.status] || 'neutral'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
                                           :class="statusBadge(tpl.status)" x-text="tpl.status"></span>
                                 </div>
                             </div>

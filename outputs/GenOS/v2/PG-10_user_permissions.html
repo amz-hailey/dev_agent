@@ -80,11 +80,11 @@
 
             <!-- TAB -->
             <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="flex gap-1 bg-slate-100 rounded-lg p-1 w-fit">
-                <button @click="activeTab = 'users'" role="tab" :aria-selected="activeTab === 'users'" :data-state="activeTab === 'users' ? 'active' : 'inactive'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                <button @click="activeTab = 'users'" role="tab" :aria-selected="activeTab === 'users'" :data-state="activeTab === 'users' ? 'selected' : 'default'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
                     :class="activeTab === 'users' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'">사용자 목록</button>
-                <button @click="activeTab = 'roles'" role="tab" :aria-selected="activeTab === 'roles'" :data-state="activeTab === 'roles' ? 'active' : 'inactive'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                <button @click="activeTab = 'roles'" role="tab" :aria-selected="activeTab === 'roles'" :data-state="activeTab === 'roles' ? 'selected' : 'default'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
                     :class="activeTab === 'roles' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'">역할 관리</button>
-                <button @click="activeTab = 'matrix'" role="tab" :aria-selected="activeTab === 'matrix'" :data-state="activeTab === 'matrix' ? 'active' : 'inactive'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                <button @click="activeTab = 'matrix'" role="tab" :aria-selected="activeTab === 'matrix'" :data-state="activeTab === 'matrix' ? 'selected' : 'default'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
                     :class="activeTab === 'matrix' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'">권한 매트릭스</button>
             </div>
 
@@ -145,12 +145,12 @@
                                         <span data-component="badge" data-intent="info" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-violet-50 text-violet-700" x-text="user.role"></span>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="user.mfa_enabled ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full"
                                             :class="user.mfa_enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
                                             x-text="user.mfa_enabled ? 'ON' : 'OFF'"></span>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="user.status === 'ACTIVE' ? 'success' : user.status === 'INACTIVE' ? 'neutral' : user.status === 'LOCKED' ? 'danger' : 'warning'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
                                             :class="{
                                                 'bg-emerald-50 text-emerald-700': user.status === 'ACTIVE',
                                                 'bg-slate-100 text-slate-500': user.status === 'INACTIVE',
@@ -204,7 +204,7 @@
                                     <td class="px-4 py-3 text-sm text-slate-700 font-medium" x-text="role.user_count"></td>
                                     <td class="px-4 py-3 text-sm text-slate-600" x-text="role.permission_count"></td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="role.is_system ? 'neutral' : 'info'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
                                             :class="role.is_system ? 'bg-slate-100 text-slate-500' : 'bg-blue-50 text-blue-700'"
                                             x-text="role.is_system ? '시스템' : '커스텀'"></span>
                                     </td>
@@ -240,12 +240,12 @@
                         </select>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div x-show="matrixChanged" data-component="alert" data-intent="warning" data-variant="banner" data-size="md" data-state="default" role="status" class="text-xs text-amber-600 font-medium flex items-center gap-1">
+                        <div x-show="matrixChanged" data-component="alert" data-intent="warning" data-variant="banner" data-size="md" data-state="default" role="status" class="text-xs text-amber-600 font-medium flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-1">
                             <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> 저장되지 않은 변경 사항
                         </div>
                         <button x-show="matrixChanged" @click="matrixChanged = false" class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50">취소</button>
                         <button x-show="matrixChanged" @click="matrixChanged = false; matrixSaved = true; setTimeout(() => matrixSaved = false, 2000)" class="h-8 px-3 rounded-md bg-slate-900 text-xs font-medium text-white hover:bg-slate-800">변경 저장</button>
-                        <span x-show="matrixSaved" data-component="badge" data-intent="success" data-variant="filled-light" data-size="sm" data-state="default" class="text-xs text-emerald-600 font-medium flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 저장됨</span>
+                        <span x-show="matrixSaved" data-component="badge" data-intent="success" data-variant="filled-light" data-size="sm" data-state="default" class="text-xs text-emerald-600 font-medium flex items-center gap-1 rounded-full"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 저장됨</span>
                     </div>
                 </div>
                 <div class="bg-white border border-slate-200 rounded-lg overflow-x-auto">

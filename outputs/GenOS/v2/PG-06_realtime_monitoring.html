@@ -55,7 +55,7 @@
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
             <div><h1 class="text-lg font-bold text-slate-900">실시간 모니터링</h1><p class="text-xs text-slate-400 -mt-0.5">이상 탐지 스트리밍 모니터</p></div>
             <div class="flex items-center gap-3">
-                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="sm" data-state="default" class="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full" :class="paused ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'">
+                <span data-component="badge" :data-intent="paused ? 'warning' : 'success'" data-variant="filled-light" data-size="sm" data-state="default" class="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full" :class="paused ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'">
                     <span class="w-1.5 h-1.5 rounded-full" :class="paused ? 'bg-amber-500' : 'bg-emerald-500 pulse-dot'"></span>
                     <span x-text="paused ? '일시 중지' : '실시간'"></span>
                 </span>
@@ -85,8 +85,8 @@
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center justify-between gap-2 mb-1">
                                             <div class="flex items-center gap-2">
-                                                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="sevBadge(a.severity)" x-text="a.severityLabel"></span>
-                                                <span data-component="badge" data-intent="neutral" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] text-slate-400 font-mono" x-text="a.type"></span>
+                                                <span data-component="badge" :data-intent="a.severity === 'critical' ? 'danger' : a.severity === 'high' ? 'warning' : a.severity === 'medium' ? 'warning' : 'info'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="sevBadge(a.severity)" x-text="a.severityLabel"></span>
+                                                <span data-component="badge" data-intent="neutral" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] text-slate-400 font-mono rounded-full" x-text="a.type"></span>
                                             </div>
                                             <span class="text-[11px] text-slate-400 font-mono" x-text="a.time"></span>
                                         </div>

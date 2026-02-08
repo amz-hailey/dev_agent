@@ -590,7 +590,7 @@
                                         <td class="py-2 pr-3 text-slate-600" x-text="v.author"></td>
                                         <td class="py-2 pr-3 text-slate-600" x-text="v.summary"></td>
                                         <td class="py-2 pr-3">
-                                            <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                            <span data-component="badge" :data-intent="v.status==='deployed' ? 'success' : 'neutral'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
                                                   :class="v.status==='deployed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'"
                                                   x-text="v.status==='deployed' ? '배포됨' : '아카이브'"></span>
                                         </td>

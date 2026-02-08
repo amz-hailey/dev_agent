@@ -150,7 +150,7 @@
                                 <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="tmpl.iconBg">
                                     <i :data-lucide="tmpl.icon" class="w-5 h-5" :class="tmpl.iconColor"></i>
                                 </div>
-                                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                <span data-component="badge" :data-intent="tmpl.schedule_status === '설정됨' ? 'success' : 'neutral'" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
                                     :class="tmpl.schedule_status === '설정됨' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'"
                                     x-text="tmpl.schedule_status"></span>
                             </div>
@@ -320,12 +320,12 @@
                                     <td class="px-4 py-3 text-sm font-medium text-slate-900" x-text="report.template_name"></td>
                                     <td class="px-4 py-3 text-sm text-slate-600" x-text="report.report_period"></td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="report.format === 'PDF' ? 'danger' : 'success'" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
                                             :class="report.format === 'PDF' ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'"
                                             x-text="report.format"></span>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="report.status === '완료' ? 'success' : report.status === '생성중' ? 'info' : report.status === '실패' ? 'danger' : 'warning'" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
                                             :class="{
                                                 'bg-emerald-50 text-emerald-700': report.status === '완료',
                                                 'bg-blue-50 text-blue-700': report.status === '생성중',
@@ -348,7 +348,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm text-slate-600" x-text="report.file_size"></td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] px-2 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="report.schedule_type === '자동(스케줄)' ? 'info' : 'neutral'" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] px-2 py-0.5 rounded-full"
                                             :class="report.schedule_type === '자동(스케줄)' ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'"
                                             x-text="report.schedule_type"></span>
                                     </td>
@@ -502,7 +502,7 @@
                                         <td class="px-4 py-2.5 text-xs text-slate-400" x-text="idx + 1"></td>
                                         <td class="px-4 py-2.5 text-sm text-slate-900" x-text="item.name"></td>
                                         <td class="px-4 py-2.5">
-                                            <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                            <span data-component="badge" :data-intent="item.pass ? 'success' : 'danger'" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] font-medium px-2 py-0.5 rounded-full"
                                                 :class="item.pass ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'"
                                                 x-text="item.pass ? '준수' : '미준수'"></span>
                                         </td>

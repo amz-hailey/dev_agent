@@ -167,7 +167,7 @@
                                     </td>
                                     <td class="px-3 py-2 text-xs text-slate-600 truncate max-w-[200px]" x-text="log.target_resource"></td>
                                     <td class="px-3 py-2">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="log.severity === 'CRITICAL' ? 'danger' : log.severity === 'HIGH' ? 'warning' : log.severity === 'MEDIUM' ? 'warning' : log.severity === 'LOW' ? 'neutral' : 'info'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                                             :class="{
                                                 'bg-red-100 text-red-700': log.severity === 'CRITICAL',
                                                 'bg-orange-100 text-orange-700': log.severity === 'HIGH',
@@ -177,7 +177,7 @@
                                             }" x-text="log.severity"></span>
                                     </td>
                                     <td class="px-3 py-2">
-                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                                        <span data-component="badge" :data-intent="log.result === 'SUCCESS' ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                                             :class="{
                                                 'bg-emerald-100 text-emerald-700': log.result === 'SUCCESS',
                                                 'bg-red-100 text-red-700': log.result === 'FAILURE'
@@ -222,7 +222,7 @@
                                 <div class="flex justify-between"><span class="text-xs text-slate-500">리소스 ID</span><span class="text-xs font-mono text-slate-600" x-text="selectedLog?.resource_id"></span></div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-xs text-slate-500">심각도</span>
-                                    <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                                    <span data-component="badge" :data-intent="selectedLog?.severity === 'CRITICAL' ? 'danger' : selectedLog?.severity === 'HIGH' ? 'warning' : selectedLog?.severity === 'MEDIUM' ? 'warning' : selectedLog?.severity === 'LOW' ? 'neutral' : 'info'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                                         :class="{
                                             'bg-red-100 text-red-700': selectedLog?.severity === 'CRITICAL',
                                             'bg-orange-100 text-orange-700': selectedLog?.severity === 'HIGH',
@@ -233,7 +233,7 @@
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-xs text-slate-500">결과</span>
-                                    <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                                    <span data-component="badge" :data-intent="selectedLog?.result === 'SUCCESS' ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                                         :class="{ 'bg-emerald-100 text-emerald-700': selectedLog?.result === 'SUCCESS', 'bg-red-100 text-red-700': selectedLog?.result === 'FAILURE' }"
                                         x-text="selectedLog?.result"></span>
                                 </div>
