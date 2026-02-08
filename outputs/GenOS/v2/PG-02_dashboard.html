@@ -47,7 +47,7 @@
             </a>
             <a href="../PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
                 <i data-lucide="bell" class="w-4 h-4"></i> 알림 관리
-                <span data-component="badge" data-intent="danger" data-variant="soft" data-size="xs" data-state="default" class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span>
+                <span data-component="badge" data-intent="danger" data-variant="filled-light" data-size="xs" data-state="default" class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span>
             </a>
 
             <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
@@ -122,7 +122,7 @@
             </div>
             <div class="flex items-center gap-3">
                 <!-- Live indicator -->
-                <div data-component="badge" data-intent="success" data-variant="soft" data-size="sm" data-state="default" class="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                <div data-component="badge" data-intent="success" data-variant="filled-light" data-size="sm" data-state="default" class="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
                     <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full pulse-dot"></span>
                     실시간
                 </div>
@@ -170,15 +170,17 @@
             <div class="grid grid-cols-5 gap-4 mb-6">
 
                 <!-- Detection Trend Chart -->
-                <div data-component="card" data-intent="container" data-variant="outlined" data-size="lg" data-state="default" class="col-span-3 bg-white rounded-xl border border-slate-200 p-5">
+                <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="col-span-3 bg-white rounded-xl border border-slate-200 p-5">
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h2 class="text-sm font-semibold text-slate-900">탐지 추이</h2>
                             <p class="text-xs text-slate-400 mt-0.5">에이전트 유형별 이상 탐지 건수</p>
                         </div>
-                        <div data-component="tab" data-intent="filter" data-variant="pill" data-size="sm" data-state="default" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                        <div data-component="tab" data-intent="default" data-variant="pill" data-size="md" data-state="default" role="tablist" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
                             <template x-for="p in periods" :key="p.value">
-                                <button @click="changePeriod(p.value)"
+                                <button @click="changePeriod(p.value)" role="tab"
+                                        :aria-selected="selectedPeriod === p.value"
+                                        :data-state="selectedPeriod === p.value ? 'selected' : 'default'"
                                         class="px-2.5 py-1 text-xs font-medium rounded-md transition-colors"
                                         :class="selectedPeriod === p.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                                         x-text="p.label"></button>
@@ -191,7 +193,7 @@
                 </div>
 
                 <!-- Alert Timeline -->
-                <div data-component="card" data-intent="container" data-variant="outlined" data-size="lg" data-state="default" class="col-span-2 bg-white rounded-xl border border-slate-200 flex flex-col">
+                <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="col-span-2 bg-white rounded-xl border border-slate-200 flex flex-col">
                     <div class="flex items-center justify-between p-5 pb-3">
                         <div>
                             <h2 class="text-sm font-semibold text-slate-900">실시간 알림</h2>
@@ -209,7 +211,7 @@
                     <div class="flex-1 overflow-y-auto scrollbar-thin px-5 pb-4" aria-label="실시간 보안 알림 타임라인">
                         <div class="space-y-0">
                             <template x-for="alert in filteredAlerts" :key="alert.id">
-                                <div data-component="alert" data-intent="info" data-variant="soft" data-size="sm" data-state="default" class="flex gap-3 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 -mx-2 px-2 rounded-md transition-colors cursor-pointer slide-down"
+                                <div data-component="alert" data-intent="info" data-variant="banner" data-size="md" data-state="default" role="status" class="flex gap-3 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 -mx-2 px-2 rounded-md transition-colors cursor-pointer slide-down"
                                      @click="alert.expanded = !alert.expanded">
                                     <!-- Severity dot -->
                                     <div class="mt-1.5 flex-shrink-0">
@@ -218,14 +220,14 @@
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center justify-between gap-2">
                                             <span class="text-[11px] font-mono text-slate-400" x-text="alert.time"></span>
-                                            <span data-component="badge" data-intent="status" data-variant="soft" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0"
+                                            <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0"
                                                   :class="severityBadgeClass(alert.severity)"
                                                   x-text="alert.severityLabel"></span>
                                         </div>
                                         <p class="text-sm text-slate-800 mt-0.5 leading-snug" x-text="alert.message"></p>
                                         <div class="flex items-center gap-2 mt-1">
                                             <span class="text-[11px] text-slate-400" x-text="alert.agent"></span>
-                                            <span data-component="badge" data-intent="status" data-variant="soft" data-size="xs" data-state="default" class="text-[10px] px-1.5 py-0.5 rounded-full"
+                                            <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] px-1.5 py-0.5 rounded-full"
                                                   :class="alert.status === 'new' ? 'bg-blue-50 text-blue-600' : alert.status === 'acknowledged' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-500'"
                                                   x-text="alert.statusLabel"></span>
                                         </div>
@@ -252,10 +254,10 @@
             </div>
 
             <!-- ===== QUICK ACTIONS ===== -->
-            <div data-component="card" data-intent="container" data-variant="outlined" data-size="lg" data-state="default" class="bg-white rounded-xl border border-slate-200 p-5" aria-label="빠른 작업 바로가기">
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white rounded-xl border border-slate-200 p-5" aria-label="빠른 작업 바로가기">
                 <h2 class="text-sm font-semibold text-slate-900 mb-3">빠른 실행</h2>
                 <div class="grid grid-cols-4 gap-3">
-                    <a data-component="card" data-intent="action" data-variant="outlined" data-size="md" data-state="default" href="../PG-04_deploy_wizard.html"
+                    <a data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" href="../PG-04_deploy_wizard.html"
                        class="flex items-center gap-3 p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
                         <div class="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                             <i data-lucide="rocket" class="w-5 h-5 text-white"></i>
@@ -265,7 +267,7 @@
                             <p class="text-xs text-slate-400">새 보안 에이전트 배포</p>
                         </div>
                     </a>
-                    <a data-component="card" data-intent="action" data-variant="outlined" data-size="md" data-state="default" href="../PG-08_compliance_reports.html"
+                    <a data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" href="../PG-08_compliance_reports.html"
                        class="flex items-center gap-3 p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
                         <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                             <i data-lucide="file-text" class="w-5 h-5 text-slate-700"></i>
@@ -275,7 +277,7 @@
                             <p class="text-xs text-slate-400">컴플라이언스 리포트</p>
                         </div>
                     </a>
-                    <a data-component="card" data-intent="action" data-variant="outlined" data-size="md" data-state="default" href="../PG-05_connector_hub.html"
+                    <a data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" href="../PG-05_connector_hub.html"
                        class="flex items-center gap-3 p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
                         <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                             <i data-lucide="database" class="w-5 h-5 text-slate-700"></i>
@@ -285,7 +287,7 @@
                             <p class="text-xs text-slate-400">새 커넥터 설정</p>
                         </div>
                     </a>
-                    <a data-component="card" data-intent="action" data-variant="outlined" data-size="md" data-state="default" href="../PG-06_realtime_monitoring.html"
+                    <a data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" href="../PG-06_realtime_monitoring.html"
                        class="flex items-center gap-3 p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
                         <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                             <i data-lucide="activity" class="w-5 h-5 text-slate-700"></i>

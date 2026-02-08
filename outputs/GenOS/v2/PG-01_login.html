@@ -140,7 +140,7 @@
 
                 <!-- Lockout banner -->
                 <div x-show="isLocked" x-transition
-                     data-component="alert" data-intent="danger" data-variant="soft" data-size="md" data-state="default" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
+                     data-component="alert" data-intent="danger" data-variant="banner" data-size="md" data-state="default" role="alert" class="mb-6 rounded-md bg-red-50 border border-red-200 p-4">
                     <div class="flex gap-3">
                         <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"></i>
                         <div>
@@ -307,14 +307,18 @@
                 <!-- MFA method selector -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-slate-700 mb-2">인증 방법</label>
-                    <div data-component="tab" data-intent="nav" data-variant="segment" data-size="md" data-state="default" class="grid grid-cols-2 gap-2">
-                        <button @click="selectMfaMethod('TOTP')"
+                    <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="grid grid-cols-2 gap-2">
+                        <button @click="selectMfaMethod('TOTP')" role="tab"
+                                :aria-selected="mfaMethod === 'TOTP'"
+                                :data-state="mfaMethod === 'TOTP' ? 'selected' : 'default'"
                                 class="rounded-lg border p-3 text-center transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1"
                                 :class="mfaMethod === 'TOTP' ? 'border-slate-900 bg-slate-50 text-slate-900' : 'border-slate-200 text-slate-500 hover:border-slate-300'">
                             <i data-lucide="smartphone" class="w-5 h-5 mx-auto mb-1"></i>
                             <p class="text-xs font-medium">인증 앱 (TOTP)</p>
                         </button>
-                        <button @click="selectMfaMethod('SMS')"
+                        <button @click="selectMfaMethod('SMS')" role="tab"
+                                :aria-selected="mfaMethod === 'SMS'"
+                                :data-state="mfaMethod === 'SMS' ? 'selected' : 'default'"
                                 class="rounded-lg border p-3 text-center transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1"
                                 :class="mfaMethod === 'SMS' ? 'border-slate-900 bg-slate-50 text-slate-900' : 'border-slate-200 text-slate-500 hover:border-slate-300'">
                             <i data-lucide="message-square" class="w-5 h-5 mx-auto mb-1"></i>
@@ -324,7 +328,7 @@
                 </div>
 
                 <!-- MFA error -->
-                <div x-show="mfaError" x-transition data-component="alert" data-intent="danger" data-variant="soft" data-size="sm" data-state="default" class="mb-4 rounded-lg bg-red-50 border border-red-200 p-3">
+                <div x-show="mfaError" x-transition data-component="alert" data-intent="danger" data-variant="banner" data-size="md" data-state="default" role="alert" class="mb-4 rounded-md bg-red-50 border border-red-200 p-3">
                     <div class="flex gap-2">
                         <i data-lucide="x-circle" class="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5"></i>
                         <p class="text-sm text-red-700" x-text="mfaError"></p>
@@ -364,7 +368,7 @@
                     </div>
 
                     <!-- MFA lock banner -->
-                    <div x-show="mfaLocked" x-transition data-component="alert" data-intent="warning" data-variant="soft" data-size="sm" data-state="default" class="rounded-lg bg-amber-50 border border-amber-200 p-3">
+                    <div x-show="mfaLocked" x-transition data-component="alert" data-intent="warning" data-variant="banner" data-size="md" data-state="default" role="status" class="rounded-md bg-amber-50 border border-amber-200 p-3">
                         <div class="flex gap-2">
                             <i data-lucide="timer" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
                             <p class="text-sm text-amber-700">
@@ -401,7 +405,7 @@
 
             <!-- ========== STEP 3 : SUCCESS ========== -->
             <div x-show="step === 'success'" x-transition style="display:none;">
-                <div data-component="card" data-intent="container" data-variant="default" data-size="md" data-state="default" class="text-center py-8 slide-in">
+                <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="text-center py-8 slide-in">
                     <div class="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
                         <i data-lucide="check" class="w-8 h-8 text-emerald-600"></i>
                     </div>

@@ -46,7 +46,7 @@
                 <i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링</a>
             <a href="../PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
                 <i data-lucide="bell" class="w-4 h-4"></i> 알림 관리
-                <span data-component="badge" class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span></a>
+                <span data-component="badge" data-intent="danger" data-variant="filled-light" data-size="xs" data-state="default" class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span></a>
 
             <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
             <a href="../PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
@@ -106,7 +106,7 @@
                 <p class="text-xs text-slate-400 -mt-0.5">모델 버전 관리 · 학습 상태 · 성능 비교 · 배포 제어</p>
             </div>
             <div class="flex items-center gap-3">
-                <div data-component="badge" class="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                <div data-component="badge" data-intent="success" data-variant="filled-light" data-size="sm" data-state="default" class="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
                     <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full pulse-dot"></span>파이프라인 활성
                 </div>
                 <span class="text-xs text-slate-400" x-text="'갱신: ' + lastUpdated"></span>
@@ -121,17 +121,20 @@
         <div class="flex-1 overflow-y-auto p-6 space-y-5">
 
             <!-- ==================== MODEL VERSION TABLE ==================== -->
-            <div data-component="card" class="bg-white rounded-xl border border-slate-200">
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white rounded-xl border border-slate-200">
                 <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100">
                     <div class="flex items-center gap-3">
                         <h2 class="text-sm font-semibold text-slate-900">모델 버전 관리</h2>
-                        <span data-component="badge" class="text-[11px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full" x-text="filteredModels.length + '개 버전'"></span>
+                        <span data-component="badge" data-intent="neutral" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full" x-text="filteredModels.length + '개 버전'"></span>
                     </div>
                     <div class="flex items-center gap-2">
                         <!-- Model Type Filter -->
-                        <div data-component="tab" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                        <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
                             <template x-for="f in modelTypeFilters" :key="f.value">
                                 <button @click="modelTypeFilter=f.value"
+                                        role="tab"
+                                        :aria-selected="modelTypeFilter===f.value"
+                                        :data-state="modelTypeFilter===f.value ? 'active' : 'inactive'"
                                         class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors"
                                         :class="modelTypeFilter===f.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                                         x-text="f.label"></button>
@@ -187,11 +190,11 @@
                                         </div></td>
                                     <td class="py-2.5 px-3 font-mono text-slate-500" x-text="m.version"></td>
                                     <td class="py-2.5 px-3">
-                                        <span data-component="badge" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
                                               :class="m.type==='FDS' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700'"
                                               x-text="m.type"></span></td>
                                     <td class="py-2.5 px-3">
-                                        <span data-component="badge" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-1"
+                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-1"
                                               :class="{
                                                   'bg-emerald-100 text-emerald-700': m.status==='deployed',
                                                   'bg-blue-100 text-blue-700': m.status==='ready',
@@ -231,10 +234,10 @@
             <div x-show="selectedModel" x-transition class="grid grid-cols-5 gap-5 slide-down">
 
                 <!-- Training Status Panel (2 cols) -->
-                <div data-component="card" class="col-span-2 bg-white rounded-xl border border-slate-200 p-5">
+                <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="col-span-2 bg-white rounded-xl border border-slate-200 p-5">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-sm font-semibold text-slate-900">학습 상태</h2>
-                        <span data-component="badge" class="text-[11px] px-2 py-0.5 rounded-full inline-flex items-center gap-1"
+                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[11px] px-2 py-0.5 rounded-full inline-flex items-center gap-1"
                               :class="{
                                   'bg-emerald-50 text-emerald-600': selectedData?.status==='deployed' || selectedData?.status==='ready',
                                   'bg-amber-50 text-amber-600': selectedData?.status==='training',
@@ -312,7 +315,7 @@
                 </div>
 
                 <!-- Performance Comparison Chart (3 cols) -->
-                <div data-component="card" class="col-span-3 bg-white rounded-xl border border-slate-200 p-5">
+                <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="col-span-3 bg-white rounded-xl border border-slate-200 p-5">
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h2 class="text-sm font-semibold text-slate-900">버전 간 성능 비교</h2>
@@ -332,7 +335,7 @@
             </div>
 
             <!-- ==================== DEPLOYMENT CONTROL ==================== -->
-            <div data-component="card" x-show="selectedModel && (selectedData?.status==='ready' || selectedData?.status==='deployed')" x-transition class="bg-white rounded-xl border border-slate-200 p-5 slide-down">
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" x-show="selectedModel && (selectedData?.status==='ready' || selectedData?.status==='deployed')" x-transition class="bg-white rounded-xl border border-slate-200 p-5 slide-down">
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h2 class="text-sm font-semibold text-slate-900">배포 제어</h2>
@@ -396,7 +399,7 @@
             </div>
 
             <!-- Empty State -->
-            <div data-component="card" x-show="!selectedModel" class="bg-white rounded-xl border border-slate-200 p-12 text-center">
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" x-show="!selectedModel" class="bg-white rounded-xl border border-slate-200 p-12 text-center">
                 <i data-lucide="brain-circuit" class="w-10 h-10 text-slate-300 mx-auto mb-3"></i>
                 <p class="text-sm text-slate-500 mb-1">모델을 선택하면 학습 상태 및 성능 비교가 표시됩니다.</p>
                 <p class="text-xs text-slate-400">위 테이블에서 모델 버전을 클릭하세요.</p>
@@ -424,7 +427,7 @@
                     <span class="text-slate-500">대상 환경</span>
                     <span class="font-medium text-slate-900">Production</span>
                 </div>
-                <div data-component="alert" class="flex justify-between text-xs p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <div data-component="alert" data-intent="warning" data-variant="banner" data-size="md" data-state="default" role="status" class="flex justify-between text-xs p-3 bg-amber-50 rounded-md border border-amber-200">
                     <span class="text-amber-700">현재 배포 버전이 교체됩니다</span>
                     <span class="font-medium text-amber-800" x-text="currentDeployed?.version"></span>
                 </div>

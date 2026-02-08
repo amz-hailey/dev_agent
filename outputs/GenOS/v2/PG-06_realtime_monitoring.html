@@ -55,7 +55,7 @@
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
             <div><h1 class="text-lg font-bold text-slate-900">실시간 모니터링</h1><p class="text-xs text-slate-400 -mt-0.5">이상 탐지 스트리밍 모니터</p></div>
             <div class="flex items-center gap-3">
-                <span data-component="badge" class="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full" :class="paused ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'">
+                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="sm" data-state="default" class="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full" :class="paused ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'">
                     <span class="w-1.5 h-1.5 rounded-full" :class="paused ? 'bg-amber-500' : 'bg-emerald-500 pulse-dot'"></span>
                     <span x-text="paused ? '일시 중지' : '실시간'"></span>
                 </span>
@@ -77,7 +77,7 @@
                         </template>
                     </div>
                     <!-- Feed -->
-                    <div data-component="card" class="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 max-h-[600px] overflow-y-auto scrollbar-thin">
+                    <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 max-h-[600px] overflow-y-auto scrollbar-thin">
                         <template x-for="a in filteredAlerts" :key="a.id">
                             <div class="p-4 hover:bg-slate-50 transition-colors cursor-pointer slide-down" @click="selectAlert(a)">
                                 <div class="flex items-start gap-3">
@@ -85,8 +85,8 @@
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center justify-between gap-2 mb-1">
                                             <div class="flex items-center gap-2">
-                                                <span data-component="badge" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="sevBadge(a.severity)" x-text="a.severityLabel"></span>
-                                                <span data-component="badge" class="text-[10px] text-slate-400 font-mono" x-text="a.type"></span>
+                                                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="sevBadge(a.severity)" x-text="a.severityLabel"></span>
+                                                <span data-component="badge" data-intent="neutral" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] text-slate-400 font-mono" x-text="a.type"></span>
                                             </div>
                                             <span class="text-[11px] text-slate-400 font-mono" x-text="a.time"></span>
                                         </div>
@@ -107,12 +107,12 @@
                 <!-- RIGHT COLUMN (2 cols) -->
                 <div class="col-span-2 space-y-4">
                     <!-- Detection Heatmap -->
-                    <div data-component="card" class="bg-white rounded-xl border border-slate-200 p-5">
+                    <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white rounded-xl border border-slate-200 p-5">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-sm font-semibold text-slate-900">탐지 히트맵</h2>
-                            <div data-component="tab" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                            <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
                                 <template x-for="p in [{v:'1d',l:'1일'},{v:'7d',l:'7일'},{v:'30d',l:'30일'}]" :key="p.v">
-                                    <button @click="heatmapPeriod=p.v" class="px-2 py-0.5 text-[11px] font-medium rounded-md transition-colors" :class="heatmapPeriod===p.v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'" x-text="p.l"></button>
+                                    <button @click="heatmapPeriod=p.v" role="tab" :aria-selected="heatmapPeriod===p.v" :data-state="heatmapPeriod===p.v ? 'selected' : 'default'" class="px-2 py-0.5 text-[11px] font-medium rounded-md transition-colors" :class="heatmapPeriod===p.v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'" x-text="p.l"></button>
                                 </template>
                             </div>
                         </div>
@@ -139,7 +139,7 @@
                     </div>
 
                     <!-- Action Panel -->
-                    <div data-component="card" x-show="selectedAlert" x-transition class="bg-white rounded-xl border border-slate-200 p-5">
+                    <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" x-show="selectedAlert" x-transition class="bg-white rounded-xl border border-slate-200 p-5">
                         <h2 class="text-sm font-semibold text-slate-900 mb-3">알림 상세</h2>
                         <div class="space-y-2 text-xs mb-4">
                             <div class="flex justify-between"><span class="text-slate-400">거래 ID</span><span class="font-mono text-slate-700" x-text="selectedAlert?.txId"></span></div>
@@ -159,7 +159,7 @@
                     </div>
 
                     <!-- Placeholder when no alert selected -->
-                    <div data-component="card" x-show="!selectedAlert" class="bg-white rounded-xl border border-slate-200 p-8 text-center">
+                    <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" x-show="!selectedAlert" class="bg-white rounded-xl border border-slate-200 p-8 text-center">
                         <i data-lucide="mouse-pointer-click" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
                         <p class="text-sm text-slate-400">알림을 클릭하면 상세 정보가 표시됩니다</p>
                     </div>

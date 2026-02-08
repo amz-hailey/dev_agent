@@ -58,16 +58,16 @@
 
         <div class="flex-1 overflow-y-auto p-6">
             <!-- Tabs -->
-            <div data-component="tab" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5 w-fit mb-6">
+            <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5 w-fit mb-6">
                 <template x-for="t in [{v:'channels',l:'채널 설정'},{v:'escalation',l:'에스컬레이션 규칙'},{v:'history',l:'알림 이력'}]" :key="t.v">
-                    <button @click="activeTab=t.v" class="px-4 py-1.5 text-sm font-medium rounded-md transition-colors" :class="activeTab===t.v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" x-text="t.l"></button>
+                    <button @click="activeTab=t.v" role="tab" :aria-selected="activeTab===t.v" :data-state="activeTab===t.v ? 'selected' : 'default'" class="px-4 py-1.5 text-sm font-medium rounded-md transition-colors" :class="activeTab===t.v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" x-text="t.l"></button>
                 </template>
             </div>
 
             <!-- Channel Settings -->
             <div x-show="activeTab==='channels'" class="space-y-4">
                 <template x-for="ch in channels" :key="ch.id">
-                    <div data-component="card" class="bg-white rounded-xl border border-slate-200 p-5">
+                    <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white rounded-xl border border-slate-200 p-5">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-lg flex items-center justify-center" :class="ch.iconBg"><i :data-lucide="ch.icon" class="w-5 h-5" :class="ch.iconColor"></i></div>
@@ -99,12 +99,12 @@
                     <button class="h-9 px-4 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5"><i data-lucide="plus" class="w-4 h-4"></i> 규칙 추가</button>
                 </div>
                 <template x-for="(rule, idx) in escalationRules" :key="rule.id">
-                    <div data-component="card" class="bg-white rounded-xl border border-slate-200 p-5">
+                    <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white rounded-xl border border-slate-200 p-5">
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <span class="w-6 h-6 rounded-full bg-slate-100 text-[11px] font-bold text-slate-500 flex items-center justify-center" x-text="idx+1"></span>
                                 <h3 class="text-sm font-semibold text-slate-900" x-text="rule.name"></h3>
-                                <span data-component="badge" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="rule.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'" x-text="rule.enabled ? '활성' : '비활성'"></span>
+                                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="rule.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'" x-text="rule.enabled ? '활성' : '비활성'"></span>
                             </div>
                             <button @click="rule.enabled=!rule.enabled" :class="rule.enabled ? 'bg-slate-900' : 'bg-slate-200'" class="w-9 h-5 rounded-full relative transition-colors"><span :class="rule.enabled ? 'translate-x-4' : 'translate-x-0.5'" class="block w-4 h-4 bg-white rounded-full shadow transition-transform"></span></button>
                         </div>
@@ -138,11 +138,11 @@
                             <template x-for="h in alertHistory" :key="h.id">
                                 <tr class="hover:bg-slate-50">
                                     <td class="px-4 py-3 text-xs font-mono text-slate-500" x-text="h.time"></td>
-                                    <td class="px-4 py-3"><span data-component="badge" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.channelBadge" x-text="h.channel"></span></td>
-                                    <td class="px-4 py-3"><span data-component="badge" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.sevBadge" x-text="h.severity"></span></td>
+                                    <td class="px-4 py-3"><span data-component="badge" data-intent="info" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.channelBadge" x-text="h.channel"></span></td>
+                                    <td class="px-4 py-3"><span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.sevBadge" x-text="h.severity"></span></td>
                                     <td class="px-4 py-3 text-xs text-slate-700 max-w-[300px] truncate" x-text="h.message"></td>
                                     <td class="px-4 py-3 text-xs text-slate-500" x-text="h.recipient"></td>
-                                    <td class="px-4 py-3"><span data-component="badge" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.statusBadge" x-text="h.status"></span></td>
+                                    <td class="px-4 py-3"><span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full" :class="h.statusBadge" x-text="h.status"></span></td>
                                 </tr>
                             </template>
                         </tbody>

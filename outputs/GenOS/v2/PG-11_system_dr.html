@@ -138,7 +138,7 @@
             <div class="grid grid-cols-2 gap-6">
 
                 <!-- Seoul Region (Primary) -->
-                <div data-component="card" class="bg-white border border-slate-200 rounded-lg p-6">
+                <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white border border-slate-200 rounded-lg p-6">
                     <div class="flex items-center justify-between mb-5">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -149,7 +149,7 @@
                                 <p class="text-xs text-slate-500">Active Production Region</p>
                             </div>
                         </div>
-                        <span data-component="badge" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-full">
+                        <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-full">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ACTIVE
                         </span>
                     </div>
@@ -227,7 +227,7 @@
                 </div>
 
                 <!-- Daejeon Region (DR Standby) -->
-                <div data-component="card" class="bg-white border-2 border-slate-200 rounded-lg p-6">
+                <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white border-2 border-slate-200 rounded-lg p-6">
                     <div class="flex items-center justify-between mb-5">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-violet-50 flex items-center justify-center">
@@ -238,7 +238,7 @@
                                 <p class="text-xs text-slate-500">Disaster Recovery Region</p>
                             </div>
                         </div>
-                        <span data-component="badge" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-600 rounded-full">
+                        <span data-component="badge" data-intent="neutral" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-600 rounded-full">
                             <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> STANDBY
                         </span>
                     </div>
@@ -282,7 +282,7 @@
                                 <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-400"></i>
                                 <span class="text-xs text-slate-500">페일오버 준비 상태</span>
                             </div>
-                            <span data-component="badge" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded mt-1">
+                            <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-full mt-1">
                                 <i data-lucide="check-circle" class="w-3 h-3"></i> READY
                             </span>
                         </div>
@@ -296,7 +296,7 @@
                                     <p class="text-sm font-semibold text-slate-900">2026-01-15</p>
                                 </div>
                                 <div class="text-right">
-                                    <span data-component="badge" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded">PASS</span>
+                                    <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-full">PASS</span>
                                     <p class="text-[10px] text-slate-400 mt-1">RTO 18분 / RPO 2분</p>
                                 </div>
                             </div>
@@ -306,7 +306,7 @@
             </div>
 
             <!-- ==================== BACKUP STATUS ==================== -->
-            <div data-component="card" class="bg-white border border-slate-200 rounded-lg p-6">
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white border border-slate-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-2.5">
                         <i data-lucide="hard-drive" class="w-5 h-5 text-slate-700"></i>
@@ -327,7 +327,7 @@
                 <div class="grid grid-cols-4 gap-4">
                     <div data-component="stat" class="p-4 bg-slate-50 rounded-lg text-center">
                         <p class="text-xs text-slate-500 mb-2">실시간 리플리케이션</p>
-                        <span data-component="badge" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-700 rounded-full">
+                        <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-700 rounded-full">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span> ACTIVE
                         </span>
                         <p class="text-[10px] text-slate-400 mt-2">지연: 2.3초</p>
@@ -335,7 +335,7 @@
                     <div data-component="stat" class="p-4 bg-slate-50 rounded-lg text-center">
                         <p class="text-xs text-slate-500 mb-2">마지막 스냅샷</p>
                         <p class="text-sm font-semibold text-slate-900">3시간 전</p>
-                        <span data-component="badge" class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-700 rounded">SUCCESS</span>
+                        <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-700 rounded-full">SUCCESS</span>
                         <p class="text-[10px] text-slate-400 mt-1">2026-02-06 17:00</p>
                     </div>
                     <div data-component="stat" class="p-4 bg-slate-50 rounded-lg text-center">
@@ -356,7 +356,7 @@
             </div>
 
             <!-- ==================== FAILOVER HISTORY ==================== -->
-            <div data-component="card" class="bg-white border border-slate-200 rounded-lg">
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white border border-slate-200 rounded-lg">
                 <div class="p-6 border-b border-slate-100">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2.5">
@@ -409,7 +409,7 @@
                                     <td class="px-6 py-3 font-mono text-xs text-slate-600" x-text="fo.event_id"></td>
                                     <td class="px-4 py-3 text-xs text-slate-600" x-text="fo.triggered_at"></td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded"
+                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
                                               :class="{
                                                   'bg-amber-50 text-amber-700': fo.type === 'AUTO',
                                                   'bg-slate-100 text-slate-600': fo.type === 'MANUAL',
@@ -436,7 +436,7 @@
                                         </template>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded"
+                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
                                               :class="{
                                                   'bg-emerald-50 text-emerald-700': fo.data_loss === 'NONE',
                                                   'bg-amber-50 text-amber-700': fo.data_loss === 'MINIMAL',
@@ -445,7 +445,7 @@
                                               x-text="fo.data_loss"></span>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span data-component="badge" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded"
+                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
                                               :class="{
                                                   'bg-emerald-50 text-emerald-700': fo.status === 'COMPLETED',
                                                   'bg-red-50 text-red-700': fo.status === 'FAILED',
@@ -469,7 +469,7 @@
             </div>
 
             <!-- ==================== DR TEST SCHEDULE ==================== -->
-            <div data-component="card" class="bg-white border border-slate-200 rounded-lg p-6">
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white border border-slate-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-2.5">
                         <i data-lucide="calendar" class="w-5 h-5 text-slate-700"></i>
@@ -501,7 +501,7 @@
                                   :class="cell.isToday ? 'bg-slate-900 text-white font-medium' : (cell.isCurrentMonth ? 'text-slate-700' : 'text-slate-300')"
                                   x-text="cell.day"></span>
                             <template x-for="evt in cell.events" :key="evt.id">
-                                <div data-component="badge" class="px-1 py-0.5 rounded text-[10px] font-medium truncate mb-0.5 cursor-pointer"
+                                <div data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="px-1 py-0.5 rounded-full text-[10px] font-medium truncate mb-0.5 cursor-pointer"
                                      :class="{
                                          'bg-emerald-100 text-emerald-800': evt.result === 'PASS',
                                          'bg-red-100 text-red-800': evt.result === 'FAIL',
@@ -528,7 +528,7 @@
                     <h4 class="text-xs font-semibold text-slate-700 mb-3">예정된 테스트</h4>
                     <div class="space-y-2">
                         <template x-for="test in upcomingTests" :key="test.id">
-                            <div data-component="card" class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-lg flex items-center justify-center"
                                          :class="test.result ? (test.result === 'PASS' ? 'bg-emerald-100' : test.result === 'FAIL' ? 'bg-red-100' : 'bg-amber-100') : 'bg-blue-100'">
@@ -542,7 +542,7 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <template x-if="test.result">
-                                        <span data-component="badge" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded"
+                                        <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full"
                                               :class="{
                                                   'bg-emerald-50 text-emerald-700': test.result === 'PASS',
                                                   'bg-red-50 text-red-700': test.result === 'FAIL',
@@ -551,7 +551,7 @@
                                               x-text="test.result"></span>
                                     </template>
                                     <template x-if="!test.result">
-                                        <span data-component="badge" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-blue-50 text-blue-700 rounded">예정</span>
+                                        <span data-component="badge" data-intent="info" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-blue-50 text-blue-700 rounded-full">예정</span>
                                     </template>
                                     <button @click="selectedTest = test; showTestDetailModal = true" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
                                         <i data-lucide="chevron-right" class="w-4 h-4"></i>
@@ -580,7 +580,7 @@
                     <p class="text-xs text-slate-500">서울 → 대전 리전으로 전환합니다</p>
                 </div>
             </div>
-            <div data-component="alert" class="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+            <div data-component="alert" data-intent="danger" data-variant="banner" data-size="md" data-state="default" role="alert" class="p-3 bg-red-50 border border-red-200 rounded-md mb-4">
                 <p class="text-xs text-red-700 font-medium mb-1">경고: 실서비스에 영향이 있습니다</p>
                 <ul class="text-[11px] text-red-600 space-y-0.5">
                     <li>· 전환 중 약 15~30분간 서비스 지연 가능</li>
@@ -727,7 +727,7 @@
                         <div class="grid grid-cols-3 gap-3">
                             <div data-component="stat" class="p-3 bg-slate-50 rounded-lg text-center">
                                 <p class="text-xs text-slate-500 mb-1">결과</p>
-                                <span data-component="badge" class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded"
+                                <span data-component="badge" data-intent="status" data-variant="filled-light" data-size="xs" data-state="default" class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full"
                                       :class="{
                                           'bg-emerald-50 text-emerald-700': selectedTest.result === 'PASS',
                                           'bg-red-50 text-red-700': selectedTest.result === 'FAIL',
@@ -745,13 +745,13 @@
                             </div>
                         </div>
                         <template x-if="selectedTest.issues">
-                            <div data-component="alert" class="mt-3 p-3 bg-amber-50 rounded-lg">
+                            <div data-component="alert" data-intent="warning" data-variant="banner" data-size="md" data-state="default" role="status" class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-md">
                                 <p class="text-xs font-medium text-amber-700 mb-1">발견된 문제</p>
                                 <p class="text-xs text-amber-600" x-text="selectedTest.issues"></p>
                             </div>
                         </template>
                         <template x-if="selectedTest.corrective">
-                            <div data-component="alert" class="mt-2 p-3 bg-blue-50 rounded-lg">
+                            <div data-component="alert" data-intent="success" data-variant="banner" data-size="md" data-state="default" role="status" class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
                                 <p class="text-xs font-medium text-blue-700 mb-1">시정 조치</p>
                                 <p class="text-xs text-blue-600" x-text="selectedTest.corrective"></p>
                             </div>

@@ -129,9 +129,12 @@
             <div class="max-w-3xl mx-auto py-8 px-8">
 
                 <!-- Section Nav Tabs -->
-                <div data-component="tab" class="flex border-b border-slate-200 mb-8">
+                <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="flex border-b border-slate-200 mb-8">
                     <template x-for="tab in ['프로필', '보안', '알림', '표시']" :key="tab">
                         <button @click="activeTab = tab"
+                                role="tab"
+                                :aria-selected="activeTab === tab"
+                                :data-state="activeTab === tab ? 'active' : 'inactive'"
                                 class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px"
                                 :class="activeTab === tab ? 'border-slate-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
                                 x-text="tab"></button>
@@ -140,7 +143,7 @@
 
                 <!-- ==================== PROFILE SETTINGS ==================== -->
                 <div x-show="activeTab === '프로필'" x-transition class="space-y-6">
-                    <div data-component="card" class="flex items-center gap-5 mb-6">
+                    <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="flex items-center gap-5 mb-6">
                         <div class="relative">
                             <div class="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center text-2xl font-bold text-slate-500">김</div>
                             <button class="absolute bottom-0 right-0 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center hover:bg-slate-800 transition-colors shadow">
@@ -207,7 +210,7 @@
                     <!-- MFA -->
                     <div>
                         <h3 class="text-sm font-semibold text-slate-900 mb-4">MFA (다중 인증)</h3>
-                        <div data-component="card" class="p-4 bg-slate-50 rounded-lg space-y-4">
+                        <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="p-4 bg-slate-50 rounded-lg space-y-4">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-slate-900">MFA 활성화</p>
@@ -220,7 +223,7 @@
                                         <div class="toggle-thumb"></div>
                                     </div>
                                     <template x-if="security.mfaEnforced">
-                                        <span data-component="badge" class="text-[10px] text-slate-400 flex items-center gap-1">
+                                        <span data-component="badge" data-intent="neutral" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] text-slate-400 flex items-center gap-1">
                                             <i data-lucide="lock" class="w-3 h-3"></i> 정책 강제
                                         </span>
                                     </template>
@@ -297,7 +300,7 @@
                             </div>
                             <div class="space-y-2">
                                 <template x-for="sess in security.sessions" :key="sess.id">
-                                    <div data-component="card" class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                    <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
                                                 <i :data-lucide="sess.icon" class="w-4 h-4 text-slate-500"></i>
@@ -306,7 +309,7 @@
                                                 <div class="flex items-center gap-2">
                                                     <p class="text-sm font-medium text-slate-900" x-text="sess.device"></p>
                                                     <template x-if="sess.current">
-                                                        <span data-component="badge" class="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-medium">현재 세션</span>
+                                                        <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-full font-medium">현재 세션</span>
                                                     </template>
                                                 </div>
                                                 <p class="text-[11px] text-slate-500" x-text="sess.ip + ' · ' + sess.location + ' · ' + sess.lastActive"></p>
@@ -330,7 +333,7 @@
                         <h3 class="text-sm font-semibold text-slate-900 mb-4">알림 채널</h3>
                         <div class="space-y-3">
                             <template x-for="ch in notif.channels" :key="ch.key">
-                                <div data-component="card" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                                <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-lg flex items-center justify-center"
                                              :class="ch.enabled ? 'bg-slate-900' : 'bg-slate-300'">
@@ -373,7 +376,7 @@
                     <!-- Quiet Hours -->
                     <div>
                         <h3 class="text-sm font-semibold text-slate-900 mb-4">방해 금지 시간</h3>
-                        <div data-component="card" class="p-4 bg-slate-50 rounded-lg space-y-4">
+                        <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="p-4 bg-slate-50 rounded-lg space-y-4">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-slate-900">방해 금지 모드</p>
@@ -398,7 +401,7 @@
                                 </div>
                             </div>
                             <template x-if="notif.quietEnabled">
-                                <div data-component="alert" class="flex items-center gap-2 p-2 bg-amber-50 rounded text-xs text-amber-700">
+                                <div data-component="alert" data-intent="warning" data-variant="banner" data-size="md" data-state="default" role="status" class="flex items-center gap-2 p-2 bg-amber-50 border border-amber-200 rounded-md text-xs text-amber-700">
                                     <i data-lucide="info" class="w-3.5 h-3.5 flex-shrink-0"></i>
                                     <span>CRITICAL 등급 알림은 방해 금지 시간에도 수신됩니다</span>
                                 </div>
@@ -486,7 +489,7 @@
 
                     <!-- Toggle Options -->
                     <div class="space-y-3 pt-2">
-                        <div data-component="card" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                        <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                             <div>
                                 <p class="text-sm font-medium text-slate-900">고대비 모드</p>
                                 <p class="text-xs text-slate-500 mt-0.5">WCAG AAA 수준의 색상 대비 강화</p>
@@ -497,7 +500,7 @@
                                 <div class="toggle-thumb"></div>
                             </div>
                         </div>
-                        <div data-component="card" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                        <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                             <div>
                                 <p class="text-sm font-medium text-slate-900">사이드바 기본 접힘</p>
                                 <p class="text-xs text-slate-500 mt-0.5">로그인 시 사이드바를 접힌 상태로 표시</p>
@@ -508,7 +511,7 @@
                                 <div class="toggle-thumb"></div>
                             </div>
                         </div>
-                        <div data-component="card" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                        <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                             <div>
                                 <p class="text-sm font-medium text-slate-900">애니메이션 축소</p>
                                 <p class="text-xs text-slate-500 mt-0.5">모션 민감 사용자를 위한 애니메이션 최소화</p>
