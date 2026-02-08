@@ -40,3 +40,43 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 **IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 
 Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+## Component Markup Convention
+
+모든 의미 있는 UI 컴포넌트에 `data-component` 속성을 반드시 추가한다. 이 속성은 design_agent가 컴포넌트를 자동 인식하는 데 사용된다.
+
+**대상 컴포넌트 타입과 값:**
+
+| 타입 | `data-component` 값 | 대상 |
+|------|---------------------|------|
+| card | `card` | 카드, 타일, 패널 등 콘텐츠 컨테이너 |
+| badge | `badge` | 뱃지, 태그, 칩, 상태 라벨 |
+| alert | `alert` | 알림, 토스트, 노티스 배너 |
+| modal | `modal` | 모달, 다이얼로그, 바텀시트 |
+| tab | `tab` | 탭 그룹 컨테이너 |
+| stat | `stat` | 통계 카드, KPI 위젯 |
+
+**HTML 태그로 이미 구분되는 요소(`<button>`, `<input>`, `<table>`, `<nav>`)에는 추가하지 않는다.**
+
+예시:
+```html
+<!-- 카드 -->
+<div data-component="card" class="bg-white rounded-lg shadow-md p-6">
+  <h3>제목</h3>
+  <p>내용</p>
+</div>
+
+<!-- 뱃지 -->
+<span data-component="badge" class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full">활성</span>
+
+<!-- 통계 카드 -->
+<div data-component="stat" class="bg-white rounded-xl p-4 shadow-sm">
+  <div class="text-2xl font-bold">1,234</div>
+  <div class="text-sm text-gray-500">총 사용자</div>
+</div>
+
+<!-- 알림 -->
+<div data-component="alert" class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+  <p>경고 메시지</p>
+</div>
+```
