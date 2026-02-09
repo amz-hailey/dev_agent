@@ -264,7 +264,7 @@
                                 <span x-text="testRunning ? '테스트 실행 중...' : '테스트 실행'"></span>
                             </button>
                             <!-- Test progress -->
-                            <div x-show="testRunning" data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="rounded-lg bg-slate-50 border border-slate-200 p-4">
+                            <div x-show="testRunning" data-component="card" data-intent="default" data-variant="tinted" data-size="auto" data-state="default" class="rounded-lg bg-slate-50 border border-slate-200 p-4">
                                 <div class="flex items-center justify-between text-sm mb-2">
                                     <span class="text-slate-600">에이전트 실행 중...</span>
                                     <span class="text-slate-400" x-text="testProgress + '%'"></span>
@@ -274,7 +274,7 @@
                                 </div>
                             </div>
                             <!-- Test results -->
-                            <div x-show="testDone" data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="rounded-lg border border-emerald-200 bg-emerald-50/50 p-5 space-y-4">
+                            <div x-show="testDone" data-component="card" data-intent="default" data-variant="tinted" data-size="auto" data-state="default" class="rounded-lg border border-emerald-200 bg-emerald-50/50 p-5 space-y-4">
                                 <div class="flex items-center gap-2">
                                     <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i>
                                     <span class="text-sm font-semibold text-emerald-800">테스트 완료</span>
@@ -307,7 +307,7 @@
                         <p class="text-sm text-slate-500 mb-6">최종 설정을 확인하고 에이전트를 배포합니다</p>
                         <!-- Summary -->
                         <div class="space-y-3 mb-6">
-                            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="rounded-lg bg-slate-50 border border-slate-200 p-4 grid grid-cols-2 gap-3 text-sm">
+                            <div data-component="card" data-intent="default" data-variant="tinted" data-size="auto" data-state="default" class="rounded-lg bg-slate-50 border border-slate-200 p-4 grid grid-cols-2 gap-3 text-sm">
                                 <div><span class="text-slate-400">템플릿</span><p class="font-medium text-slate-900" x-text="templateLabel"></p></div>
                                 <div><span class="text-slate-400">에이전트 이름</span><p class="font-medium text-slate-900" x-text="form.agentName || '-'"></p></div>
                                 <div><span class="text-slate-400">데이터 소스</span><p class="font-medium text-slate-900" x-text="(form.connectorType || '-') + ' · ' + (form.host || '-')"></p></div>

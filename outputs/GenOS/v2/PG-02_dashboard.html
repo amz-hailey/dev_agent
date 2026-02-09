@@ -176,7 +176,7 @@
                             <h2 class="text-sm font-semibold text-slate-900">탐지 추이</h2>
                             <p class="text-xs text-slate-400 mt-0.5">에이전트 유형별 이상 탐지 건수</p>
                         </div>
-                        <div data-component="tab" data-intent="default" data-variant="pill" data-size="md" data-state="default" role="tablist" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                        <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
                             <template x-for="p in periods" :key="p.value">
                                 <button @click="changePeriod(p.value)" role="tab"
                                         :aria-selected="selectedPeriod === p.value"
