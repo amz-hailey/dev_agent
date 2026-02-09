@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GenOS — 로그인 | 금융권 AI 보안 플랫폼</title>
+    <title>FinGuard — 로그인 | 금융권 AI 보안 플랫폼</title>
 
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="../cdn/tailwind.css">
@@ -52,7 +52,7 @@
                 <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur flex items-center justify-center">
                     <i data-lucide="shield-check" class="w-6 h-6 text-blue-400"></i>
                 </div>
-                <span class="text-2xl font-bold tracking-tight">GenOS</span>
+                <span class="text-2xl font-bold tracking-tight">FinGuard</span>
             </div>
             <p class="text-slate-400 text-sm ml-[52px] mt-0.5">Financial AI Security Platform</p>
         </div>
@@ -114,7 +114,7 @@
                 <i data-lucide="lock" class="w-3 h-3"></i>
                 <span>TLS 1.3 암호화 통신 · SOC 2 Type II 인증</span>
             </div>
-            <p class="text-xs text-slate-600 mt-2">&copy; 2026 GenOS Inc. All rights reserved.</p>
+            <p class="text-xs text-slate-600 mt-2">&copy; 2026 FinGuard Inc. All rights reserved.</p>
         </div>
     </div>
 
@@ -127,7 +127,7 @@
                 <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
                     <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
                 </div>
-                <span class="text-xl font-bold text-slate-900">GenOS</span>
+                <span class="text-xl font-bold text-slate-900">FinGuard</span>
             </div>
 
             <!-- ========== STEP 1 : LOGIN ========== -->
@@ -135,12 +135,12 @@
 
                 <div class="mb-8">
                     <h2 class="text-2xl font-bold text-slate-900 tracking-tight">로그인</h2>
-                    <p class="text-sm text-slate-500 mt-1.5">GenOS 계정으로 로그인하세요</p>
+                    <p class="text-sm text-slate-500 mt-1.5">FinGuard 계정으로 로그인하세요</p>
                 </div>
 
                 <!-- Lockout banner -->
                 <div x-show="isLocked" x-transition
-                     data-component="alert" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
+                     data-component="alert" data-intent="danger" data-variant="banner" data-size="md" data-state="default" role="alert" class="mb-6 rounded-md bg-red-50 border border-red-200 p-4">
                     <div class="flex gap-3">
                         <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"></i>
                         <div>
@@ -307,14 +307,18 @@
                 <!-- MFA method selector -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-slate-700 mb-2">인증 방법</label>
-                    <div data-component="tab" class="grid grid-cols-2 gap-2">
-                        <button @click="selectMfaMethod('TOTP')"
+                    <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="grid grid-cols-2 gap-2">
+                        <button @click="selectMfaMethod('TOTP')" role="tab"
+                                :aria-selected="mfaMethod === 'TOTP'"
+                                :data-state="mfaMethod === 'TOTP' ? 'selected' : 'default'"
                                 class="rounded-lg border p-3 text-center transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1"
                                 :class="mfaMethod === 'TOTP' ? 'border-slate-900 bg-slate-50 text-slate-900' : 'border-slate-200 text-slate-500 hover:border-slate-300'">
                             <i data-lucide="smartphone" class="w-5 h-5 mx-auto mb-1"></i>
                             <p class="text-xs font-medium">인증 앱 (TOTP)</p>
                         </button>
-                        <button @click="selectMfaMethod('SMS')"
+                        <button @click="selectMfaMethod('SMS')" role="tab"
+                                :aria-selected="mfaMethod === 'SMS'"
+                                :data-state="mfaMethod === 'SMS' ? 'selected' : 'default'"
                                 class="rounded-lg border p-3 text-center transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1"
                                 :class="mfaMethod === 'SMS' ? 'border-slate-900 bg-slate-50 text-slate-900' : 'border-slate-200 text-slate-500 hover:border-slate-300'">
                             <i data-lucide="message-square" class="w-5 h-5 mx-auto mb-1"></i>
@@ -324,7 +328,7 @@
                 </div>
 
                 <!-- MFA error -->
-                <div x-show="mfaError" x-transition data-component="alert" class="mb-4 rounded-lg bg-red-50 border border-red-200 p-3">
+                <div x-show="mfaError" x-transition data-component="alert" data-intent="danger" data-variant="banner" data-size="md" data-state="default" role="alert" class="mb-4 rounded-md bg-red-50 border border-red-200 p-3">
                     <div class="flex gap-2">
                         <i data-lucide="x-circle" class="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5"></i>
                         <p class="text-sm text-red-700" x-text="mfaError"></p>
@@ -364,7 +368,7 @@
                     </div>
 
                     <!-- MFA lock banner -->
-                    <div x-show="mfaLocked" x-transition data-component="alert" class="rounded-lg bg-amber-50 border border-amber-200 p-3">
+                    <div x-show="mfaLocked" x-transition data-component="alert" data-intent="warning" data-variant="banner" data-size="md" data-state="default" role="status" class="rounded-md bg-amber-50 border border-amber-200 p-3">
                         <div class="flex gap-2">
                             <i data-lucide="timer" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
                             <p class="text-sm text-amber-700">
@@ -401,7 +405,7 @@
 
             <!-- ========== STEP 3 : SUCCESS ========== -->
             <div x-show="step === 'success'" x-transition style="display:none;">
-                <div data-component="card" class="text-center py-8 slide-in">
+                <div data-component="card" data-intent="default" data-variant="outline" data-size="auto" data-state="default" class="text-center py-8 slide-in">
                     <div class="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
                         <i data-lucide="check" class="w-8 h-8 text-emerald-600"></i>
                     </div>

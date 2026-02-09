@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GenOS — 사용자/권한 관리</title>
+    <title>FinGuard — 사용자/권한 관리</title>
     <link rel="stylesheet" href="cdn/tailwind.css">
     <script defer src="cdn/alpine.js"></script>
     <script src="cdn/lucide.js"></script>
@@ -22,7 +22,7 @@
     <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
         <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
             <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center"><i data-lucide="shield-check" class="w-5 h-5 text-white"></i></div>
-            <span class="text-lg font-bold text-slate-900 tracking-tight">GenOS</span>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">FinGuard</span>
         </div>
         <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
             <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
@@ -333,7 +333,7 @@ function userPermissions() {
             { user_id: 'U004', user_name: '최사원', email: 'choi.sw@nhfg.com', department: '준법감시팀', role: 'VIEWER', mfa_enabled: false, status: 'LOCKED', last_login: '2026-02-06 08:15', created_at: '2025-06-01' },
             { user_id: 'U005', user_name: '정과장', email: 'jung.gj@kbfg.com', department: 'IT 인프라팀', role: 'ANALYST', mfa_enabled: true, status: 'ACTIVE', last_login: '2026-02-04 17:45', created_at: '2024-08-12' },
             { user_id: 'U006', user_name: '한대리', email: 'han.dr@kbfg.com', department: '디지털혁신팀', role: 'VIEWER', mfa_enabled: false, status: 'ACTIVE', last_login: '2026-01-30 14:20', created_at: '2025-09-01' },
-            { user_id: 'U007', user_name: '제논CSM', email: 'csm@xenonai.com', department: '제논 AI (외부)', role: 'VIEWER', mfa_enabled: true, status: 'ACTIVE', last_login: '2026-02-05 10:30', created_at: '2025-03-01' },
+            { user_id: 'U007', user_name: '솔라CSM', email: 'csm@solarai.com', department: '솔라 AI (외부)', role: 'VIEWER', mfa_enabled: true, status: 'ACTIVE', last_login: '2026-02-05 10:30', created_at: '2025-03-01' },
             { user_id: 'U008', user_name: '신입사원', email: 'new@kbfg.com', department: 'IT 보안팀', role: 'VIEWER', mfa_enabled: false, status: 'PENDING', last_login: '-', created_at: '2026-02-05' },
         ],
 

@@ -1,159 +1,222 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GenOS — 페이지 목록</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 2rem; }
-  h1 { font-size: 1.5rem; margin-bottom: .5rem; }
-  .subtitle { color: #94a3b8; margin-bottom: 2rem; font-size: .875rem; }
-  .phase { margin-bottom: 2rem; }
-  .phase-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: #64748b; margin-bottom: .75rem; padding-bottom: .5rem; border-bottom: 1px solid #1e293b; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .75rem; }
-  a { text-decoration: none; display: block; padding: .75rem 1rem; background: #1e293b; border-radius: .5rem; border: 1px solid #334155; transition: all .15s; }
-  a:hover { background: #334155; border-color: #3b82f6; }
-  .page-id { font-size: .75rem; color: #3b82f6; font-weight: 600; }
-  .page-name { color: #e2e8f0; font-size: .875rem; margin-top: .125rem; }
-  .snapshots { margin-top: .25rem; font-size: .75rem; color: #64748b; }
-  .snap-links { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: .375rem; }
-  .snap-links a { padding: .25rem .5rem; font-size: .7rem; background: #0f172a; border-color: #1e293b; display: inline-block; }
-  .snap-links a:hover { border-color: #6366f1; }
-  .snap-label { color: #a5b4fc; }
-  .stats { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; font-size: .8rem; color: #64748b; }
-  .stats span { color: #e2e8f0; font-weight: 600; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinGuard — UI Prototype</title>
+    <link rel="stylesheet" href="cdn/tailwind.css">
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f8fafc; }
+        .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; transition: all 0.2s; }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #3b82f6; transform: translateY(-2px); }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+        .phase-1 { background: #dbeafe; color: #1d4ed8; }
+        .phase-2 { background: #fef3c7; color: #92400e; }
+        .phase-3 { background: #ede9fe; color: #6d28d9; }
+    </style>
 </head>
 <body>
-<h1>GenOS 금융 AI 보안 플랫폼</h1>
-<p class="subtitle">html.to.design 변환용 페이지 목록</p>
-<div class="stats">
-  <div>메인 페이지 <span>16</span></div>
-  <div>스냅샷 <span>29</span></div>
-  <div>총 <span>45</span></div>
-</div>
+    <div style="max-width: 1100px; margin: 0 auto; padding: 40px 24px;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 48px;">
+            <div style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h1 style="font-size: 28px; font-weight: 700; color: #0f172a;">FinGuard</h1>
+            </div>
+            <p style="color: #64748b; font-size: 15px;">Financial AI Security Platform — UI Prototype (16 Pages)</p>
+            <div style="margin-top: 16px; display: flex; gap: 12px; justify-content: center; font-size: 13px; color: #94a3b8;">
+                <span><span class="badge phase-1">Phase 1</span> MVP (12p)</span>
+                <span><span class="badge phase-2">Phase 2</span> 확장 (2p)</span>
+                <span><span class="badge phase-3">Phase 3</span> 고도화 (2p)</span>
+            </div>
+        </div>
 
-<div class="phase">
-  <div class="phase-title">Phase 1 — MVP (12 pages)</div>
-  <div class="grid">
-    <div>
-      <a href="PG-01_login.html"><span class="page-id">PG-01</span><div class="page-name">로그인 / 인증</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-01_login--mfa.html"><span class="snap-label">MFA 인증</span></a>
-        <a href="snapshots/PG-01_login--success.html"><span class="snap-label">로그인 성공</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-02_dashboard.html"><span class="page-id">PG-02</span><div class="page-name">통합 대시보드</div></a>
-    </div>
-    <div>
-      <a href="PG-03_agent_templates.html"><span class="page-id">PG-03</span><div class="page-name">AI 에이전트 템플릿</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-03_agent_templates--detail.html"><span class="snap-label">상세보기</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-04_deploy_wizard.html"><span class="page-id">PG-04</span><div class="page-name">배포 위자드</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-04_deploy_wizard--step2.html"><span class="snap-label">Step 2</span></a>
-        <a href="snapshots/PG-04_deploy_wizard--step3.html"><span class="snap-label">Step 3</span></a>
-        <a href="snapshots/PG-04_deploy_wizard--step4.html"><span class="snap-label">Step 4</span></a>
-        <a href="snapshots/PG-04_deploy_wizard--step5.html"><span class="snap-label">Step 5</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-05_connector_hub.html"><span class="page-id">PG-05</span><div class="page-name">데이터 커넥터 허브</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-05_connector_hub--add_modal.html"><span class="snap-label">추가 모달</span></a>
-        <a href="snapshots/PG-05_connector_hub--detail.html"><span class="snap-label">상세보기</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-06_realtime_monitoring.html"><span class="page-id">PG-06</span><div class="page-name">실시간 모니터링</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-06_realtime_monitoring--detail.html"><span class="snap-label">상세보기</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-07_alert_management.html"><span class="page-id">PG-07</span><div class="page-name">알림 관리</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-07_alert_management--escalation.html"><span class="snap-label">에스컬레이션</span></a>
-        <a href="snapshots/PG-07_alert_management--history.html"><span class="snap-label">히스토리</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-08_compliance_reports.html"><span class="page-id">PG-08</span><div class="page-name">컴플라이언스 리포트</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-08_compliance_reports--generate_modal.html"><span class="snap-label">생성 모달</span></a>
-        <a href="snapshots/PG-08_compliance_reports--preview.html"><span class="snap-label">미리보기</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-09_audit_log.html"><span class="page-id">PG-09</span><div class="page-name">감사 로그</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-09_audit_log--detail.html"><span class="snap-label">상세보기</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-10_user_permissions.html"><span class="page-id">PG-10</span><div class="page-name">사용자 권한 관리</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-10_user_permissions--add_modal.html"><span class="snap-label">추가 모달</span></a>
-        <a href="snapshots/PG-10_user_permissions--matrix.html"><span class="snap-label">권한 매트릭스</span></a>
-        <a href="snapshots/PG-10_user_permissions--roles.html"><span class="snap-label">역할 관리</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-11_system_dr.html"><span class="page-id">PG-11</span><div class="page-name">시스템 DR</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-11_system_dr--failover_modal.html"><span class="snap-label">페일오버 모달</span></a>
-        <a href="snapshots/PG-11_system_dr--test_detail.html"><span class="snap-label">테스트 상세</span></a>
-        <a href="snapshots/PG-11_system_dr--test_register.html"><span class="snap-label">테스트 등록</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-12_settings.html"><span class="page-id">PG-12</span><div class="page-name">시스템 설정</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-12_settings--display.html"><span class="snap-label">디스플레이</span></a>
-        <a href="snapshots/PG-12_settings--notification.html"><span class="snap-label">알림 설정</span></a>
-        <a href="snapshots/PG-12_settings--security.html"><span class="snap-label">보안 설정</span></a>
-      </div>
-    </div>
-  </div>
-</div>
+        <!-- Version Toggle -->
+        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 32px;">
+            <button id="btn-v2" onclick="toggleVersion('v2')" style="padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #3b82f6; background: #3b82f6; color: white;">v2 (Tagged)</button>
+            <button id="btn-v1" onclick="toggleVersion('v1')" style="padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; background: white; color: #64748b;">v1 (Original)</button>
+        </div>
 
-<div class="phase">
-  <div class="phase-title">Phase 2 — 확장 (2 pages)</div>
-  <div class="grid">
-    <div>
-      <a href="PG-13_workflow_builder.html"><span class="page-id">PG-13</span><div class="page-name">워크플로우 빌더</div></a>
-    </div>
-    <div>
-      <a href="PG-14_customer_health.html"><span class="page-id">PG-14</span><div class="page-name">고객 헬스 스코어</div></a>
-    </div>
-  </div>
-</div>
+        <!-- Page Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
 
-<div class="phase">
-  <div class="phase-title">Phase 3 — 고도화 (2 pages)</div>
-  <div class="grid">
-    <div>
-      <a href="PG-15_ai_pipeline.html"><span class="page-id">PG-15</span><div class="page-name">AI 재학습 파이프라인</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-15_ai_pipeline--training.html"><span class="snap-label">학습 중</span></a>
-        <a href="snapshots/PG-15_ai_pipeline--deploy_modal.html"><span class="snap-label">배포 모달</span></a>
-        <a href="snapshots/PG-15_ai_pipeline--rollback_modal.html"><span class="snap-label">롤백 모달</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="PG-16_benchmarking.html"><span class="page-id">PG-16</span><div class="page-name">벤치마킹 대시보드</div></a>
-      <div class="snap-links">
-        <a href="snapshots/PG-16_benchmarking--false_positive.html"><span class="snap-label">오탐률 필터</span></a>
-        <a href="snapshots/PG-16_benchmarking--bank_filter.html"><span class="snap-label">금융사 필터</span></a>
-      </div>
-    </div>
-  </div>
-</div>
+            <!-- Phase 1 -->
+            <a id="link-01" href="v2/PG-01_login.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-01</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Login</h3>
+                <p style="font-size: 12px; color: #94a3b8;">LoginForm, SSOProviderList, MFAVerification</p>
+            </a>
 
+            <a id="link-02" href="v2/PG-02_dashboard.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-02</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Main Dashboard</h3>
+                <p style="font-size: 12px; color: #94a3b8;">StatusSummaryCards, DetectionTrendChart, AlertTimeline, QuickActions</p>
+            </a>
+
+            <a id="link-03" href="v2/PG-03_agent_templates.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-03</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Agent Template Library</h3>
+                <p style="font-size: 12px; color: #94a3b8;">CategoryFilter, TemplateGrid, TemplateDetailPanel</p>
+            </a>
+
+            <a id="link-04" href="v2/PG-04_deploy_wizard.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-04</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Deploy Wizard</h3>
+                <p style="font-size: 12px; color: #94a3b8;">StepProgress, WizardContent, NavigationButtons</p>
+            </a>
+
+            <a id="link-05" href="v2/PG-05_connector_hub.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-05</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Connector Hub</h3>
+                <p style="font-size: 12px; color: #94a3b8;">ConnectorList, ConnectionStatus, AddConnectorForm</p>
+            </a>
+
+            <a id="link-06" href="v2/PG-06_realtime_monitoring.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-06</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Realtime Monitoring</h3>
+                <p style="font-size: 12px; color: #94a3b8;">LiveAlertFeed, DetectionHeatmap, TransactionDetail, ActionPanel</p>
+            </a>
+
+            <a id="link-07" href="v2/PG-07_alert_management.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-07</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Alert Management</h3>
+                <p style="font-size: 12px; color: #94a3b8;">ChannelSettings, EscalationRules, AlertHistory</p>
+            </a>
+
+            <a id="link-08" href="v2/PG-08_compliance_reports.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-08</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Compliance Reports</h3>
+                <p style="font-size: 12px; color: #94a3b8;">ReportTemplates, ReportScheduler, ReportHistory, ReportPreview</p>
+            </a>
+
+            <a id="link-09" href="v2/PG-09_audit_log.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-09</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Audit Log Viewer</h3>
+                <p style="font-size: 12px; color: #94a3b8;">LogSearchBar, LogTable, LogDetail, ExportPanel</p>
+            </a>
+
+            <a id="link-10" href="v2/PG-10_user_permissions.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-10</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">User & Permissions</h3>
+                <p style="font-size: 12px; color: #94a3b8;">UserList, RoleManager, PermissionMatrix</p>
+            </a>
+
+            <a id="link-11" href="v2/PG-11_system_dr.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-11</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">System / DR Monitoring</h3>
+                <p style="font-size: 12px; color: #94a3b8;">RegionStatusCards, BackupStatus, FailoverHistory, DRTestSchedule</p>
+            </a>
+
+            <a id="link-12" href="v2/PG-12_settings.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">PG-12</span>
+                    <span class="badge phase-1">Phase 1</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Settings</h3>
+                <p style="font-size: 12px; color: #94a3b8;">ProfileSettings, SecuritySettings, NotificationPreferences, DisplaySettings</p>
+            </a>
+
+            <!-- Phase 2 -->
+            <a id="link-13" href="v2/PG-13_workflow_builder.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #d97706;">PG-13</span>
+                    <span class="badge phase-2">Phase 2</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Workflow Builder</h3>
+                <p style="font-size: 12px; color: #94a3b8;">NodePalette, WorkflowCanvas, PropertyPanel, VersionHistory</p>
+            </a>
+
+            <a id="link-14" href="v2/PG-14_customer_health.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #d97706;">PG-14</span>
+                    <span class="badge phase-2">Phase 2</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Customer Health Dashboard</h3>
+                <p style="font-size: 12px; color: #94a3b8;">HealthScorePanel, CustomerOverview, UsageAnalytics, MaintenanceCalendar</p>
+            </a>
+
+            <!-- Phase 3 -->
+            <a id="link-15" href="v2/PG-15_ai_pipeline.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #7c3aed;">PG-15</span>
+                    <span class="badge phase-3">Phase 3</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">AI Retraining Pipeline</h3>
+                <p style="font-size: 12px; color: #94a3b8;">ModelVersionList, TrainingStatus, PerformanceComparison, DeploymentControl</p>
+            </a>
+
+            <a id="link-16" href="v2/PG-16_benchmarking.html" class="card" style="text-decoration: none; color: inherit;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #7c3aed;">PG-16</span>
+                    <span class="badge phase-3">Phase 3</span>
+                </div>
+                <h3 style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Benchmarking Dashboard</h3>
+                <p style="font-size: 12px; color: #94a3b8;">IndustryBenchmarks, CrossCustomerMetrics, TrendAnalysis</p>
+            </a>
+
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 12px;">
+            FinGuard Financial AI Security Platform &mdash; UI Prototype &copy; 2026
+        </div>
+    </div>
+
+    <script>
+        let currentVersion = 'v2';
+        function toggleVersion(ver) {
+            currentVersion = ver;
+            const links = document.querySelectorAll('a.card');
+            links.forEach(a => {
+                const href = a.getAttribute('href');
+                if (ver === 'v2') {
+                    a.setAttribute('href', href.replace(/^(?:v2\/)?/, 'v2/'));
+                } else {
+                    a.setAttribute('href', href.replace(/^v2\//, ''));
+                }
+            });
+            document.getElementById('btn-v2').style.background = ver === 'v2' ? '#3b82f6' : 'white';
+            document.getElementById('btn-v2').style.color = ver === 'v2' ? 'white' : '#64748b';
+            document.getElementById('btn-v2').style.borderColor = ver === 'v2' ? '#3b82f6' : '#e2e8f0';
+            document.getElementById('btn-v1').style.background = ver === 'v1' ? '#3b82f6' : 'white';
+            document.getElementById('btn-v1').style.color = ver === 'v1' ? 'white' : '#64748b';
+            document.getElementById('btn-v1').style.borderColor = ver === 'v1' ? '#3b82f6' : '#e2e8f0';
+        }
+    </script>
 </body>
 </html>
