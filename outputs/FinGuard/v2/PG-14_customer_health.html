@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinGuard — 고객 Health 대시보드</title>
+    <link rel="stylesheet" href="../cdn/tailwind.css">
+    <script defer src="../cdn/alpine.js"></script>
+    <script src="../cdn/lucide.js"></script>
+    <script src="../cdn/chart.js"></script>
+
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        .slide-down { animation: slideDown 0.25s ease-out; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+
+<div x-data="customerHealth()" x-init="init()" class="flex h-full min-h-screen">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">FinGuard</span>
+        </div>
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="../PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> 메인 대시보드</a>
+            <a href="../PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링</a>
+            <a href="../PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bell" class="w-4 h-4"></i> 알림 관리
+                <span data-component="badge" data-intent="danger" data-variant="filled-light" data-size="sm" data-state="default" class="ml-auto text-[11px] bg-red-100 text-red-700 font-medium px-1.5 py-0.5 rounded-full">3</span></a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="../PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="boxes" class="w-4 h-4"></i> 템플릿 라이브러리</a>
+            <a href="../PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="rocket" class="w-4 h-4"></i> 배포 위저드</a>
+            <a href="../PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="plug" class="w-4 h-4"></i> 커넥터 허브</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">자동화</p>
+            <a href="../PG-13_workflow_builder.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="git-branch" class="w-4 h-4"></i> 워크플로우 빌더</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="../PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="file-text" class="w-4 h-4"></i> 컴플라이언스 리포트</a>
+            <a href="../PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="scroll-text" class="w-4 h-4"></i> 감사 로그</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="../PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="users" class="w-4 h-4"></i> 사용자/권한</a>
+            <a href="../PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="server" class="w-4 h-4"></i> 시스템/DR</a>
+            <a href="../PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="settings" class="w-4 h-4"></i> 설정</a>
+
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">고도화</p>
+            <a href="../PG-15_ai_pipeline.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="brain-circuit" class="w-4 h-4"></i> AI 재학습 파이프라인</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">내부 관리</p>
+            <a href="../PG-14_customer_health.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5">
+                <i data-lucide="heart-pulse" class="w-4 h-4"></i> 고객 Health</a>
+            <a href="../PG-16_benchmarking.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i> 벤치마킹</a>
+
+        </nav>
+        <div class="border-t border-slate-100 p-3">
+            <div class="flex items-center gap-2.5 px-2 py-1.5">
+                <div class="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center text-xs font-bold text-violet-600">박</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-900 truncate">박CSM</p>
+                    <p class="text-[11px] text-slate-400 truncate">고객 성공팀</p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN ==================== -->
+    <main class="flex-1 flex flex-col min-w-0">
+
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900">고객 Health 대시보드</h1>
+                <p class="text-xs text-slate-400 -mt-0.5">금융권 고객사 에이전트 사용 현황 모니터링</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div data-component="badge" data-intent="success" data-variant="filled-light" data-size="sm" data-state="default" class="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full pulse-dot"></span>실시간
+                </div>
+                <span class="text-xs text-slate-400" x-text="'갱신: ' + lastUpdated"></span>
+                <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                <button class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i> 내보내기</button>
+                <button class="h-8 px-3 rounded-md bg-slate-900 text-xs font-medium text-white hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i> 일괄 리포트</button>
+            </div>
+        </header>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-5">
+
+            <!-- ==================== CUSTOMER OVERVIEW TABLE ==================== -->
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="bg-white rounded-xl border border-slate-200">
+                <!-- Table Header -->
+                <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-sm font-semibold text-slate-900">고객사 현황</h2>
+                        <span data-component="badge" data-intent="neutral" data-variant="filled-light" data-size="sm" data-state="default" class="text-[11px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full" x-text="customers.length + '개 고객사'"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <!-- Industry Filter -->
+                        <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                            <template x-for="f in industryFilters" :key="f.value">
+                                <button @click="industryFilter=f.value"
+                                        role="tab"
+                                        :aria-selected="industryFilter===f.value"
+                                        :data-state="industryFilter===f.value ? 'selected' : 'default'"
+                                        class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors"
+                                        :class="industryFilter===f.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                                        x-text="f.label"></button>
+                            </template>
+                        </div>
+                        <!-- Search -->
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400"></i>
+                            <input x-model="searchQuery" type="text" placeholder="고객사 검색..."
+                                   class="h-8 w-40 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-300">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="text-left text-slate-400 font-medium border-b border-slate-100 bg-slate-50/50">
+                                <th class="py-2.5 px-5 w-[160px]">고객사</th>
+                                <th class="py-2.5 px-3 w-[70px]">업종</th>
+                                <th class="py-2.5 px-3 w-[100px] cursor-pointer hover:text-slate-600" @click="sortBy('health_score')">
+                                    <span class="inline-flex items-center gap-1">Health Score <i data-lucide="arrow-up-down" class="w-3 h-3"></i></span></th>
+                                <th class="py-2.5 px-3 w-[80px]">가동률</th>
+                                <th class="py-2.5 px-3 w-[70px]">탐지율</th>
+                                <th class="py-2.5 px-3 w-[70px]">오탐률</th>
+                                <th class="py-2.5 px-3 w-[70px]">에이전트</th>
+                                <th class="py-2.5 px-3 w-[80px]">API 호출</th>
+                                <th class="py-2.5 px-3 w-[80px]">최근 활동</th>
+                                <th class="py-2.5 px-3 w-[100px]">계약 만료</th>
+                                <th class="py-2.5 px-3 w-[70px]">담당</th>
+                                <th class="py-2.5 px-3 w-[60px]"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="c in filteredCustomers" :key="c.id">
+                                <tr class="border-b border-slate-50 transition-colors cursor-pointer"
+                                    :class="selectedCustomer===c.id ? 'bg-blue-50/50' : 'hover:bg-slate-50'"
+                                    @click="selectCustomer(c.id)">
+                                    <td class="py-2.5 px-5 font-medium text-slate-800" x-text="c.name"></td>
+                                    <td class="py-2.5 px-3">
+                                        <span data-component="badge" :data-intent="{'은행':'info','증권':'info','보험':'warning','카드':'danger','저축은행':'neutral'}[c.industry]" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                              :class="{'bg-blue-100 text-blue-700': c.industry==='은행', 'bg-indigo-100 text-indigo-700': c.industry==='증권', 'bg-amber-100 text-amber-700': c.industry==='보험', 'bg-rose-100 text-rose-700': c.industry==='카드', 'bg-slate-100 text-slate-600': c.industry==='저축은행'}"
+                                              x-text="c.industry"></span></td>
+                                    <td class="py-2.5 px-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                                                 :class="c.health >= 90 ? 'bg-emerald-100 text-emerald-700' : c.health >= 80 ? 'bg-amber-100 text-amber-700' : c.health >= 60 ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'"
+                                                 x-text="c.health"></div>
+                                        </div></td>
+                                    <td class="py-2.5 px-3" :class="c.uptime < 99.9 ? 'text-red-600 font-medium' : 'text-slate-600'" x-text="c.uptime.toFixed(2)+'%'"></td>
+                                    <td class="py-2.5 px-3 text-slate-600" x-text="c.detection.toFixed(1)+'%'"></td>
+                                    <td class="py-2.5 px-3" :class="c.falsePositive > 5 ? 'text-red-600 font-medium' : 'text-slate-600'" x-text="c.falsePositive.toFixed(1)+'%'"></td>
+                                    <td class="py-2.5 px-3 text-slate-600 text-center" x-text="c.agents"></td>
+                                    <td class="py-2.5 px-3 text-slate-600" x-text="c.apiCalls"></td>
+                                    <td class="py-2.5 px-3 text-slate-400" x-text="c.lastActivity"></td>
+                                    <td class="py-2.5 px-3" :class="c.contractDays <= 90 ? 'text-red-600 font-medium' : 'text-slate-500'" x-text="c.contractEnd"></td>
+                                    <td class="py-2.5 px-3 text-slate-500" x-text="c.csm"></td>
+                                    <td class="py-2.5 px-3">
+                                        <button class="p-1 text-slate-400 hover:text-slate-600 rounded"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ==================== HEALTH SCORE PANEL (6 Cards) ==================== -->
+            <div x-show="selectedCustomer" x-transition class="slide-down">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-sm font-semibold text-slate-900" x-text="selectedData?.name + ' Health 지표'"></h2>
+                        <span class="text-[11px] text-slate-400">7일 추이</span>
+                    </div>
+                    <button class="text-xs text-slate-500 hover:text-slate-700 inline-flex items-center gap-1">
+                        <i data-lucide="settings" class="w-3.5 h-3.5"></i> 임계값 설정</button>
+                </div>
+                <div class="grid grid-cols-6 gap-3">
+                    <!-- Uptime -->
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer"
+                         :class="selectedData?.uptime < 99.5 ? 'border-red-200' : ''">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center"><i data-lucide="activity" class="w-4 h-4 text-blue-600"></i></div>
+                            <span data-component="badge" :data-intent="selectedData?.uptimeTrend > 0 ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
+                                  :class="selectedData?.uptimeTrend > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'">
+                                <i :data-lucide="selectedData?.uptimeTrend > 0 ? 'trending-up' : 'trending-down'" class="w-3 h-3"></i>
+                                <span x-text="(selectedData?.uptimeTrend > 0 ? '+' : '') + selectedData?.uptimeTrend + '%'"></span>
+                            </span>
+                        </div>
+                        <p class="text-lg font-bold text-slate-900" x-text="selectedData?.uptime.toFixed(2) + '%'"></p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">에이전트 가동률</p>
+                    </div>
+                    <!-- Detection Rate -->
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center"><i data-lucide="shield" class="w-4 h-4 text-emerald-600"></i></div>
+                            <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 inline-flex items-center gap-0.5">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +1.2%</span>
+                        </div>
+                        <p class="text-lg font-bold text-slate-900" x-text="selectedData?.detection.toFixed(1) + '%'"></p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">탐지율</p>
+                    </div>
+                    <!-- False Positive -->
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer"
+                         :class="selectedData?.falsePositive > 5 ? 'border-red-200' : ''">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i></div>
+                            <span data-component="badge" :data-intent="selectedData?.fpTrend < 0 ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
+                                  :class="selectedData?.fpTrend < 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'">
+                                <i :data-lucide="selectedData?.fpTrend < 0 ? 'trending-down' : 'trending-up'" class="w-3 h-3"></i>
+                                <span x-text="(selectedData?.fpTrend > 0 ? '+' : '') + selectedData?.fpTrend + '%'"></span>
+                            </span>
+                        </div>
+                        <p class="text-lg font-bold text-slate-900" x-text="selectedData?.falsePositive.toFixed(1) + '%'"></p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">오탐률</p>
+                    </div>
+                    <!-- API Calls -->
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center"><i data-lucide="zap" class="w-4 h-4 text-violet-600"></i></div>
+                            <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 inline-flex items-center gap-0.5">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +8%</span>
+                        </div>
+                        <p class="text-lg font-bold text-slate-900" x-text="selectedData?.apiCalls"></p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">일일 API 호출</p>
+                    </div>
+                    <!-- Active Users -->
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i></div>
+                            <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 inline-flex items-center gap-0.5">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +2</span>
+                        </div>
+                        <p class="text-lg font-bold text-slate-900" x-text="selectedData?.activeUsers"></p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">활성 사용자</p>
+                    </div>
+                    <!-- Health Score -->
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border-2 p-4 hover:shadow-sm transition-shadow cursor-pointer"
+                         :class="selectedData?.health >= 90 ? 'border-emerald-300' : selectedData?.health >= 80 ? 'border-amber-300' : selectedData?.health >= 60 ? 'border-orange-300' : 'border-red-300'">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                 :class="selectedData?.health >= 90 ? 'bg-emerald-50' : selectedData?.health >= 80 ? 'bg-amber-50' : 'bg-red-50'">
+                                <i data-lucide="heart" class="w-4 h-4"
+                                   :class="selectedData?.health >= 90 ? 'text-emerald-600' : selectedData?.health >= 80 ? 'text-amber-600' : 'text-red-600'"></i></div>
+                            <span data-component="badge" :data-intent="selectedData?.healthTrend > 0 ? 'success' : 'danger'" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
+                                  :class="selectedData?.healthTrend > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'">
+                                <i :data-lucide="selectedData?.healthTrend > 0 ? 'trending-up' : 'trending-down'" class="w-3 h-3"></i>
+                                <span x-text="(selectedData?.healthTrend > 0 ? '+' : '') + selectedData?.healthTrend"></span>
+                            </span>
+                        </div>
+                        <p class="text-lg font-bold text-slate-900" x-text="selectedData?.health"></p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Health Score</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== BOTTOM ROW: Chart + Calendar ==================== -->
+            <div x-show="selectedCustomer" x-transition class="grid grid-cols-5 gap-5 slide-down">
+
+                <!-- Usage Analytics Chart -->
+                <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="col-span-3 bg-white rounded-xl border border-slate-200 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-sm font-semibold text-slate-900">사용량 추이</h2>
+                            <p class="text-[11px] text-slate-400 mt-0.5" x-text="selectedData?.name + ' — 최근 30일'"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-3 text-[11px]">
+                                <span class="inline-flex items-center gap-1"><span class="w-3 h-0.5 bg-emerald-500 rounded"></span> 탐지율</span>
+                                <span class="inline-flex items-center gap-1"><span class="w-3 h-0.5 bg-red-500 rounded" style="border-bottom: 1px dashed"></span> 오탐률</span>
+                                <span class="inline-flex items-center gap-1"><span class="w-3 h-0.5 bg-blue-500 rounded"></span> 가동률</span>
+                            </div>
+                            <div data-component="tab" data-intent="default" data-variant="segment" data-size="md" data-state="default" role="tablist" class="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5 ml-2">
+                                <template x-for="p in ['7일','30일','90일']" :key="p">
+                                    <button @click="chartPeriod=p"
+                                            role="tab"
+                                            :aria-selected="chartPeriod===p"
+                                            :data-state="chartPeriod===p ? 'selected' : 'default'"
+                                            class="px-2 py-1 text-[11px] font-medium rounded-md transition-colors"
+                                            :class="chartPeriod===p ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                                            x-text="p"></button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-[240px]">
+                        <canvas id="usageChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Maintenance Calendar -->
+                <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" class="col-span-2 bg-white rounded-xl border border-slate-200 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-sm font-semibold text-slate-900">유지보수 캘린더</h2>
+                            <p class="text-[11px] text-slate-400 mt-0.5">2026년 2월</p>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button class="p-1 text-slate-400 hover:text-slate-600 rounded"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <button class="p-1 text-slate-400 hover:text-slate-600 rounded"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Grid -->
+                    <div class="grid grid-cols-7 gap-px text-center text-[11px] mb-1">
+                        <template x-for="d in ['일','월','화','수','목','금','토']" :key="d">
+                            <div class="text-slate-400 font-medium py-1" x-text="d"></div>
+                        </template>
+                    </div>
+                    <div class="grid grid-cols-7 gap-px">
+                        <template x-for="day in calendarDays" :key="day.key">
+                            <div class="h-9 flex flex-col items-center justify-center rounded-md text-[11px] transition-colors relative"
+                                 :class="{
+                                     'text-slate-300': !day.current,
+                                     'text-slate-700': day.current && !day.event,
+                                     'bg-amber-50 text-amber-700 font-medium': day.event==='maintenance',
+                                     'bg-blue-50 text-blue-700 font-medium': day.event==='deployment',
+                                     'bg-red-50 text-red-700 font-medium': day.event==='incident',
+                                     'bg-violet-50 text-violet-700 font-medium': day.event==='contract',
+                                     'ring-2 ring-blue-400 ring-offset-1': day.today
+                                 }">
+                                <span x-text="day.date"></span>
+                                <span x-show="day.event" class="w-1 h-1 rounded-full mt-0.5"
+                                      :class="{
+                                          'bg-amber-500': day.event==='maintenance',
+                                          'bg-blue-500': day.event==='deployment',
+                                          'bg-red-500': day.event==='incident',
+                                          'bg-violet-500': day.event==='contract'
+                                      }"></span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Event Legend -->
+                    <div class="mt-3 pt-3 border-t border-slate-100 space-y-1.5">
+                        <div class="flex items-center gap-2 text-[11px]">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            <span class="text-slate-500">2/10~12</span>
+                            <span class="text-slate-700 font-medium">시스템 점검</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[11px]">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            <span class="text-slate-500">2/18</span>
+                            <span class="text-slate-700 font-medium">에이전트 v3.2 배포</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[11px]">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            <span class="text-slate-500">2/5</span>
+                            <span class="text-slate-700 font-medium">네트워크 장애 (해결)</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[11px]">
+                            <span class="w-2 h-2 rounded-full bg-violet-500"></span>
+                            <span class="text-slate-500">2/28</span>
+                            <span class="text-slate-700 font-medium">계약 갱신 협의</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State (no customer selected) -->
+            <div data-component="card" data-intent="default" data-variant="filled" data-size="auto" data-state="default" x-show="!selectedCustomer" class="bg-white rounded-xl border border-slate-200 p-12 text-center">
+                <i data-lucide="mouse-pointer-click" class="w-10 h-10 text-slate-300 mx-auto mb-3"></i>
+                <p class="text-sm text-slate-500 mb-1">고객사를 선택하면 Health 지표가 표시됩니다.</p>
+                <p class="text-xs text-slate-400">위 테이블에서 고객사를 클릭하세요.</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('alpine:init', () => { setTimeout(() => lucide.createIcons(), 50); });
+
+function customerHealth() {
+    return {
+        selectedCustomer: 'kb',
+        searchQuery: '',
+        industryFilter: '전체',
+        chartPeriod: '30일',
+        lastUpdated: new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }),
+        usageChart: null,
+
+        industryFilters: [
+            { value:'전체', label:'전체' },
+            { value:'은행', label:'은행' },
+            { value:'증권', label:'증권' },
+            { value:'보험', label:'보험' },
+            { value:'카드', label:'카드' }
+        ],
+
+        customers: [
+            { id:'kb', name:'KB국민은행', industry:'은행', health:94, uptime:99.97, detection:96.2, falsePositive:1.8, agents:12, apiCalls:'45.2K', activeUsers:28, lastActivity:'2분 전', contractEnd:'2027-03-15', contractDays:401, csm:'박CSM', uptimeTrend:0.01, fpTrend:-0.3, healthTrend:2 },
+            { id:'shinhan', name:'신한은행', industry:'은행', health:88, uptime:99.95, detection:93.5, falsePositive:3.2, agents:10, apiCalls:'38.7K', activeUsers:22, lastActivity:'5분 전', contractEnd:'2026-12-31', contractDays:327, csm:'박CSM', uptimeTrend:0.02, fpTrend:-0.5, healthTrend:1 },
+            { id:'nh', name:'NH농협은행', industry:'은행', health:76, uptime:99.82, detection:88.1, falsePositive:6.5, agents:8, apiCalls:'22.3K', activeUsers:15, lastActivity:'15분 전', contractEnd:'2026-08-20', contractDays:194, csm:'최CSM', uptimeTrend:-0.05, fpTrend:1.2, healthTrend:-3 },
+            { id:'samsung_sec', name:'삼성증권', industry:'증권', health:91, uptime:99.96, detection:95.0, falsePositive:2.1, agents:6, apiCalls:'18.9K', activeUsers:14, lastActivity:'8분 전', contractEnd:'2027-06-30', contractDays:508, csm:'박CSM', uptimeTrend:0.01, fpTrend:-0.2, healthTrend:1 },
+            { id:'hanwha', name:'한화투자증권', industry:'증권', health:65, uptime:99.71, detection:82.3, falsePositive:8.7, agents:4, apiCalls:'8.5K', activeUsers:6, lastActivity:'1시간 전', contractEnd:'2026-05-15', contractDays:97, csm:'최CSM', uptimeTrend:-0.12, fpTrend:2.1, healthTrend:-5 },
+            { id:'samsung_fire', name:'삼성화재', industry:'보험', health:85, uptime:99.93, detection:91.8, falsePositive:3.8, agents:7, apiCalls:'15.2K', activeUsers:11, lastActivity:'12분 전', contractEnd:'2027-01-31', contractDays:358, csm:'김CSM', uptimeTrend:0.00, fpTrend:-0.1, healthTrend:0 },
+            { id:'hyundai', name:'현대카드', industry:'카드', health:92, uptime:99.98, detection:97.1, falsePositive:1.5, agents:9, apiCalls:'52.1K', activeUsers:19, lastActivity:'1분 전', contractEnd:'2027-09-30', contractDays:600, csm:'박CSM', uptimeTrend:0.01, fpTrend:-0.4, healthTrend:3 },
+            { id:'sbi', name:'SBI저축은행', industry:'저축은행', health:58, uptime:99.45, detection:78.5, falsePositive:12.3, agents:3, apiCalls:'3.2K', activeUsers:4, lastActivity:'3시간 전', contractEnd:'2026-04-10', contractDays:62, csm:'최CSM', uptimeTrend:-0.22, fpTrend:3.5, healthTrend:-8 }
+        ],
+
+        get filteredCustomers() {
+            let list = this.customers;
+            if (this.industryFilter !== '전체') list = list.filter(c => c.industry === this.industryFilter);
+            if (this.searchQuery) {
+                const q = this.searchQuery.toLowerCase();
+                list = list.filter(c => c.name.toLowerCase().includes(q));
+            }
+            return list;
+        },
+
+        get selectedData() {
+            return this.customers.find(c => c.id === this.selectedCustomer);
+        },
+
+        // February 2026 calendar
+        get calendarDays() {
+            const events = { 5:'incident', 10:'maintenance', 11:'maintenance', 12:'maintenance', 18:'deployment', 28:'contract' };
+            const days = [];
+            // Previous month padding (Feb 1, 2026 = Sunday)
+            for (let i = 0; i < 0; i++) days.push({ key:'p'+i, date: 32-i, current:false, event:null, today:false });
+            // Feb days
+            for (let d = 1; d <= 28; d++) {
+                days.push({ key:'d'+d, date:d, current:true, event: events[d]||null, today: d===7 });
+            }
+            // Next month padding
+            const rem = 7 - (days.length % 7);
+            if (rem < 7) for (let i = 1; i <= rem; i++) days.push({ key:'n'+i, date:i, current:false, event:null, today:false });
+            return days;
+        },
+
+        selectCustomer(id) {
+            this.selectedCustomer = id;
+            this.$nextTick(() => {
+                lucide.createIcons();
+                this.renderChart();
+            });
+        },
+
+        sortBy(field) {
+            this.customers.sort((a,b) => a[field === 'health_score' ? 'health' : field] - b[field === 'health_score' ? 'health' : field]);
+        },
+
+        renderChart() {
+            const el = document.getElementById('usageChart');
+            if (!el) return;
+            if (this.usageChart) { this.usageChart.destroy(); this.usageChart = null; }
+            const ctx = el.getContext('2d');
+            if (!ctx) return;
+
+            const labels = Array.from({length:30}, (_,i) => {
+                const d = new Date(2026, 1, i+1);
+                return (d.getMonth()+1)+'/'+d.getDate();
+            });
+
+            const c = this.selectedData;
+            if (!c) return;
+            const base = { detection: c.detection, fp: c.falsePositive, uptime: c.uptime };
+            const genData = (base, variance, count) => Array.from({length:count}, () => +(base + (Math.random()-0.5)*variance).toFixed(2));
+
+            this.usageChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label:'탐지율', data: genData(base.detection, 4, 30), borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.05)', borderWidth:2, tension:0.3, fill:true, pointRadius:0, pointHoverRadius:4 },
+                        { label:'오탐률', data: genData(base.fp, 2, 30), borderColor:'#ef4444', borderWidth:2, tension:0.3, borderDash:[5,3], pointRadius:0, pointHoverRadius:4 },
+                        { label:'가동률', data: genData(base.uptime, 0.1, 30), borderColor:'#3b82f6', borderWidth:2, tension:0.3, pointRadius:0, pointHoverRadius:4, yAxisID:'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    interaction: { mode:'index', intersect:false },
+                    plugins: { legend:{ display:false }, tooltip:{ backgroundColor:'#1e293b', titleFont:{size:11}, bodyFont:{size:11}, padding:8, cornerRadius:6 } },
+                    scales: {
+                        x: { grid:{display:false}, ticks:{font:{size:10}, color:'#94a3b8', maxTicksLimit:10} },
+                        y: { min:0, max:100, grid:{color:'#f1f5f9'}, ticks:{font:{size:10}, color:'#94a3b8', callback: v => v+'%'} },
+                        y1: { position:'right', min:99, max:100.05, grid:{display:false}, ticks:{font:{size:10}, color:'#94a3b8', callback: v => v.toFixed(2)+'%'} }
+                    }
+                }
+            });
+        },
+
+        init() {
+            this.$nextTick(() => {
+                try { lucide.createIcons(); } catch(e) { console.warn('Lucide init:', e); }
+                try { this.renderChart(); } catch(e) { console.warn('Chart init:', e); }
+            });
+        }
+    };
+}
+</script>
+</body>
+</html>

@@ -28,5 +28,5 @@ node_modules/
 
 # Outputs
 outputs/*
-!outputs/GenOS/
+!outputs/FinGuard/
 *.log

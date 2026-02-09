@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinGuard — 사용자/권한 관리</title>
+    <link rel="stylesheet" href="../cdn/tailwind.css">
+    <script defer src="../cdn/alpine.js"></script>
+    <script src="../cdn/lucide.js"></script>
+                    
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+
+<div x-data="userPermissions()" x-init="init()" class="flex h-full min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="w-[240px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 h-screen sticky top-0">
+        <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center"><i data-lucide="shield-check" class="w-5 h-5 text-white"></i></div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">FinGuard</span>
+        </div>
+        <nav class="flex-1 overflow-y-auto scrollbar-thin py-4 px-3">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5">보안 운영</p>
+            <a href="PG-02_dashboard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> 메인 대시보드</a>
+            <a href="PG-06_realtime_monitoring.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="activity" class="w-4 h-4"></i> 실시간 모니터링</a>
+            <a href="PG-07_alert_management.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="bell" class="w-4 h-4"></i> 알림 관리</a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">에이전트 관리</p>
+            <a href="PG-03_agent_templates.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="boxes" class="w-4 h-4"></i> 템플릿 라이브러리</a>
+            <a href="PG-04_deploy_wizard.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="rocket" class="w-4 h-4"></i> 배포 위저드</a>
+            <a href="PG-05_connector_hub.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="plug" class="w-4 h-4"></i> 커넥터 허브</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">자동화</p>
+            <a href="PG-13_workflow_builder.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="git-branch" class="w-4 h-4"></i> 워크플로우 빌더</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">리포팅 · 감사</p>
+            <a href="PG-08_compliance_reports.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="file-text" class="w-4 h-4"></i> 컴플라이언스 리포트</a>
+            <a href="PG-09_audit_log.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="scroll-text" class="w-4 h-4"></i> 감사 로그</a>
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">시스템 관리</p>
+            <a href="PG-10_user_permissions.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium bg-slate-100 text-slate-900 mb-0.5"><i data-lucide="users" class="w-4 h-4"></i> 사용자/권한</a>
+            <a href="PG-11_system_dr.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="server" class="w-4 h-4"></i> 시스템/DR</a>
+            <a href="PG-12_settings.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5"><i data-lucide="settings" class="w-4 h-4"></i> 설정</a>
+
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">고도화</p>
+            <a href="PG-15_ai_pipeline.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="brain-circuit" class="w-4 h-4"></i> AI 재학습 파이프라인</a>
+
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-1.5 mt-5">내부 관리</p>
+            <a href="PG-14_customer_health.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="heart-pulse" class="w-4 h-4"></i> 고객 Health</a>
+            <a href="PG-16_benchmarking.html" class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-0.5">
+                <i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i> 벤치마킹</a>
+
+        </nav>
+        <div class="border-t border-slate-100 p-3">
+            <div class="flex items-center gap-2.5 px-2 py-1.5">
+                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">김</div>
+                <div class="flex-1 min-w-0"><p class="text-sm font-medium text-slate-900 truncate">김부장</p><p class="text-[11px] text-slate-400 truncate">IT 보안팀</p></div>
+                <button class="text-slate-400 hover:text-slate-600"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 flex flex-col min-w-0">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900">사용자/권한 관리</h1>
+                <p class="text-xs text-slate-500">RBAC 기반 사용자 관리, 역할 할당, 권한 매트릭스</p>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+            <!-- TAB -->
+            <div class="flex gap-1 bg-slate-100 rounded-lg p-1 w-fit">
+                <button @click="activeTab = 'users'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    :class="activeTab === 'users' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'">사용자 목록</button>
+                <button @click="activeTab = 'roles'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    :class="activeTab === 'roles' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'">역할 관리</button>
+                <button @click="activeTab = 'matrix'" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    :class="activeTab === 'matrix' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'">권한 매트릭스</button>
+            </div>
+
+            <!-- ==================== USER LIST ==================== -->
+            <section x-show="activeTab === 'users'" x-transition>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" x-model="userSearch" placeholder="이름, 이메일로 검색" class="h-9 pl-9 pr-3 w-[220px] rounded-md border border-slate-200 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                        </div>
+                        <select x-model="userRoleFilter" class="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="all">전체 역할</option>
+                            <template x-for="r in roles" :key="r.role_id"><option :value="r.role_name" x-text="r.role_name"></option></template>
+                        </select>
+                        <select x-model="userStatusFilter" class="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="all">전체 상태</option>
+                            <option value="ACTIVE">ACTIVE</option>
+                            <option value="INACTIVE">INACTIVE</option>
+                            <option value="LOCKED">LOCKED</option>
+                        </select>
+                    </div>
+                    <button @click="showAddUserModal = true" class="h-9 px-3.5 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 flex items-center gap-2">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i> 사용자 추가
+                    </button>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-slate-100">
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3 w-[80px]">ID</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">이름</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">이메일</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">부서</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">역할</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3 w-[70px]">MFA</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">상태</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">마지막 로그인</th>
+                                <th class="text-right text-xs font-medium text-slate-500 px-4 py-3">액션</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="user in filteredUsers" :key="user.user_id">
+                                <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                                    :class="{'bg-amber-50/50': !user.mfa_enabled}">
+                                    <td class="px-4 py-3 text-xs text-slate-400 font-mono" x-text="user.user_id"></td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold"
+                                                :class="user.status === 'ACTIVE' ? 'bg-slate-200 text-slate-600' : 'bg-slate-100 text-slate-400'"
+                                                x-text="user.user_name.charAt(0)"></div>
+                                            <span class="text-sm font-medium text-slate-900" x-text="user.user_name"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-slate-600" x-text="user.email"></td>
+                                    <td class="px-4 py-3 text-sm text-slate-600" x-text="user.department"></td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-violet-50 text-violet-700" x-text="user.role"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded"
+                                            :class="user.mfa_enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
+                                            x-text="user.mfa_enabled ? 'ON' : 'OFF'"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                            :class="{
+                                                'bg-emerald-50 text-emerald-700': user.status === 'ACTIVE',
+                                                'bg-slate-100 text-slate-500': user.status === 'INACTIVE',
+                                                'bg-red-50 text-red-700': user.status === 'LOCKED',
+                                                'bg-amber-50 text-amber-700': user.status === 'PENDING'
+                                            }" x-text="user.status"></span>
+                                    </td>
+                                    <td class="px-4 py-3 text-xs text-slate-500" x-text="user.last_login"></td>
+                                    <td class="px-4 py-3 text-right">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <button class="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600" title="편집"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                                            <button x-show="!user.mfa_enabled" class="p-1.5 rounded hover:bg-amber-50 text-amber-500 hover:text-amber-700" title="MFA 강제 활성화"><i data-lucide="shield" class="w-3.5 h-3.5"></i></button>
+                                            <button class="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600" title="삭제"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ==================== ROLE MANAGER ==================== -->
+            <section x-show="activeTab === 'roles'" x-transition>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-base font-semibold text-slate-900">역할 관리</h2>
+                    <button class="h-9 px-3.5 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> 역할 추가
+                    </button>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-slate-100">
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3 w-[80px]">ID</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">역할명</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">설명</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3 w-[100px]">사용자 수</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3 w-[80px]">권한 수</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3 w-[90px]">유형</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3">수정일</th>
+                                <th class="text-right text-xs font-medium text-slate-500 px-4 py-3">액션</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="role in roles" :key="role.role_id">
+                                <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-3 text-xs text-slate-400 font-mono" x-text="role.role_id"></td>
+                                    <td class="px-4 py-3 text-sm font-semibold text-slate-900" x-text="role.role_name"></td>
+                                    <td class="px-4 py-3 text-sm text-slate-600" x-text="role.description"></td>
+                                    <td class="px-4 py-3 text-sm text-slate-700 font-medium" x-text="role.user_count"></td>
+                                    <td class="px-4 py-3 text-sm text-slate-600" x-text="role.permission_count"></td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                                            :class="role.is_system ? 'bg-slate-100 text-slate-500' : 'bg-blue-50 text-blue-700'"
+                                            x-text="role.is_system ? '시스템' : '커스텀'"></span>
+                                    </td>
+                                    <td class="px-4 py-3 text-xs text-slate-500" x-text="role.updated_at"></td>
+                                    <td class="px-4 py-3 text-right">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <button :disabled="role.is_system" class="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed" title="편집"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                                            <button class="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600" title="복제"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+                                            <button :disabled="role.is_system || role.user_count > 0" class="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600 disabled:opacity-30 disabled:cursor-not-allowed" title="삭제"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ==================== PERMISSION MATRIX ==================== -->
+            <section x-show="activeTab === 'matrix'" x-transition>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-base font-semibold text-slate-900">권한 매트릭스</h2>
+                        <select x-model="matrixCategoryFilter" class="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <option value="all">전체 카테고리</option>
+                            <option value="에이전트 관리">에이전트 관리</option>
+                            <option value="데이터 소스">데이터 소스</option>
+                            <option value="모니터링">모니터링</option>
+                            <option value="리포트">리포트</option>
+                            <option value="사용자 관리">사용자 관리</option>
+                            <option value="시스템 설정">시스템 설정</option>
+                            <option value="감사 로그">감사 로그</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div x-show="matrixChanged" class="text-xs text-amber-600 font-medium flex items-center gap-1">
+                            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> 저장되지 않은 변경 사항
+                        </div>
+                        <button x-show="matrixChanged" @click="matrixChanged = false" class="h-8 px-3 rounded-md border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50">취소</button>
+                        <button x-show="matrixChanged" @click="matrixChanged = false; matrixSaved = true; setTimeout(() => matrixSaved = false, 2000)" class="h-8 px-3 rounded-md bg-slate-900 text-xs font-medium text-white hover:bg-slate-800">변경 저장</button>
+                        <span x-show="matrixSaved" class="text-xs text-emerald-600 font-medium flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 저장됨</span>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-lg overflow-x-auto">
+                    <table class="w-full min-w-[900px]">
+                        <thead>
+                            <tr class="border-b border-slate-200">
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3 sticky left-0 bg-white z-10 w-[200px]">권한</th>
+                                <th class="text-left text-xs font-medium text-slate-500 px-4 py-3 sticky left-[200px] bg-white z-10 w-[120px]">카테고리</th>
+                                <template x-for="role in roles" :key="role.role_id">
+                                    <th class="text-center text-xs font-medium text-slate-700 px-3 py-3 min-w-[100px]" x-text="role.role_name"></th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="perm in filteredPermissions" :key="perm.id">
+                                <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-2.5 text-sm text-slate-900 sticky left-0 bg-white" x-text="perm.name"></td>
+                                    <td class="px-4 py-2.5 sticky left-[200px] bg-white">
+                                        <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-100 text-slate-600" x-text="perm.category"></span>
+                                    </td>
+                                    <template x-for="role in roles" :key="role.role_id">
+                                        <td class="text-center px-3 py-2.5">
+                                            <button @click="togglePermission(perm.id, role.role_id)"
+                                                :disabled="perm.locked && perm.locked.includes(role.role_id)"
+                                                class="w-5 h-5 rounded border-2 inline-flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                                :class="getPermValue(perm.id, role.role_id) ? 'bg-slate-900 border-slate-900' : 'bg-white border-slate-300 hover:border-slate-400'">
+                                                <svg x-show="getPermValue(perm.id, role.role_id)" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                            </button>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ADD USER MODAL -->
+    <div x-show="showAddUserModal" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showAddUserModal = false">
+        <div class="bg-white rounded-lg w-[480px] shadow-xl" @click.stop>
+            <div class="p-5 border-b border-slate-100"><h3 class="text-base font-semibold text-slate-900">사용자 추가</h3></div>
+            <div class="p-5 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-medium text-slate-700 mb-1.5">이름</label><input type="text" placeholder="홍길동" class="w-full h-10 rounded-md border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none"></div>
+                    <div><label class="block text-xs font-medium text-slate-700 mb-1.5">이메일</label><input type="email" placeholder="user@company.com" class="w-full h-10 rounded-md border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-medium text-slate-700 mb-1.5">부서</label><input type="text" placeholder="IT 보안팀" class="w-full h-10 rounded-md border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none"></div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">역할</label>
+                        <select class="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none">
+                            <template x-for="r in roles" :key="r.role_id"><option x-text="r.role_name"></option></template>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-amber-50 rounded-lg">
+                    <i data-lucide="info" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+                    <p class="text-xs text-amber-700">금융권 보안 정책에 따라 MFA가 자동 활성화됩니다. 사용자가 첫 로그인 시 MFA를 설정해야 합니다.</p>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 flex justify-end gap-2">
+                <button @click="showAddUserModal = false" class="h-9 px-3.5 rounded-md border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50">취소</button>
+                <button @click="showAddUserModal = false" class="h-9 px-3.5 rounded-md bg-slate-900 text-sm font-medium text-white hover:bg-slate-800">추가</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function userPermissions() {
+    return {
+        activeTab: 'users',
+        userSearch: '', userRoleFilter: 'all', userStatusFilter: 'all',
+        showAddUserModal: true,
+        matrixCategoryFilter: 'all',
+        matrixChanged: false, matrixSaved: false,
+
+        users: [
+            { user_id: 'U001', user_name: '김부장', email: 'kim.bj@kbfg.com', department: 'IT 보안팀', role: 'ADMIN', mfa_enabled: true, status: 'ACTIVE', last_login: '2026-02-06 09:32', created_at: '2024-03-15' },
+            { user_id: 'U002', user_name: '이과장', email: 'lee.gj@kbfg.com', department: '디지털혁신팀', role: 'SECURITY_OFFICER', mfa_enabled: true, status: 'ACTIVE', last_login: '2026-02-06 08:55', created_at: '2024-05-20' },
+            { user_id: 'U003', user_name: '박대리', email: 'park.dr@shfg.com', department: 'IT 보안팀', role: 'ANALYST', mfa_enabled: true, status: 'ACTIVE', last_login: '2026-02-05 18:22', created_at: '2025-01-10' },
+            { user_id: 'U004', user_name: '최사원', email: 'choi.sw@nhfg.com', department: '준법감시팀', role: 'VIEWER', mfa_enabled: false, status: 'LOCKED', last_login: '2026-02-06 08:15', created_at: '2025-06-01' },
+            { user_id: 'U005', user_name: '정과장', email: 'jung.gj@kbfg.com', department: 'IT 인프라팀', role: 'ANALYST', mfa_enabled: true, status: 'ACTIVE', last_login: '2026-02-04 17:45', created_at: '2024-08-12' },
+            { user_id: 'U006', user_name: '한대리', email: 'han.dr@kbfg.com', department: '디지털혁신팀', role: 'VIEWER', mfa_enabled: false, status: 'ACTIVE', last_login: '2026-01-30 14:20', created_at: '2025-09-01' },
+            { user_id: 'U007', user_name: '솔라CSM', email: 'csm@solarai.com', department: '솔라 AI (외부)', role: 'VIEWER', mfa_enabled: true, status: 'ACTIVE', last_login: '2026-02-05 10:30', created_at: '2025-03-01' },
+            { user_id: 'U008', user_name: '신입사원', email: 'new@kbfg.com', department: 'IT 보안팀', role: 'VIEWER', mfa_enabled: false, status: 'PENDING', last_login: '-', created_at: '2026-02-05' },
+        ],
+
+        roles: [
+            { role_id: 'R01', role_name: 'ADMIN', description: '전체 시스템 관리 권한', user_count: 1, permission_count: 28, is_system: true, updated_at: '2024-03-15' },
+            { role_id: 'R02', role_name: 'SECURITY_OFFICER', description: '보안 운영 및 모니터링 관리', user_count: 1, permission_count: 22, is_system: true, updated_at: '2024-03-15' },
+            { role_id: 'R03', role_name: 'ANALYST', description: '보안 분석 및 리포트 조회', user_count: 2, permission_count: 14, is_system: true, updated_at: '2024-03-15' },
+            { role_id: 'R04', role_name: 'VIEWER', description: '대시보드 및 리포트 읽기 전용', user_count: 4, permission_count: 8, is_system: true, updated_at: '2024-03-15' },
+            { role_id: 'R05', role_name: '커스텀_감사관', description: '감사 로그 전체 접근 + 내보내기', user_count: 0, permission_count: 12, is_system: false, updated_at: '2025-11-20' },
+        ],
+
+        permissions: [
+            { id: 'P01', name: '에이전트 템플릿 조회', category: '에이전트 관리', locked: ['R01'] },
+            { id: 'P02', name: '에이전트 배포', category: '에이전트 관리', locked: ['R01'] },
+            { id: 'P03', name: '에이전트 설정 변경', category: '에이전트 관리', locked: ['R01'] },
+            { id: 'P04', name: '커넥터 조회', category: '데이터 소스', locked: ['R01'] },
+            { id: 'P05', name: '커넥터 생성/수정', category: '데이터 소스', locked: ['R01'] },
+            { id: 'P06', name: '커넥터 삭제', category: '데이터 소스', locked: ['R01'] },
+            { id: 'P07', name: '실시간 모니터링 조회', category: '모니터링', locked: ['R01'] },
+            { id: 'P08', name: '알림 확인 처리', category: '모니터링', locked: ['R01'] },
+            { id: 'P09', name: '리포트 조회', category: '리포트', locked: ['R01'] },
+            { id: 'P10', name: '리포트 생성', category: '리포트', locked: ['R01'] },
+            { id: 'P11', name: '리포트 다운로드', category: '리포트', locked: ['R01'] },
+            { id: 'P12', name: '사용자 조회', category: '사용자 관리', locked: ['R01'] },
+            { id: 'P13', name: '사용자 생성/수정', category: '사용자 관리', locked: ['R01'] },
+            { id: 'P14', name: '역할/권한 관리', category: '사용자 관리', locked: ['R01'] },
+            { id: 'P15', name: '시스템 설정 변경', category: '시스템 설정', locked: ['R01'] },
+            { id: 'P16', name: 'DR 테스트 관리', category: '시스템 설정', locked: ['R01'] },
+            { id: 'P17', name: '감사 로그 조회', category: '감사 로그', locked: ['R01'] },
+            { id: 'P18', name: '감사 로그 내보내기', category: '감사 로그', locked: ['R01'] },
+            { id: 'P19', name: 'PII 마스킹 해제', category: '감사 로그', locked: ['R01'] },
+        ],
+
+        permissionMatrix: {},
+
+        get filteredUsers() {
+            return this.users.filter(u => {
+                if (this.userRoleFilter !== 'all' && u.role !== this.userRoleFilter) return false;
+                if (this.userStatusFilter !== 'all' && u.status !== this.userStatusFilter) return false;
+                if (this.userSearch) {
+                    const s = this.userSearch.toLowerCase();
+                    return u.user_name.toLowerCase().includes(s) || u.email.toLowerCase().includes(s);
+                }
+                return true;
+            });
+        },
+
+        get filteredPermissions() {
+            return this.permissions.filter(p => this.matrixCategoryFilter === 'all' || p.category === this.matrixCategoryFilter);
+        },
+
+        getPermValue(permId, roleId) {
+            const key = permId + ':' + roleId;
+            return this.permissionMatrix[key] ?? false;
+        },
+
+        togglePermission(permId, roleId) {
+            const key = permId + ':' + roleId;
+            this.permissionMatrix[key] = !this.getPermValue(permId, roleId);
+            this.matrixChanged = true;
+        },
+
+        initMatrix() {
+            const defaults = {
+                'R01': this.permissions.map(p => p.id),
+                'R02': ['P01','P02','P03','P04','P05','P07','P08','P09','P10','P11','P12','P17','P18','P19'],
+                'R03': ['P01','P04','P07','P08','P09','P10','P11','P17'],
+                'R04': ['P01','P04','P07','P09','P17'],
+                'R05': ['P01','P04','P07','P09','P17','P18','P19'],
+            };
+            Object.entries(defaults).forEach(([roleId, perms]) => {
+                perms.forEach(permId => { this.permissionMatrix[permId + ':' + roleId] = true; });
+            });
+        },
+
+        init() {
+            this.initMatrix();
+            this.$nextTick(() => lucide.createIcons());
+}
+    }
+}
+</script>
+</body>
+</html>
