@@ -436,33 +436,33 @@
                     <!-- Key Metrics -->
                     <h3 class="text-sm font-semibold text-slate-900 mb-3">핵심 지표 요약</h3>
                     <div class="grid grid-cols-4 gap-4 mb-6">
-                        <div data-component="stat" class="bg-slate-50 rounded-lg p-4 text-center">
+                        <div data-component="stat" data-variant="tinted" data-size="lg" class="bg-slate-50 rounded-lg p-4 text-center">
                             <p class="text-2xl font-bold text-slate-900">1,247,832</p>
                             <p class="text-xs text-slate-500 mt-1">총 거래 건수</p>
                         </div>
-                        <div data-component="stat" class="bg-slate-50 rounded-lg p-4 text-center">
+                        <div data-component="stat" data-variant="tinted" data-size="lg" class="bg-slate-50 rounded-lg p-4 text-center">
                             <p class="text-2xl font-bold text-red-600">127</p>
                             <p class="text-xs text-slate-500 mt-1">이상거래 탐지</p>
                         </div>
-                        <div data-component="stat" class="bg-slate-50 rounded-lg p-4 text-center">
+                        <div data-component="stat" data-variant="tinted" data-size="lg" class="bg-slate-50 rounded-lg p-4 text-center">
                             <p class="text-2xl font-bold text-emerald-600">4.2%</p>
                             <p class="text-xs text-slate-500 mt-1">오탐률</p>
                         </div>
-                        <div data-component="stat" class="bg-slate-50 rounded-lg p-4 text-center">
+                        <div data-component="stat" data-variant="tinted" data-size="lg" class="bg-slate-50 rounded-lg p-4 text-center">
                             <p class="text-2xl font-bold text-blue-600">2.3초</p>
                             <p class="text-xs text-slate-500 mt-1">평균 대응 시간</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-4 mb-6">
-                        <div data-component="stat" class="bg-slate-50 rounded-lg p-4 text-center">
+                        <div data-component="stat" data-variant="tinted" data-size="lg" class="bg-slate-50 rounded-lg p-4 text-center">
                             <p class="text-xl font-bold text-slate-900">99.97%</p>
                             <p class="text-xs text-slate-500 mt-1">에이전트 가동률</p>
                         </div>
-                        <div data-component="stat" class="bg-slate-50 rounded-lg p-4 text-center">
+                        <div data-component="stat" data-variant="tinted" data-size="lg" class="bg-slate-50 rounded-lg p-4 text-center">
                             <p class="text-xl font-bold text-orange-600">12</p>
                             <p class="text-xs text-slate-500 mt-1">차단 거래</p>
                         </div>
-                        <div data-component="stat" class="bg-slate-50 rounded-lg p-4 text-center">
+                        <div data-component="stat" data-variant="tinted" data-size="lg" class="bg-slate-50 rounded-lg p-4 text-center">
                             <p class="text-xl font-bold text-violet-600">3</p>
                             <p class="text-xs text-slate-500 mt-1">에스컬레이션</p>
                         </div>
@@ -526,7 +526,7 @@
     </main>
 
     <!-- ==================== GENERATE MODAL ==================== -->
-    <div data-component="modal" x-show="showGenerateModal" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showGenerateModal = false">
+    <div data-component="modal" data-variant="dialog" x-show="showGenerateModal" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showGenerateModal = false">
         <div class="bg-white rounded-lg w-[480px] shadow-xl" @click.stop>
             <div class="p-5 border-b border-slate-100">
                 <h3 class="text-base font-semibold text-slate-900">리포트 생성</h3>

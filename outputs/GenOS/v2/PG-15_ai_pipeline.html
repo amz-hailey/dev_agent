@@ -275,39 +275,39 @@
 
                     <!-- 9 Metrics Grid -->
                     <div class="grid grid-cols-3 gap-3">
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold text-slate-900" x-text="selectedData?.epochs"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">Epoch</p>
                         </div>
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold text-slate-900" x-text="selectedData?.batchSize"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">Batch Size</p>
                         </div>
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold text-slate-900" x-text="selectedData?.learningRate"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">Learning Rate</p>
                         </div>
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold text-slate-900" x-text="selectedData?.dataSize"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">학습 데이터</p>
                         </div>
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold text-slate-900" x-text="selectedData?.trainTime || '—'"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">학습 시간</p>
                         </div>
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold text-slate-900" x-text="selectedData?.gpuType"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">GPU 유형</p>
                         </div>
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold" :class="selectedData?.valLoss < 0.05 ? 'text-emerald-600' : 'text-slate-900'" x-text="selectedData?.valLoss ?? '—'"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">Val Loss</p>
                         </div>
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold text-slate-900" x-text="selectedData?.paramCount || '—'"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">파라미터 수</p>
                         </div>
-                        <div data-component="stat" class="text-center p-2.5 bg-slate-50 rounded-lg">
+                        <div data-component="stat" data-variant="tinted" data-size="sm" class="text-center p-2.5 bg-slate-50 rounded-lg">
                             <p class="text-lg font-bold text-slate-900" x-text="selectedData?.inferenceMs || '—'"></p>
                             <p class="text-[10px] text-slate-400 mt-0.5">추론 지연(ms)</p>
                         </div>
@@ -357,22 +357,22 @@
 
                 <!-- Deployment Summary Cards -->
                 <div class="grid grid-cols-4 gap-3">
-                    <div data-component="stat" class="p-3 bg-slate-50 rounded-lg">
+                    <div data-component="stat" data-variant="tinted" data-size="md" class="p-3 bg-slate-50 rounded-lg">
                         <p class="text-[11px] text-slate-400 mb-1">현재 운영 버전</p>
                         <p class="text-sm font-bold text-slate-900" x-text="currentDeployed?.version || '—'"></p>
                         <p class="text-[10px] text-slate-500 mt-0.5" x-text="currentDeployed?.name || ''"></p>
                     </div>
-                    <div data-component="stat" class="p-3 bg-slate-50 rounded-lg">
+                    <div data-component="stat" data-variant="tinted" data-size="md" class="p-3 bg-slate-50 rounded-lg">
                         <p class="text-[11px] text-slate-400 mb-1">배포 전략</p>
                         <p class="text-sm font-bold text-slate-900" x-text="deployStrategy"></p>
                         <p class="text-[10px] text-slate-500 mt-0.5">점진적 배포</p>
                     </div>
-                    <div data-component="stat" class="p-3 bg-slate-50 rounded-lg">
+                    <div data-component="stat" data-variant="tinted" data-size="md" class="p-3 bg-slate-50 rounded-lg">
                         <p class="text-[11px] text-slate-400 mb-1">예상 소요 시간</p>
                         <p class="text-sm font-bold text-slate-900" x-text="deployStrategy==='Canary' ? '~2시간' : deployStrategy==='Blue-Green' ? '~30분' : '~1시간'"></p>
                         <p class="text-[10px] text-slate-500 mt-0.5">무중단 전환</p>
                     </div>
-                    <div data-component="stat" class="p-3 bg-slate-50 rounded-lg">
+                    <div data-component="stat" data-variant="tinted" data-size="md" class="p-3 bg-slate-50 rounded-lg">
                         <p class="text-[11px] text-slate-400 mb-1">영향 고객사</p>
                         <p class="text-sm font-bold text-slate-900" x-text="selectedData?.type==='FDS' ? '5개사' : '3개사'"></p>
                         <p class="text-[10px] text-slate-500 mt-0.5">활성 에이전트 기준</p>
@@ -408,7 +408,7 @@
     </main>
 
     <!-- ==================== DEPLOY MODAL ==================== -->
-    <div data-component="modal" x-show="showDeployModal" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showDeployModal=false">
+    <div data-component="modal" data-variant="dialog" x-show="showDeployModal" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showDeployModal=false">
         <div class="bg-white rounded-xl shadow-xl w-[480px] p-6 slide-down" @click.stop>
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-bold text-slate-900">배포 확인</h3>
@@ -441,7 +441,7 @@
     </div>
 
     <!-- ==================== ROLLBACK CONFIRM ==================== -->
-    <div data-component="modal" x-show="showRollbackConfirm" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showRollbackConfirm=false">
+    <div data-component="modal" data-variant="dialog" x-show="showRollbackConfirm" x-transition.opacity class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" @click.self="showRollbackConfirm=false">
         <div class="bg-white rounded-xl shadow-xl w-[420px] p-6 slide-down" @click.stop>
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">

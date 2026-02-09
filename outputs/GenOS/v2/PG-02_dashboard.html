@@ -143,7 +143,7 @@
             <!-- ===== STATUS SUMMARY CARDS ===== -->
             <div class="grid grid-cols-5 gap-4 mb-6" aria-label="보안 현황 요약 지표">
                 <template x-for="card in summaryCards" :key="card.id">
-                    <a data-component="stat" :href="card.link"
+                    <a data-component="stat" data-variant="elevated" data-size="lg" :href="card.link"
                        class="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md hover:border-slate-300 transition-all duration-200 group cursor-pointer"
                        :aria-label="card.label + ' ' + card.displayValue">
                         <div class="flex items-center justify-between mb-3">

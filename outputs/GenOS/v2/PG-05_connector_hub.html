@@ -102,7 +102,7 @@
     </main>
 
     <!-- Add Connector Modal -->
-    <div x-show="showAddModal" x-transition data-component="modal" class="fixed inset-0 z-50 flex items-center justify-center" style="display:none">
+    <div x-show="showAddModal" x-transition data-component="modal" data-variant="dialog" class="fixed inset-0 z-50 flex items-center justify-center" style="display:none">
         <div class="absolute inset-0 bg-black/30" @click="showAddModal=false"></div>
         <div class="relative bg-white rounded-2xl shadow-2xl w-[560px] max-h-[80vh] overflow-y-auto p-6">
             <div class="flex items-center justify-between mb-6">
@@ -136,7 +136,7 @@
     </div>
 
     <!-- Detail Side Panel -->
-    <div x-show="selectedConn" x-transition data-component="modal" class="fixed inset-0 z-40" style="display:none">
+    <div x-show="selectedConn" x-transition data-component="modal" data-variant="panel" class="fixed inset-0 z-40" style="display:none">
         <div class="absolute inset-0 bg-black/20" @click="selectedConn=null"></div>
         <div class="absolute right-0 top-0 h-full w-[420px] bg-white shadow-xl border-l border-slate-200 flex flex-col">
             <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100 flex-shrink-0">
@@ -151,18 +151,18 @@
                 <div class="space-y-3">
                     <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">연결 상태</h4>
                     <div class="grid grid-cols-2 gap-3">
-                        <div data-component="stat" class="rounded-lg bg-slate-50 p-3"><p class="text-[11px] text-slate-400">상태</p><p class="text-sm font-semibold" :class="selectedConn?.status==='connected'?'text-emerald-600':'text-red-600'" x-text="selectedConn?.statusLabel"></p></div>
-                        <div data-component="stat" class="rounded-lg bg-slate-50 p-3"><p class="text-[11px] text-slate-400">레이턴시</p><p class="text-sm font-semibold text-slate-900" x-text="selectedConn?.latency + 'ms'"></p></div>
-                        <div data-component="stat" class="rounded-lg bg-slate-50 p-3"><p class="text-[11px] text-slate-400">Uptime</p><p class="text-sm font-semibold text-slate-900" x-text="selectedConn?.uptime + '%'"></p></div>
-                        <div data-component="stat" class="rounded-lg bg-slate-50 p-3"><p class="text-[11px] text-slate-400">TLS</p><p class="text-sm font-semibold text-slate-900">TLS 1.3</p></div>
+                        <div data-component="stat" data-variant="tinted" data-size="md" class="rounded-lg bg-slate-50 p-3"><p class="text-[11px] text-slate-400">상태</p><p class="text-sm font-semibold" :class="selectedConn?.status==='connected'?'text-emerald-600':'text-red-600'" x-text="selectedConn?.statusLabel"></p></div>
+                        <div data-component="stat" data-variant="tinted" data-size="md" class="rounded-lg bg-slate-50 p-3"><p class="text-[11px] text-slate-400">레이턴시</p><p class="text-sm font-semibold text-slate-900" x-text="selectedConn?.latency + 'ms'"></p></div>
+                        <div data-component="stat" data-variant="tinted" data-size="md" class="rounded-lg bg-slate-50 p-3"><p class="text-[11px] text-slate-400">Uptime</p><p class="text-sm font-semibold text-slate-900" x-text="selectedConn?.uptime + '%'"></p></div>
+                        <div data-component="stat" data-variant="tinted" data-size="md" class="rounded-lg bg-slate-50 p-3"><p class="text-[11px] text-slate-400">TLS</p><p class="text-sm font-semibold text-slate-900">TLS 1.3</p></div>
                     </div>
                 </div>
                 <div class="space-y-3">
                     <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">스키마 정보</h4>
                     <div class="grid grid-cols-3 gap-3">
-                        <div data-component="stat" class="text-center rounded-lg bg-slate-50 p-3"><p class="text-lg font-bold text-slate-900" x-text="selectedConn?.tables"></p><p class="text-[11px] text-slate-400">테이블</p></div>
-                        <div data-component="stat" class="text-center rounded-lg bg-slate-50 p-3"><p class="text-lg font-bold text-slate-900" x-text="selectedConn?.mappedFields"></p><p class="text-[11px] text-slate-400">매핑 필드</p></div>
-                        <div data-component="stat" class="text-center rounded-lg bg-slate-50 p-3"><p class="text-lg font-bold text-purple-600" x-text="selectedConn?.piiCount"></p><p class="text-[11px] text-slate-400">PII 필드</p></div>
+                        <div data-component="stat" data-variant="tinted" data-size="md" class="text-center rounded-lg bg-slate-50 p-3"><p class="text-lg font-bold text-slate-900" x-text="selectedConn?.tables"></p><p class="text-[11px] text-slate-400">테이블</p></div>
+                        <div data-component="stat" data-variant="tinted" data-size="md" class="text-center rounded-lg bg-slate-50 p-3"><p class="text-lg font-bold text-slate-900" x-text="selectedConn?.mappedFields"></p><p class="text-[11px] text-slate-400">매핑 필드</p></div>
+                        <div data-component="stat" data-variant="tinted" data-size="md" class="text-center rounded-lg bg-slate-50 p-3"><p class="text-lg font-bold text-purple-600" x-text="selectedConn?.piiCount"></p><p class="text-[11px] text-slate-400">PII 필드</p></div>
                     </div>
                 </div>
                 <div class="space-y-3">

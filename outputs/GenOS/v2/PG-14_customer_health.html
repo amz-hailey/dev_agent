@@ -213,7 +213,7 @@
                 </div>
                 <div class="grid grid-cols-6 gap-3">
                     <!-- Uptime -->
-                    <div data-component="stat" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer"
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer"
                          :class="selectedData?.uptime < 99.5 ? 'border-red-200' : ''">
                         <div class="flex items-center justify-between mb-2">
                             <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center"><i data-lucide="activity" class="w-4 h-4 text-blue-600"></i></div>
@@ -227,7 +227,7 @@
                         <p class="text-[11px] text-slate-400 mt-0.5">에이전트 가동률</p>
                     </div>
                     <!-- Detection Rate -->
-                    <div data-component="stat" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
                         <div class="flex items-center justify-between mb-2">
                             <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center"><i data-lucide="shield" class="w-4 h-4 text-emerald-600"></i></div>
                             <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 inline-flex items-center gap-0.5">
@@ -237,7 +237,7 @@
                         <p class="text-[11px] text-slate-400 mt-0.5">탐지율</p>
                     </div>
                     <!-- False Positive -->
-                    <div data-component="stat" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer"
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer"
                          :class="selectedData?.falsePositive > 5 ? 'border-red-200' : ''">
                         <div class="flex items-center justify-between mb-2">
                             <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i></div>
@@ -251,7 +251,7 @@
                         <p class="text-[11px] text-slate-400 mt-0.5">오탐률</p>
                     </div>
                     <!-- API Calls -->
-                    <div data-component="stat" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
                         <div class="flex items-center justify-between mb-2">
                             <div class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center"><i data-lucide="zap" class="w-4 h-4 text-violet-600"></i></div>
                             <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 inline-flex items-center gap-0.5">
@@ -261,7 +261,7 @@
                         <p class="text-[11px] text-slate-400 mt-0.5">일일 API 호출</p>
                     </div>
                     <!-- Active Users -->
-                    <div data-component="stat" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
                         <div class="flex items-center justify-between mb-2">
                             <div class="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i></div>
                             <span data-component="badge" data-intent="success" data-variant="filled-light" data-size="xs" data-state="default" class="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 inline-flex items-center gap-0.5">
@@ -271,7 +271,7 @@
                         <p class="text-[11px] text-slate-400 mt-0.5">활성 사용자</p>
                     </div>
                     <!-- Health Score -->
-                    <div data-component="stat" class="bg-white rounded-xl border-2 p-4 hover:shadow-sm transition-shadow cursor-pointer"
+                    <div data-component="stat" data-variant="elevated" data-size="lg" class="bg-white rounded-xl border-2 p-4 hover:shadow-sm transition-shadow cursor-pointer"
                          :class="selectedData?.health >= 90 ? 'border-emerald-300' : selectedData?.health >= 80 ? 'border-amber-300' : selectedData?.health >= 60 ? 'border-orange-300' : 'border-red-300'">
                         <div class="flex items-center justify-between mb-2">
                             <div class="w-8 h-8 rounded-lg flex items-center justify-center"
